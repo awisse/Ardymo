@@ -521,8 +521,9 @@ int main(int argc, char* argv[])
           break;
         }
       }
-    if (!step_model(frameCount)) 
-      break;
+
+    step_model(frameCount);
+
     /* if (!eeprom.isSaved()) { */
     /*   eeprom.save(); */
     /* } */
@@ -530,7 +531,7 @@ int main(int argc, char* argv[])
     SDL_RenderPresent(AppRenderer);
 
     // FrameRate
-    SDL_Delay(1000 / 20);
+    SDL_Delay(FRAME_DURATION);
 
   }
 
@@ -547,7 +548,16 @@ void cleanup() {
 }
 
 size_t write(uint8_t c) {
-  Platform::drawBitmap(&font5x7[FONT_WIDTH * c], 12, 12, 5, 7);
+  Platform::drawBitmap(&font5x7[FONT_WIDTH * c], cursor.x, cursor.y, 5, 7);
+  cursor.x += FONT_WIDTH + 1;
+  if (cursor.x >= SCREEN_WIDTH) {
+    cursor.x = 0;
+    cursor.y += FONT_HEIGHT + 1;
+    if (cursor.y >= SCREEN_HEIGHT) {
+      cursor.y = 0;
+    }
+  }
   return 1;
 }
+  
 // vim: tabstop=2:softtabstop=2:shiftwidth=2:expandtab:filetype=cpp

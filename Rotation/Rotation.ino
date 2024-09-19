@@ -31,10 +31,9 @@ void loop() {
   while (!arduboy.nextFrame()) {
   };
 
-  if (!step_model(arduboy.frameCount)) {
-    return;
-  }
-  Platform::display(true);
+  step_model(arduboy.frameCount);
+
+  Platform::display(false);
 
 }
 

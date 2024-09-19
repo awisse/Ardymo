@@ -9,7 +9,7 @@ point rotate(point *p0, uint8_t step);
 
 void init_game() {}
 
-bool step_model(uint16_t frame) {
+void step_model(uint16_t frame) {
 
   // point p, p0, center;
   // int16_t x, y; // Coordinates to be drawn
@@ -40,11 +40,24 @@ bool step_model(uint16_t frame) {
   //   Platform::idle();
   // }
   uint8_t buttons = Platform::buttonsState();
-  Platform::print((uint8_t)0x01);
+  static uint8_t row;
+  static uint8_t counter = 0;
 
-  if (buttons & INPUT_A)
-    return false;
-  return true;
+  if ((counter & 0x7F) == 0x7F) {
+    if  (buttons & INPUT_A) {
+      Platform::clear();
+    } else {
+      return;
+    }
+  }
+
+  if (counter++ < 256) {
+    Platform::setCursor((counter & 0x0F) * 6, ((counter & 0x7F) >> 4) << 3 );
+    Platform::print((char)counter);
+  } else {
+    counter = 0;
+  }
+
 }
 
 /*************** Rotation matrix *******************

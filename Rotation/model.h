@@ -6,4 +6,4 @@
 #include <stdint.h>
 
 void init_game();
-bool step_model(uint16_t frame);
+void step_model(uint16_t frame);
