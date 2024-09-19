@@ -5,9 +5,9 @@
 #include <time.h>
 #include <iostream>
 #include "EEPROM.h"
-#include "../defines.h"
-#include "../platform.h"
-#include "../model.h"
+#include "../Rotation/defines.h"
+#include "../Rotation/platform.h"
+#include "../Rotation/model.h"
 #include "Font5x7.h"
 
 #define ZOOM_SCALE 4
@@ -248,68 +248,68 @@ void Platform::setCursor(int16_t x, int16_t y) {
   cursor.y = y;
 }
 
-size_t print(const char str[]) {
+size_t Platform::print(const char str[]) {
   return 1;
 }
 
-size_t print(char c) {
+size_t Platform::print(char c) {
   return write(c);
 }
 
-size_t print(unsigned char c) {
+size_t Platform::print(unsigned char c) {
+  return write(c);
+}
+
+size_t Platform::print(int x, int fmt) {
   return 1;
 }
 
-size_t print(int x, int fmt) {
+size_t Platform::print(unsigned int x, int fmt) {
   return 1;
 }
 
-size_t print(unsigned int x, int fmt) {
+size_t Platform::print(long x, int fmt) {
   return 1;
 }
 
-size_t print(long x, int fmt) {
+size_t Platform::print(unsigned long x, int fmt) {
   return 1;
 }
 
-size_t print(unsigned long x, int fmt) {
-  return 1;
-}
-
-size_t print(float x, int decimals) {
+size_t Platform::print(float x, int decimals) {
   return 1;
 }
 
 
-size_t println(const char str[]) {
+size_t Platform::println(const char str[]) {
   return 1;
 }
 
-size_t println(char c) {
+size_t Platform::println(char c) {
   return 1;
 }
 
-size_t println(unsigned char c) {
+size_t Platform::println(unsigned char c) {
   return 1;
 }
 
-size_t println(int x, int fmt) {
+size_t Platform::println(int x, int fmt) {
   return 1;
 }
 
-size_t println(unsigned int x, int fmt) {
+size_t Platform::println(unsigned int x, int fmt) {
   return 1;
 }
 
-size_t println(long x, int fmt) {
+size_t Platform::println(long x, int fmt) {
   return 1;
 }
 
-size_t println(unsigned long x, int fmt) {
+size_t Platform::println(unsigned long x, int fmt) {
   return 1;
 }
 
-size_t println(float x, int decimals) {
+size_t Platform::println(float x, int decimals) {
   return 1;
 }
 

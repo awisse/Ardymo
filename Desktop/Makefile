@@ -1,16 +1,21 @@
 TARGET := ardusdl
-VPATH = ..
+VPATH := ../Rotation
 PKGCONFIG := $(shell which pkg-config)
-CXXFLAGS := $(shell $(PKGCONFIG) --cflags sdl2)
+CXXFLAGS := -g $(shell $(PKGCONFIG) --cflags sdl2)
 LDLIBS := $(shell $(PKGCONFIG) --libs sdl2)
 SOURCES := $(wildcard $(VPATH)/*.cpp *.cpp)
 OBJECTS := $(SOURCES:%.cpp=%.o)
 INCLUDES := $(wildcard $(VPATH)/*.h *.h)
 
+# show:
+# 	@echo SOURCES $(SOURCES)
+# 	@echo OBJECTS $(OBJECTS)
+# 	@echo INCLUDES $(INCLUDES)
+
 all: $(TARGET)
 
-%.o : *.cpp $(INCLUDES)
-	$(CXX) -c -o $(@F) $(CXXFLAGS) $<
+%.o : %.cpp $(INCLUDES)
+	$(CXX) -c -o $@ $(CXXFLAGS) $<
 
 $(TARGET) : $(OBJECTS)
 	$(CXX) -o $@ $^ $(LDLIBS)

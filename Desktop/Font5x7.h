@@ -1,6 +1,7 @@
 /**
  * @file Font5x7.cpp
  */
+#pragma once
 #include <stdint.h>
 #define NUMGLYPHS 256
 #define FONT_WIDTH 5
@@ -10,7 +11,6 @@
  * The screen buffer is an array of 1024 bytes representing a 
  * 128 x 64 screen.
  */
-void write(uint8_t c, uint8_t* screenBuffer, int16_t x, int16_t y); 
 
 // ASCII based 5x7 font
 // IBM PC code page 437
