@@ -39,9 +39,10 @@ bool step_model(uint16_t frame) {
   // while (!Platform::pressed(UP_BUTTON)) {
   //   Platform::idle();
   // }
-  Platform::print(0x01);
+  uint8_t buttons = Platform::buttonsState();
+  Platform::print((uint8_t)0x01);
 
-  if (Platform::buttonsState() | INPUT_A)
+  if (buttons & INPUT_A)
     return false;
   return true;
 }
