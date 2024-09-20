@@ -35,22 +35,21 @@ void step_model(uint16_t frame) {
 
   // Platform::drawPixel(x, y);
 
-  int counter;
+  int16_t counter;
+  static bool done = false;
+  uint8_t bases[] = {DEC, HEX, OCT, BINARY};
 
-  if (!Platform::pressed(INPUT_A)) {
+  if (done) {
     return;
   }
 
-
-  Platform::setCursor(16, 0);
-  Platform::print("Integer   yfg");
-
-  for (counter=0; counter < 8; counter+=2) {
-    Platform::setCursor(16, counter << 3);
-    Platform::print(2 << counter);
-    Platform::setCursor(32, counter << 3);
-    Platform::print((unsigned long)2 << counter);
+  Platform::setCursor(0, 0);
+  for (counter=0; counter<4; counter++) {
+    Platform::print((uint16_t)0xabcd, bases[counter]);
+    Platform::setCursor(64, Platform::getCursorY());
+    Platform::println((int16_t)0xabcd, bases[counter]);
   }
+  Platform::print(-21555, HEX);
 
 }
 

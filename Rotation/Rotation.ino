@@ -96,12 +96,25 @@ static void Platform::display(bool clear)
 {
   arduboy.display(clear);
 }
-/************* Text *************************************************/
-static void Platform::setCursor(int16_t x, int16_t y)
-{
+
+/************* Text Functions *********************************************/
+static void Platform::setTextRawMode(bool raw) {
+  arduboy.setTextRawMode(raw);
+}
+ 
+static void Platform::setCursor(int16_t x, int16_t y) {
   arduboy.setCursor(x, y);
 }
-// *** print ***
+
+static int16_t Platform::getCursorX(void) {
+  return arduboy.getCursorX();
+}
+
+static int16_t Platform::getCursorY(void) {
+  return arduboy.getCursorY();
+}
+
+/******************** Print *************************************************/
 static size_t Platform::print(const char str[])
 {
   arduboy.print(str);
@@ -117,24 +130,24 @@ static size_t Platform::print(unsigned char c)
   arduboy.print(c);
 }
 
-static size_t Platform::print(int x, uint8_t base)
+static size_t Platform::print(int16_t x, uint8_t base)
 {
-  arduboy.print(x, fmt);
+  arduboy.print(x, base);
 }
 
-static size_t Platform::print(unsigned int x, uint8_t base)
+static size_t Platform::print(uint16_t x, uint8_t base)
 {
-  arduboy.print(x, fmt);
+  arduboy.print(x, base);
 }
 
-static size_t Platform::print(long x, uint8_t base)
+static size_t Platform::print(int32_t x, uint8_t base)
 {
-  arduboy.print(x, fmt);
+  arduboy.print(x, base);
 }
 
-static size_t Platform::print(unsigned long x, uint8_t base)
+static size_t Platform::print(uint32_t x, uint8_t base)
 {
-  arduboy.print(x, fmt);
+  arduboy.print(x, base);
 }
 
 static size_t Platform::print(float x, uint8_t decimals)
@@ -143,6 +156,11 @@ static size_t Platform::print(float x, uint8_t decimals)
 }
 
 // *** println ***
+
+static size_t Platform::println(void) {
+  arduboy.println();
+}
+
 static size_t Platform::println(const char str[])
 {
   arduboy.println(str);
@@ -158,27 +176,27 @@ static size_t Platform::println(unsigned char c)
   arduboy.println(c);
 }
 
-static size_t Platform::println(int x, int fmt)
+static size_t Platform::println(int16_t x, uint8_t base)
 {
-  arduboy.println(x, fmt);
+  arduboy.println(x, base);
 }
 
-static size_t Platform::println(unsigned int x, int fmt)
+static size_t Platform::println(uint16_t x, uint8_t base)
 {
-  arduboy.println(x, fmt);
+  arduboy.println(x, base);
 }
 
-static size_t Platform::println(long x, int fmt)
+static size_t Platform::println(int32_t x, uint8_t base)
 {
-  arduboy.println(x, fmt);
+  arduboy.println(x, base);
 }
 
-static size_t Platform::println(unsigned long x, int fmt)
+static size_t Platform::println(uint32_t x, uint8_t base)
 {
-  arduboy.println(x, fmt);
+  arduboy.println(x, base);
 }
 
-static size_t Platform::println(float x, int digits)
+static size_t Platform::println(float x, uint8_t digits)
 {
   arduboy.println(x, digits);
 }

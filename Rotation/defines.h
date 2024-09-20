@@ -1,7 +1,33 @@
 /* vim: ts=2:sts=2:expandtab
 
  * Constants 
+ *
+ * NOTE: AVOID USING `int`, `long`, `unsigned int` and `unsigned long` in code,
+ * int is int16_t on Arduboy and int32_t on a Linux computer.
+ * Use the corresponding stdint values instead. 
  */
+#pragma once
+
+// Platform dependant definitions
+#ifndef ARDUINO
+#include <stdint.h>
+#include <string.h>
+#define PROGMEM
+#define PSTR
+#define pgm_read_byte(x) *(x)
+#define pgm_read_word(x) (*((uint16_t*)x))
+#define pgm_read_ptr(x) (*((uintptr_t*)x))
+#define strlen_P(x) strlen(x)
+// If you absolutely must use `long` and `int`, 
+// use these instead: `long_` and `int_`.
+typedef int long_;
+typedef short int_;
+#else
+//#define pgm_read_ptr pgm_read_word:
+#include <avr/pgmspace.h>
+typedef long long_;
+typedef int int_;
+#endif
 
 #define FRAME_DURATION 200
 #define PI 3.141592653589793

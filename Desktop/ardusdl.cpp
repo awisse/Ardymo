@@ -29,7 +29,7 @@ uint8_t InputMask = 0;
 void cleanup();
 size_t write(uint8_t c); // Write one character at the cursor.
 size_t write(const char str[]); // Write a string at the cursor.
-size_t printNumber(unsigned long n, int base);
+size_t printNumber(uint32_t n, int base);
 
 // Helper
 void SetColour(uint8_t colour) {
@@ -248,7 +248,7 @@ unsigned long Platform::millis() {
   return ms;
 }
 
-// Print
+/******************** Text Functions *************************************/
 void Platform::setTextRawMode(bool raw) {
   textRawMode = raw;
 }
@@ -258,6 +258,15 @@ void Platform::setCursor(int16_t x, int16_t y) {
   cursor.y = y;
 }
 
+int16_t Platform::getCursorX(void) {
+  return cursor.x;
+}
+
+int16_t Platform::getCursorY(void) {
+  return cursor.y;
+}
+
+/******************** Print **********************************************/
 size_t Platform::print(const char str[]) {
   return write(str);
 }
@@ -270,28 +279,36 @@ size_t Platform::print(unsigned char c) {
   return write(c);
 }
 
-size_t Platform::print(int x, uint8_t base) {
-  return print((long)x, base);
+// Careful: `int` is 16 bits on Arduino, but 32 bits on a regular computer.
+size_t Platform::print(int16_t n, uint8_t base) {
+  // Conversion to 16 bits
+
+  return print((int32_t)n, base);
 }
 
-size_t Platform::print(unsigned int x, uint8_t base) {
-  return print((unsigned long)x, base);
+size_t Platform::print(uint16_t n, uint8_t base) {
+  return print((uint32_t)n, base);
 }
 
-size_t Platform::print(long n, uint8_t base) {
+// Careful: `long` is 32 bits on Arduino, but 64 bits on a regular computer.
+size_t Platform::print(int32_t n, uint8_t base) {
   size_t t = 0;
 
-  if (n < 0) {
-    t = write('-');
-    n = -n;
 
+  if ((n < 0) && (base == 10)) {
+    t = write('-');
+    cursor.x += FONT_WIDTH + 1;
+    n = -n;
   }
+
+  t += printNumber(n, base);
 
   return t;
 }
 
-size_t Platform::print(unsigned long x, uint8_t decimals) {
-  return 1;
+size_t Platform::print(uint32_t n, uint8_t base) {
+  size_t t = printNumber(n, base);
+  return t;
 }
 
 size_t Platform::print(float x, uint8_t decimals) {
@@ -318,26 +335,38 @@ size_t Platform::println(char c) {
 }
 
 size_t Platform::println(unsigned char c) {
-  return 1;
+  return print((char)c);
 }
 
-size_t Platform::println(int x, int fmt) {
-  return 1;
+size_t Platform::println(int16_t n, uint8_t base) {
+  size_t t;
+  t = print(n, base);
+  t += println();
+  return t;
 }
 
-size_t Platform::println(unsigned int x, int fmt) {
-  return 1;
+size_t Platform::println(uint16_t n, uint8_t base) {
+  size_t t;
+  t = print(n, base);
+  t += println();
+  return t;
 }
 
-size_t Platform::println(long x, int fmt) {
-  return 1;
+size_t Platform::println(int32_t n, uint8_t base) {
+  size_t t;
+  t = print(n, base);
+  t += println();
+  return t;
 }
 
-size_t Platform::println(unsigned long x, int fmt) {
-  return 1;
+size_t Platform::println(uint32_t n, uint8_t base) {
+  size_t t;
+  t = print(n, base);
+  t += println();
+  return t;
 }
 
-size_t Platform::println(float x, int decimals) {
+size_t Platform::println(float x, uint8_t decimals) {
   return 1;
 }
 
@@ -352,7 +381,7 @@ void Platform::DebugPrint(uint16_t value) {
   }
 }
 
-void Platform::DebugPrint(unsigned long value) {
+void Platform::DebugPrint(uint32_t value) {
   std::cout << value << ":";
   std::cout.flush();
   if (++counter % 8 == 0) {
@@ -580,6 +609,7 @@ size_t write(uint8_t c) {
     switch (c) {
     case 0xa:
       cursor.x = 0;
+      cursor.y += FONT_HEIGHT + 1;
       return 0;
     case 0xd:
       return 1;
@@ -589,7 +619,7 @@ size_t write(uint8_t c) {
   Platform::drawBitmap(&font5x7[FONT_WIDTH * c], cursor.x, cursor.y, 5, 8);
   return 1;
 }
-  
+
 size_t write(const char str[]) { // Write a string at the cursor.
   int char_pos = 0, t = 0;
   char c;
@@ -601,9 +631,9 @@ size_t write(const char str[]) { // Write a string at the cursor.
   return t;
 }
 
-size_t printNumber(unsigned long n, int base)
+size_t printNumber(uint32_t n, int base)
 {
-  char buf[8 * sizeof(long) + 1]; // Assumes 8-bit chars plus zero byte.
+  char buf[8 * sizeof(uint32_t) + 1]; // Assumes 8-bit chars plus zero byte.
   char *str = &buf[sizeof(buf) - 1];
 
   // Fill buffer from right to left
