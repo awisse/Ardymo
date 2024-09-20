@@ -17,6 +17,7 @@ public:
   
   // Buttons  
   static uint8_t buttonsState();
+  static bool pressed(uint8_t buttons);
 
   // Drawing Arduboy
   static void drawPixel(uint8_t x, uint8_t y, uint8_t colour=COLOUR_WHITE);
@@ -39,16 +40,18 @@ public:
   static unsigned long millis();
 
   // Print
-  static void setCursor(int16_t, int16_t);
+  static void setTextRawMode(bool raw);
+  static void setCursor(int16_t x, int16_t y);
   static size_t print(const char str[]);
   static size_t print(char c);
   static size_t print(unsigned char c);
-  static size_t print(int x, int=DEC);
-  static size_t print(unsigned int x, int=DEC);
-  static size_t print(long x, int=DEC);
-  static size_t print(unsigned long x, int=DEC);
-  static size_t print(float x, int=2);
+  static size_t print(int x, uint8_t base=DEC);
+  static size_t print(unsigned int x, uint8_t base=DEC);
+  static size_t print(long x, uint8_t base=DEC);
+  static size_t print(unsigned long x, uint8_t base=DEC);
+  static size_t print(float x, uint8_t decimals=2);
 
+  static size_t println(void);
   static size_t println(const char str[]);
   static size_t println(char c);
   static size_t println(unsigned char c);

@@ -35,27 +35,21 @@ void step_model(uint16_t frame) {
 
   // Platform::drawPixel(x, y);
 
+  int counter;
 
-  // while (!Platform::pressed(UP_BUTTON)) {
-  //   Platform::idle();
-  // }
-  uint8_t buttons = Platform::buttonsState();
-  static uint8_t row;
-  static uint8_t counter = 0;
-
-  if ((counter & 0x7F) == 0x7F) {
-    if  (buttons & INPUT_A) {
-      Platform::clear();
-    } else {
-      return;
-    }
+  if (!Platform::pressed(INPUT_A)) {
+    return;
   }
 
-  if (counter++ < 256) {
-    Platform::setCursor((counter & 0x0F) * 6, ((counter & 0x7F) >> 4) << 3 );
-    Platform::print((char)counter);
-  } else {
-    counter = 0;
+
+  Platform::setCursor(16, 0);
+  Platform::print("Integer   yfg");
+
+  for (counter=0; counter < 8; counter+=2) {
+    Platform::setCursor(16, counter << 3);
+    Platform::print(2 << counter);
+    Platform::setCursor(32, counter << 3);
+    Platform::print((unsigned long)2 << counter);
   }
 
 }

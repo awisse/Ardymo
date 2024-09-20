@@ -43,6 +43,10 @@ void loop() {
 uint8_t Platform::buttonsState() {
   return arduboy.buttonsState();
 }
+bool Platform::pressed(uint8_t buttons) {
+  return arduboy.pressed(buttons);
+}
+
 /******* Drawing **********************************************/
 static void Platform::drawPixel(uint8_t x, uint8_t y, uint8_t colour) {
   arduboy.drawPixel(x, y, colour);
@@ -113,29 +117,29 @@ static size_t Platform::print(unsigned char c)
   arduboy.print(c);
 }
 
-static size_t Platform::print(int x, int fmt)
+static size_t Platform::print(int x, uint8_t base)
 {
   arduboy.print(x, fmt);
 }
 
-static size_t Platform::print(unsigned int x, int fmt)
+static size_t Platform::print(unsigned int x, uint8_t base)
 {
   arduboy.print(x, fmt);
 }
 
-static size_t Platform::print(long x, int fmt)
+static size_t Platform::print(long x, uint8_t base)
 {
   arduboy.print(x, fmt);
 }
 
-static size_t Platform::print(unsigned long x, int fmt)
+static size_t Platform::print(unsigned long x, uint8_t base)
 {
   arduboy.print(x, fmt);
 }
 
-static size_t Platform::print(float x, int digits)
+static size_t Platform::print(float x, uint8_t decimals)
 {
-  arduboy.print(x, digits);
+  arduboy.print(x, decimals);
 }
 
 // *** println ***

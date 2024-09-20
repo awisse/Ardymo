@@ -7,10 +7,8 @@
 #define FONT_WIDTH 5
 #define FONT_HEIGHT 7
 
-/* Write a character to the screenBuffer at position x, y
- * The screen buffer is an array of 1024 bytes representing a 
- * 128 x 64 screen.
- */
+
+
 
 // ASCII based 5x7 font
 // IBM PC code page 437

@@ -53,6 +53,10 @@ uint8_t Platform::buttonsState()
   return InputMask;
 }
 
+bool Platform::pressed(uint8_t buttons) {
+  return (buttonsState() & buttons) == buttons;
+}
+
 // Drawing
 void Platform::drawPixel(uint8_t x, uint8_t y, uint8_t colour) {
 
@@ -582,7 +586,7 @@ size_t write(uint8_t c) {
     }
   }
 
-  Platform::drawBitmap(&font5x7[FONT_WIDTH * c], cursor.x, cursor.y, 5, 7);
+  Platform::drawBitmap(&font5x7[FONT_WIDTH * c], cursor.x, cursor.y, 5, 8);
   return 1;
 }
   
