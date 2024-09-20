@@ -19,6 +19,7 @@ uint8_t sBuffer[SCREEN_WIDTH * SCREEN_HEIGHT / 8];
 EEPROM eeprom;
 unsigned long StartTime;
 int zoom_scale;
+bool textRawMode;
 point cursor;
 #ifdef _DEBUG
 int counter;
@@ -26,8 +27,9 @@ int counter;
 
 uint8_t InputMask = 0;
 void cleanup();
-size_t write(uint8_t c); // Write one character at the cursor. Characters 
-                         // from Font5x7.h
+size_t write(uint8_t c); // Write one character at the cursor.
+size_t write(const char str[]); // Write a string at the cursor.
+size_t printNumber(unsigned long n, int base);
 
 // Helper
 void SetColour(uint8_t colour) {
@@ -243,13 +245,17 @@ unsigned long Platform::millis() {
 }
 
 // Print
+void Platform::setTextRawMode(bool raw) {
+  textRawMode = raw;
+}
+
 void Platform::setCursor(int16_t x, int16_t y) {
   cursor.x = x;
   cursor.y = y;
 }
 
 size_t Platform::print(const char str[]) {
-  return 1;
+  return write(str);
 }
 
 size_t Platform::print(char c) {
@@ -260,33 +266,51 @@ size_t Platform::print(unsigned char c) {
   return write(c);
 }
 
-size_t Platform::print(int x, int fmt) {
+size_t Platform::print(int x, uint8_t base) {
+  return print((long)x, base);
+}
+
+size_t Platform::print(unsigned int x, uint8_t base) {
+  return print((unsigned long)x, base);
+}
+
+size_t Platform::print(long n, uint8_t base) {
+  size_t t = 0;
+
+  if (n < 0) {
+    t = write('-');
+    n = -n;
+
+  }
+
+  return t;
+}
+
+size_t Platform::print(unsigned long x, uint8_t decimals) {
   return 1;
 }
 
-size_t Platform::print(unsigned int x, int fmt) {
+size_t Platform::print(float x, uint8_t decimals) {
   return 1;
 }
 
-size_t Platform::print(long x, int fmt) {
-  return 1;
-}
 
-size_t Platform::print(unsigned long x, int fmt) {
-  return 1;
+size_t Platform::println(void) {
+  return write('\n');
 }
-
-size_t Platform::print(float x, int decimals) {
-  return 1;
-}
-
 
 size_t Platform::println(const char str[]) {
-  return 1;
+  size_t t;
+  t = print(str);
+  t += println();
+  return t;
 }
 
 size_t Platform::println(char c) {
-  return 1;
+  size_t t;
+  t = print(c);
+  t += println();
+  return t;
 }
 
 size_t Platform::println(unsigned char c) {
@@ -548,16 +572,49 @@ void cleanup() {
 }
 
 size_t write(uint8_t c) {
-  Platform::drawBitmap(&font5x7[FONT_WIDTH * c], cursor.x, cursor.y, 5, 7);
-  cursor.x += FONT_WIDTH + 1;
-  if (cursor.x >= SCREEN_WIDTH) {
-    cursor.x = 0;
-    cursor.y += FONT_HEIGHT + 1;
-    if (cursor.y >= SCREEN_HEIGHT) {
-      cursor.y = 0;
+  if (!textRawMode) {
+    switch (c) {
+    case 0xa:
+      cursor.x = 0;
+      return 0;
+    case 0xd:
+      return 1;
     }
   }
+
+  Platform::drawBitmap(&font5x7[FONT_WIDTH * c], cursor.x, cursor.y, 5, 7);
   return 1;
 }
   
+size_t write(const char str[]) { // Write a string at the cursor.
+  int t = 0;
+  char c;
+
+  while ((c=str[t++]) && (cursor.x < SCREEN_WIDTH)) {
+    t += write(c);
+    cursor.x += FONT_WIDTH;
+  }
+  return t;
+}
+
+size_t printNumber(unsigned long n, int base)
+{
+  char buf[8 * sizeof(long) + 1]; // Assumes 8-bit chars plus zero byte.
+  char *str = &buf[sizeof(buf) - 1];
+
+  // Fill buffer from right to left
+  *str = '\0';
+
+  // prevent crash if called with base == 1
+  if (base < 2) base = 10;
+
+  do {
+    char c = n % base;
+    n /= base;
+
+    *--str = c < 10 ? c + '0' : c + 'A' - 10;
+  } while(n);
+
+  return write(str);
+}
 // vim: tabstop=2:softtabstop=2:shiftwidth=2:expandtab:filetype=cpp
