@@ -587,12 +587,12 @@ size_t write(uint8_t c) {
 }
   
 size_t write(const char str[]) { // Write a string at the cursor.
-  int t = 0;
+  int char_pos = 0, t = 0;
   char c;
 
-  while ((c=str[t++]) && (cursor.x < SCREEN_WIDTH)) {
+  while ((c=str[char_pos++]) && (cursor.x < SCREEN_WIDTH)) {
     t += write(c);
-    cursor.x += FONT_WIDTH;
+    cursor.x += FONT_WIDTH + 1;
   }
   return t;
 }
