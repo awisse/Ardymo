@@ -68,19 +68,20 @@ void Platform::drawPixel(uint8_t x, uint8_t y, uint8_t colour) {
   SDL_RenderDrawPoint(AppRenderer, x, y);
 }
 
-void Platform::drawBitmap(const uint8_t* data, int16_t x, int16_t y,
+void Platform::drawBitmap(int16_t x, int16_t y, const uint8_t* data, 
     uint8_t w, uint8_t h, uint8_t colour)
 {
   for (int j = 0; j < h; j++)
   {
+    uint8_t mask = 1 << (j % 8);
+    int blockY = j / 8;
+
     for (int i = 0; i < w; i++)
     {
       int blockX = i / 8;
-      int blockY = j / 8;
       int blocksPerWidth = w / 8;
       int blockIndex = blockY * blocksPerWidth + blockX;
       uint8_t pixels = data[blockIndex * 8 + i % 8];
-      uint8_t mask = 1 << (j % 8);
       if (pixels & mask)
       {
         drawPixel(x + i, y + j, colour);
@@ -605,6 +606,11 @@ void cleanup() {
 }
 
 size_t write(uint8_t c) {
+
+  // Erase rectangle first
+  Platform::fillRect(cursor.x, cursor.y, 
+      FONT_WIDTH + 1, FONT_HEIGHT + 1, COLOUR_BLACK);
+  
   if (!textRawMode) {
     switch (c) {
     case 0xa:
@@ -616,7 +622,7 @@ size_t write(uint8_t c) {
     }
   }
 
-  Platform::drawBitmap(&font5x7[FONT_WIDTH * c], cursor.x, cursor.y, 5, 8);
+  Platform::drawBitmap(cursor.x, cursor.y, &font5x7[FONT_WIDTH * c], 5, 8);
   return 1;
 }
 
