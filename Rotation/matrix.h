@@ -1,5 +1,5 @@
 /* vim: ts=2:sts=2:expandtab
- * 
+ *
  * Rotation matrix for angles of 0, 3, 6, ... 87 degrees.
  * For starters, we stop at 87 degrees given that all the other values can be deduced.
  * Upon furter inspection: we only need up to 42 degrees.
@@ -14,7 +14,7 @@ typedef struct {
   float sin;
 } rotn;
 
-rotn omega[ANGLES] = { 
+rotn omega[ANGLES] = {
  { 1, 0 },
  { 0.9986295, 0.052336 },
  { 0.9945219, 0.1045285 },

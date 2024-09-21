@@ -1,10 +1,10 @@
 /* vim: ts=2:sts=2:expandtab
 
- * Constants 
+ * Constants
  *
  * NOTE: AVOID USING `int`, `long`, `unsigned int` and `unsigned long` in code,
  * int is int16_t on Arduboy and int32_t on a Linux computer.
- * Use the corresponding stdint values instead. 
+ * Use the corresponding stdint values instead.
  */
 #pragma once
 
@@ -18,7 +18,7 @@
 #define pgm_read_word(x) (*((uint16_t*)x))
 #define pgm_read_ptr(x) (*((uintptr_t*)x))
 #define strlen_P(x) strlen(x)
-// If you absolutely must use `long` and `int`, 
+// If you absolutely must use `long` and `int`,
 // use these instead: `long_` and `int_`.
 typedef int long_;
 typedef short int_;
@@ -32,8 +32,8 @@ typedef int int_;
 #define FRAME_DURATION 200
 #define PI 3.141592653589793
 
-#define SCREEN_WIDTH 128 
-#define SCREEN_HEIGHT 64 
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
 #define DEC 10
 #define HEX 16
 #define OCT 8

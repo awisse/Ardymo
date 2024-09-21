@@ -14,23 +14,23 @@ class Platform
 public:
   // General
   static uint8_t* getBuffer();
-  
-  // Buttons  
+
+  // Buttons
   static uint8_t buttonsState();
   static bool pressed(uint8_t buttons);
 
   // Drawing Arduboy
   static void drawPixel(uint8_t x, uint8_t y, uint8_t colour=COLOUR_WHITE);
-  static void drawBitmap(const uint8_t* bitmap, int16_t x, int16_t y,
+  static void drawBitmap(int16_t x, int16_t y, const uint8_t* bitmap,
     uint8_t w, uint8_t h, uint8_t colour=COLOUR_WHITE);
-  static void drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, 
+  static void drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
     uint8_t colour=COLOUR_WHITE);
   static void drawRect(int16_t x, int16_t y, uint8_t w, uint8_t h);
-  static void fillRect(int16_t x, int16_t y, uint8_t w, uint8_t h, 
+  static void fillRect(int16_t x, int16_t y, uint8_t w, uint8_t h,
     uint8_t colour=COLOUR_WHITE);
-  static void drawCircle(int16_t x0, int16_t y0, uint8_t r, 
+  static void drawCircle(int16_t x0, int16_t y0, uint8_t r,
     uint8_t colour=COLOUR_WHITE);
-  static void fillCircle(int16_t x0, int16_t y0, uint8_t r, 
+  static void fillCircle(int16_t x0, int16_t y0, uint8_t r,
     uint8_t colour=COLOUR_WHITE);
   static void fillScreen(uint8_t colour);
   static void clear();
@@ -77,5 +77,8 @@ public:
   static void DebugPrint(const uint8_t* text);
 #endif
 	
+#ifndef ARDUINO
+
+#endif
 };
 // vim:ft=cpp

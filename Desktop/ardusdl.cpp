@@ -20,16 +20,19 @@ EEPROM eeprom;
 unsigned long StartTime;
 int zoom_scale;
 bool textRawMode;
-point cursor;
 #ifdef _DEBUG
 int counter;
 #endif
 
 uint8_t InputMask = 0;
 void cleanup();
+
+//private:
 size_t write(uint8_t c); // Write one character at the cursor.
 size_t write(const char str[]); // Write a string at the cursor.
 size_t printNumber(uint32_t n, int base);
+size_t printFloat(float x, int decimals);
+point cursor;
 
 // Helper
 void SetColour(uint8_t colour) {
@@ -68,7 +71,7 @@ void Platform::drawPixel(uint8_t x, uint8_t y, uint8_t colour) {
   SDL_RenderDrawPoint(AppRenderer, x, y);
 }
 
-void Platform::drawBitmap(int16_t x, int16_t y, const uint8_t* data, 
+void Platform::drawBitmap(int16_t x, int16_t y, const uint8_t* data,
     uint8_t w, uint8_t h, uint8_t colour)
 {
   for (int j = 0; j < h; j++)
@@ -313,7 +316,7 @@ size_t Platform::print(uint32_t n, uint8_t base) {
 }
 
 size_t Platform::print(float x, uint8_t decimals) {
-  return 1;
+  return printFloat(x, decimals);
 }
 
 
@@ -368,11 +371,13 @@ size_t Platform::println(uint32_t n, uint8_t base) {
 }
 
 size_t Platform::println(float x, uint8_t decimals) {
-  return 1;
+  size_t t = printFloat(x, decimals);
+  t += println();
+  return t;
 }
 
 
-// 
+//
 #ifdef _DEBUG
 void Platform::DebugPrint(uint16_t value) {
   std::cout << value << ":";
@@ -608,9 +613,9 @@ void cleanup() {
 size_t write(uint8_t c) {
 
   // Erase rectangle first
-  Platform::fillRect(cursor.x, cursor.y, 
+  Platform::fillRect(cursor.x, cursor.y,
       FONT_WIDTH + 1, FONT_HEIGHT + 1, COLOUR_BLACK);
-  
+
   if (!textRawMode) {
     switch (c) {
     case 0xa:
@@ -656,5 +661,20 @@ size_t printNumber(uint32_t n, int base)
   } while(n);
 
   return write(str);
+}
+
+size_t printFloat(float x, int decimals)
+{
+  size_t t;
+  char strfloat[64]; // Resulting string
+  char format[6]; // Format string
+  char fmt_tpl[] = "%%.%df";
+
+  t = sprintf(format, fmt_tpl, decimals);
+  t = sprintf(strfloat, format, x);
+
+  t = Platform::print(strfloat);
+
+  return t;
 }
 // vim: tabstop=2:softtabstop=2:shiftwidth=2:expandtab:filetype=cpp

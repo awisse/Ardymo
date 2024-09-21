@@ -35,22 +35,56 @@ void step_model(uint16_t frame) {
 
   // Platform::drawPixel(x, y);
 
-  int16_t counter;
+
   static bool done = false;
-  uint8_t bases[] = {DEC, HEX, OCT, BINARY};
+	float x, y, z, xzz, zz;
+  uint32_t *ix, *iy, *iz, *izz, *ixzz;
+
+  x = 2.;
+  y = 0.34;
+  z = 2.34;
+  zz = z - (uint32_t)z;
+  xzz = x + zz;
+  ix = (uint32_t*)&x;
+  iy = (uint32_t*)&y;
+  iz = (uint32_t*)&z;
+  izz = (uint32_t*)&zz;
+  ixzz = (uint32_t*)&xzz;
+
 
   if (done) {
     return;
   }
 
   Platform::setCursor(0, 0);
-  for (counter=0; counter<4; counter++) {
-    Platform::print((uint16_t)0xabcd, bases[counter]);
-    Platform::setCursor(64, Platform::getCursorY());
-    Platform::println((int16_t)0xabcd, bases[counter]);
-  }
-  Platform::print(-21555, HEX);
 
+  // x
+  Platform::print("x   ");
+  Platform::print(x, 4);
+  Platform::print(" ");
+  Platform::println(*ix, HEX);
+  // y
+  Platform::print("y   ");
+  Platform::print(y, 4);
+  Platform::print(" ");
+  Platform::println(*iy, HEX);
+  // z
+  Platform::print("z   ");
+  Platform::print(z, 4);
+  Platform::print(" ");
+  Platform::println(*iz, HEX);
+  // zz
+  Platform::print("zz  ");
+  Platform::print(zz, 4);
+  Platform::print(" ");
+  Platform::println(*izz, HEX);
+  // xzz
+  Platform::print("xzz ");
+  Platform::print(xzz, 4);
+  Platform::print(" ");
+  Platform::println(*ixzz, HEX);
+
+  done = true;
 }
 
 /*************** Rotation matrix *******************
