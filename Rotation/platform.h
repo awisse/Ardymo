@@ -18,6 +18,9 @@ public:
   // Buttons
   static uint8_t buttonsState();
   static bool pressed(uint8_t buttons);
+  static void pollButtons(void);
+  static bool justPressed(uint8_t button);
+  static bool justReleased(uint8_t button);
 
   // Drawing Arduboy
   static void drawPixel(uint8_t x, uint8_t y, uint8_t colour=COLOUR_WHITE);

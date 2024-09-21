@@ -33,6 +33,7 @@ size_t write(const char str[]); // Write a string at the cursor.
 size_t printNumber(uint32_t n, int base);
 size_t printFloat(float x, int decimals);
 point cursor;
+uint8_t previousButtonState, currentButtonState;
 
 // Helper
 void SetColour(uint8_t colour) {
@@ -58,6 +59,23 @@ uint8_t Platform::buttonsState()
 
 bool Platform::pressed(uint8_t buttons) {
   return (buttonsState() & buttons) == buttons;
+}
+
+void Platform::pollButtons(void) {
+
+  previousButtonState = currentButtonState;
+  currentButtonState = buttonsState();
+}
+
+bool Platform::justPressed(uint8_t button) {
+
+  return (!(previousButtonState & button) && (currentButtonState & button));
+}
+
+bool Platform::justReleased(uint8_t button) {
+
+  return ((previousButtonState & button) && !(currentButtonState & button));
+
 }
 
 // Drawing
@@ -464,7 +482,7 @@ void Initialize() {
   }
   StartTime = 1000 * ts.tv_sec + ts.tv_nsec / 1000000;
   // Initialize game
-  init_game();
+  initialize();
   // Initialize random number generator.
   srandom(StartTime);
 }
