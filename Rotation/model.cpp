@@ -3,9 +3,11 @@
 #include "model.h"
 #include "platform.h"
 #include "matrix.h"
+#include "structs.h"
 #include "defines.h"
 
-point rotate(point *p0, uint8_t step);
+void rotate(point *from, point *to, int16_t angle);
+rotn get_rotn(int16_t angle);
 
 void initialize() {}
 
@@ -35,56 +37,29 @@ void step_model(uint16_t frame) {
 
   // Platform::drawPixel(x, y);
 
+  static uint16_t alpha = 0;
+  point pt = {30, 0}, offset = {64, 32}, rpt;
+  int i;
 
-  static bool done = false;
-	float x, y, z, xzz, zz;
-  uint32_t *ix, *iy, *iz, *izz, *ixzz;
-
-  x = 2.;
-  y = 0.34;
-  z = 2.34;
-  zz = z - (uint32_t)z;
-  xzz = x + zz;
-  ix = (uint32_t*)&x;
-  iy = (uint32_t*)&y;
-  iz = (uint32_t*)&z;
-  izz = (uint32_t*)&zz;
-  ixzz = (uint32_t*)&xzz;
-
-
-  if (done) {
+  /* Platform::pollButtons(); */
+  if (Platform::pressed(INPUT_LEFT)) {
+    alpha = alpha ? alpha - 3 : 357;
+  } else if (Platform::pressed(INPUT_RIGHT)) {
+    alpha = (alpha + 3) % 360;
+  } else {
     return;
   }
 
+  Platform::clear();
+
   Platform::setCursor(0, 0);
+  Platform::print("alpha: ");
+  Platform::print(alpha);
 
-  // x
-  Platform::print("x   ");
-  Platform::print(x, 4);
-  Platform::print(" ");
-  Platform::println(*ix, HEX);
-  // y
-  Platform::print("y   ");
-  Platform::print(y, 4);
-  Platform::print(" ");
-  Platform::println(*iy, HEX);
-  // z
-  Platform::print("z   ");
-  Platform::print(z, 4);
-  Platform::print(" ");
-  Platform::println(*iz, HEX);
-  // zz
-  Platform::print("zz  ");
-  Platform::print(zz, 4);
-  Platform::print(" ");
-  Platform::println(*izz, HEX);
-  // xzz
-  Platform::print("xzz ");
-  Platform::print(xzz, 4);
-  Platform::print(" ");
-  Platform::println(*ixzz, HEX);
+  rotate(&pt, &rpt, alpha);
+  Platform::drawLine(offset.x, offset.y, offset.x + rpt.x,
+      offset.y + rpt.y, COLOUR_WHITE);
 
-  done = true;
 }
 
 /*************** Rotation matrix *******************
@@ -94,29 +69,52 @@ void step_model(uint16_t frame) {
  * We need only two float values per angle: cos(\theta) and sin(\theta)
 */
 
-point rotate(point *p0, uint8_t step) {
-  /* Rotate point p0 by step * 6  degrees around the center of the screen.
-   * Return the rotated point.
-   * Between 0 and Pi/2 for now.
+void rotate(point *from, point *to, int16_t angle) {
+  /* Rotate point `from` by angle degrees around the center of the screen.
+   * Return the rotated point in *to.
+   * Positive angle between 0 and 359 degrees.
    */
-  point p = {0, 0};
-  rotn  r;
-  float cos, sin; // Dependent on step.
-
-  if (step < ANGLES) {
-    r = omega[step];
-    cos = r.cos;
-    sin = r.sin;
-  }  else {
-    r = omega[2 * (ANGLES - 1) - step];
-    cos = -r.cos;
-    sin = r.sin;
-  }
+  rotn  r = get_rotn(angle);
 
   // Matrix multiplication
-  p.x = cos * p0->x - sin * p0->y;
-  p.y = sin * p0->x + cos * p0->y;
-
-  return p;
+  to->x = r.cos * from->x - r.sin * from->y;
+  to->y = r.sin * from->x + r.cos * from->y;
 }
+
+rotn get_rotn(int16_t alpha) {
+  // Get the correct element of the rotation matrix omega.
+  rotn rot_vect;
+  float x;
+
+  alpha = alpha % 360;
+  if (alpha < 0) {
+    alpha = 360 + alpha;
+  }
+
+  if (alpha <= 45) {
+    rot_vect.cos = pgm_read_float(&omega[alpha].cos);
+    rot_vect.sin = pgm_read_float(&omega[alpha].sin);
+    return rot_vect;
+  }
+
+  if (alpha > 180)
+  {
+    rot_vect = get_rotn(360 - alpha);
+    rot_vect.sin = -rot_vect.sin;
+  }
+  else if (alpha > 90)
+  {
+    rot_vect = get_rotn(180 - alpha);
+    rot_vect.cos = -rot_vect.cos;
+  }
+  else {
+    rot_vect = get_rotn(90 - alpha);
+    x = rot_vect.cos;
+    rot_vect.cos = rot_vect.sin;
+    rot_vect.sin = x;
+  }
+
+  return rot_vect;
+}
+
 

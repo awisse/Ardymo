@@ -4,11 +4,6 @@
 #include <stdint.h>
 #include "defines.h"
 
-
-typedef struct {
-  uint16_t x, y;
-} point;
-
 class Platform
 {
 public:
@@ -58,7 +53,13 @@ public:
   // Careful: `long` on Arduino is 32 bits, but 64 bits on a regular computer.
   static size_t print(int32_t x, uint8_t base=DEC);
   static size_t print(uint32_t x, uint8_t base=DEC);
+  // Float conversion is not the same with the Arduino `Print` class and
+  // the conversion on a desktop computer. The rounding approach
+  // in the private method `Print::printFloat` is different from
+  // standard C.
   static size_t print(float x, uint8_t decimals=2);
+  // Float and double is the same on Arduboy:
+  static size_t print(double x, uint8_t decimals=2);
 
   static size_t println(void);
   static size_t println(const char str[]);
@@ -69,15 +70,19 @@ public:
   static size_t println(int32_t x, uint8_t base=DEC);
   static size_t println(uint32_t x, uint8_t base=DEC);
   static size_t println(float x, uint8_t decimals=2);
+  static size_t println(double x, uint8_t decimals=2);
+
 
   // EEPROM
 
   // Debug
 #ifdef _DEBUG
-  static void DebugPrint(uint16_t value);
-  static void DebugPrint(unsigned long value);
-  static void DebugPrint(float value);
-  static void DebugPrint(const uint8_t* text);
+  static void DebugPrint(uint16_t value, uint8_t base=DEC);
+  static void DebugPrint(uint32_t value, uint8_t base=DEC);
+  static void DebugPrint(float value, uint8_t decimals=2);
+  static void DebugPrint(double value, uint8_t decimals=2);
+  static void DebugPrint(const char* text);
+  static void DebugPrintln();
 #endif
 	
 #ifndef ARDUINO
