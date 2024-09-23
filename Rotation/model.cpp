@@ -4,41 +4,18 @@
 #include "platform.h"
 #include "matrix.h"
 #include "structs.h"
+#include "shapes.h"
 #include "defines.h"
 
-void rotate(point *from, point *to, int16_t angle);
+void rotate(Pt *from, Pt *to, int16_t angle);
 rotn get_rotn(int16_t angle);
 
 void initialize() {}
 
 void step_model(uint16_t frame) {
 
-  // point p, p0, center;
-  // int16_t x, y; // Coordinates to be drawn
-  // uint16_t step = frame % (2 * ANGLES - 1);
-
-  // center = { SCREEN_WIDTH / 2, 0 };
-  // p0 = { SCREEN_HEIGHT - 1, 0 };
-
-  // p = rotate(&p0, step);
-
-  // x = center.x + p.x;
-  // y = center.y + p.y;
-
-  // Platform::setCursor(0, 0);
-  // Platform::print("p(x, y) = ");
-  // Platform::print("(");
-  // Platform::print(p.x);
-  // Platform::print(", ");
-  // Platform::print(p.y);
-  // Platform::println(")");
-  // Platform::print("step    = ");
-  // Platform::println(step);
-
-  // Platform::drawPixel(x, y);
-
   static uint16_t alpha = 0;
-  point pt = {30, 0}, offset = {64, 32}, rpt;
+  Pt pt(30, 0), offset(64, 32), rotated, target;
   int i;
 
   /* Platform::pollButtons(); */
@@ -46,7 +23,7 @@ void step_model(uint16_t frame) {
     alpha = alpha ? alpha - 3 : 357;
   } else if (Platform::pressed(INPUT_RIGHT)) {
     alpha = (alpha + 3) % 360;
-  } else {
+  } else if (rotated.x) { // Run at least once
     return;
   }
 
@@ -56,10 +33,12 @@ void step_model(uint16_t frame) {
   Platform::print("alpha: ");
   Platform::print(alpha);
 
-  rotate(&pt, &rpt, alpha);
-  Platform::drawLine(offset.x, offset.y, offset.x + rpt.x,
-      offset.y + rpt.y, COLOUR_WHITE);
-
+  rotate(&pt, &rotated, alpha);
+  target = offset + rotated;
+  Platform::drawLine(offset.x, offset.y, 
+      target.x, target.y, COLOUR_WHITE);
+  for (i=0; i<ARROW_LENGTH; i++) {
+  }
 }
 
 /*************** Rotation matrix *******************
@@ -69,7 +48,7 @@ void step_model(uint16_t frame) {
  * We need only two float values per angle: cos(\theta) and sin(\theta)
 */
 
-void rotate(point *from, point *to, int16_t angle) {
+void rotate(Pt *from, Pt *to, int16_t angle) {
   /* Rotate point `from` by angle degrees around the center of the screen.
    * Return the rotated point in *to.
    * Positive angle between 0 and 359 degrees.
