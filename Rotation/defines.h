@@ -54,8 +54,3 @@ typedef int int_;
 #define INPUT_A 8u
 #define INPUT_B 4u
 
-// Typedefs
-typedef struct {
-  int16_t x, y;
-} point;
-

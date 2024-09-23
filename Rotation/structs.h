@@ -22,3 +22,7 @@ class Pt {
     bool operator==(const Pt&);
 };
 
+typedef struct {
+  int16_t x, y;
+} point;
+

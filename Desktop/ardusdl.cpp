@@ -6,6 +6,7 @@
 #include <iostream>
 #include "EEPROM.h"
 #include "../Rotation/defines.h"
+#include "../Rotation/structs.h"
 #include "../Rotation/platform.h"
 #include "../Rotation/model.h"
 #include "Font5x7.h"
