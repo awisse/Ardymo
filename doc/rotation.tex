@@ -10,12 +10,9 @@
 % Packages
 %
 \usepackage{graphicx}
-% \usepackage{algorithmic}
+\usepackage{array}
 \usepackage{amsmath}
-%
-% Definitions
-%
-% \newcommand{\sign}{\hbox{sign}}
+% \usepackage{paralist}
 %
 % Dimensions
 % \setlength{\textwidth}{5.5in}
@@ -23,15 +20,16 @@
 % \setlength{\hoffset}{-0.25in}
 % \setlength{\topmargin}{0pt}
 \setlength{\parindent}{0pt}
-% \setlength{\parskip}{0.5\baselineskip}
+\setlength{\parskip}{0.5\baselineskip}
 %
 % Definitions
 \newcommand{\Rb}{{\bf{R}}}
 \newcommand{\eqn}[1]{(\ref{#1})}
 \newcommand{\TODO}{{\bf TODO}}
-\newcommand{\bhat}{{\hat b}}
-\newcommand{\xhat}{{\hat x}}
-\newcommand{\yhat}{{\hat y}}
+\newcommand{\bhat}{{\hat{b}}}
+\newcommand{\xhat}{{\hat{x}}}
+\newcommand{\yhat}{{\hat{y}}}
+\newcommand{\figref}[1]{Fig.~\eqref{#1}}
 
 \begin{document}
 %
@@ -219,14 +217,95 @@ There are four types of objects in the game.
     \item A frontal collision of both players ends the game without a winner.
 \end{itemize}
 
-\section{User Interface}
-The main screen 
-\includegraphics{screen.eps}
+\subsection{User Interface}
+\label{sec:user:interface}
+The main screen Figure \figref{fig:main:screen}.
+\begin{figure}
+    \includegraphics[width=\textwidth]{screen.eps}
+\caption{Mockup of the main game screen}\label{fig:main:screen}
+\end{figure}
+\begin{itemize}
+    \item The numbers next to the four triangles, top, left right and botton 
+        show the distance to the nearest object (obstacle or target). 
+    \item The arrow shows the direction of the vehicle. 
+    \item The dot on the circle shows in which direction the target is 
+        located.
+    \item The elapsed game time is the number at the top left in the white
+        rectangle.
+    \item The distance to the target is the number below the elapsed time.
+\end{itemize}
 
+\subsection{Game Map}
+\label{sec:game:map}
+The game map is a rectangle given by two values $x_M, y_M > 0$. The resulting
+rectangle is defined by the four points
+\begin{equation*}
+    \{(0,0), (x_M, 0), (0, y_M), (x_M, y_M)\} 
+\end{equation*}
+The map is filled with two vehicles, one for each player, a target and
+obstacles which are a collection of line segments and circles.
+
+Given that the map can be quite big, no bitmap representation of the game map
+is displayed on the Arduboy. However, the map can be converted to a bitmap 
+with a suitable drawing program. Ultimately, a small program for conversion
+into an SVG file can be written.
+
+\subsection{Controls}
+\label{sec:controls}
+
+\begin{tabular}{>{\sffamily\bfseries}ll}
+    Up Button & Accelerate forward $1m/s^2$. \\
+    Down Button & Accelerate backwards (also "braking").\\
+    Left Button & Turn left $\alpha$ degrees.\\
+    Right Button & Turn right $\alpha$ degrees.\\
+    A Button & TBD.\\
+    B Button & Show menu.\\
+\end{tabular}
+
+\subsection{Vehicle Movement}
+\label{sec:vehicle:movement}
+
+The vehicle is defined as a rectangle given by four points. Two points at the
+front of the vehicle and two points at the rear of the vehicle. These points 
+define four line segments. 
+
+Turning the vehicle with the left or right button rotates the four buttons 
+around the midpoint of the two points at the rear of the vehicle, as
+illustrated in \figref{fig:vehicle:rotate}.
+\begin{figure}
+    \centering
+    \includegraphics{vehicle-turn.eps}
+    \caption{Vehicle Turn}\label{fig:vehicle:rotate}
+\end{figure}
+The vehicles' forward movement is in the direction of the front of the vehicle
+parallel to the sides of the vehicle. 
+The vehicles' backward movement is in the direction of the rear of the vehicle
+parallel to the sides of the vehicle. 
+
+\subsection{Target and Obstacles}
+\label{sec:obstacles}
+
+The obstacles are line segments and circles. The target is a circle. The
+vehicle is a rectangle. The limits of the game map are obstacles.
+
+\pagebreak
 \section{Scanning}
 \label{sec:scanning}
-
 In each frame, the vehicle scans for obstacles in the following way.
 
-In this section, we define how the car scans continuously 
+The straight lines prolonging the sides of the vehicle are checked for
+intersections with all obstacles in the list. The distance to the closest 
+obstacle is displayed on the user interface.
+
+The straight line perpendicular to the vehicle and running through the center
+of the vehicle is checked for intersections with all obstacles in the list.
+The distance to the closest obstacle is displayed on the user interface
+\figref{fig:scanning}.
+
+\begin{figure}
+    \centering
+    \includegraphics{scanning.eps}
+    \caption{Scanning and Distance}\label{fig:scanning}
+\end{figure}
+
 \end{document}
