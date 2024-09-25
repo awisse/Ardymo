@@ -1,6 +1,7 @@
 %
 % Documentation of the planar geometry algorithms used in the
 % Mini Jam project du on October 31st, 2024.
+% The game is called "Ardymo", a combination of "Arduino" and "Waymo"
 %
 % Compute the intersections of a straight line with an ellipse and
 % a rectangle.
@@ -12,6 +13,7 @@
 \usepackage{graphicx}
 \usepackage{array}
 \usepackage{amsmath}
+\usepackage{color}
 % \usepackage{paralist}
 %
 % Dimensions
@@ -30,6 +32,10 @@
 \newcommand{\xhat}{{\hat{x}}}
 \newcommand{\yhat}{{\hat{y}}}
 \newcommand{\figref}[1]{Fig.~\eqref{#1}}
+% For graphics alignment:
+\newcommand{\HR}{\rule{1em}{0.4pt}}
+\newcommand{\bluefbox}[1]{\textcolor{blue}{%
+        \setlength\fboxsep{0pt}\fbox{\textcolor{black}{#1}}}}
 
 \begin{document}
 %
@@ -48,7 +54,7 @@ circles and convex polygons.
 
 %
 \section{Straight Line}
-\label{sec:straight:line}
+\label{sec-straight-line}
 
 Representation of a straight line going through
 coordinates $(x_0, y_0)$ and $(x_1, y_1)$. Determine the points $(x, y)$ on the
@@ -62,13 +68,13 @@ We have two special cases:
 
 For the general case, $x_0 \neq x_1, y_0 \neq y_1$, we have
 \begin{eqnarray}
-    y &=& ax+b,\quad \text{where} \label{eq:line:general}\\
+    y &=& ax+b,\quad \text{where} \label{eq-line-general}\\
     a &=& \frac{y_0 - y_1}{x_0 - x_1}, \notag \\
     b &=& \frac{x_0 y_1 - y_0 x_1}{x_0 - x_1} \notag
 \end{eqnarray}
 
 \subsection{Line Segment}
-\label{sec:line:segment}
+\label{sec-line-segment}
 
 For the special case $x_0 = x_1$ a line segment $[(x_0, y_0):(x_0, y_1)]$ 
 between $(x_0, y_0)$ and $(x_0, y_1)$ is given by the equation
@@ -82,7 +88,7 @@ between $(x_0, y_0)$ and $(x_1, y_0)$ is given by the equation
     (x, y) = (x, y_0)\quad x\in [x_0, x_1]
 \end{equation}
 
-For the general case given by \eqn{eq:line:general}, the line segment 
+For the general case given by \eqn{eq-line-general}, the line segment 
 \begin{gather*}
     \left[(x_0, y_0):(x_1, y_1)\right]
 \end{gather*}
@@ -92,7 +98,7 @@ between $(x_0, y_0)$ and $(x_1, y_1)$ is given by
 \end{equation}
 
 \section{Polygons}
-\label{sec:polygons}
+\label{sec-polygons}
 
 We are concerned with a general polygon in the two-dimensional plane. A polygon
 with $n$ sides is well defined by $n$ line segments and $n$ points $(x_0,
@@ -102,8 +108,31 @@ y_0),\ldots,(x_{n-1}, y_{n-1})$. The $n$ sides are defined by the line segments
 \cup\left\{[(x_{n-1}, y_{n-1}):(x_{0}, y_{0})]\right\}
 \end{equation}
 
+\section{Rectangle}
+\label{sec-rectangle}
+While general polygons are useful as obstacles, given that they are composed of
+general segments, they lack the direction information we need for the car.
+Hence we define a rectangle with the following five parameters by starting with
+a rectangle of which the sides are parallel to the x-axis and the y-axis, given
+by the four parameters
+\begin{enumerate}
+    \item $(x_0, y_0)$ the translation from the origin of the rectangle. It
+        represents the upper left corner of the rectangle.
+    \item $w$ the width (x-direction) of the rectangle.
+    \item $h$ the height (y-direction) of the rectangle.
+\end{enumerate}
+The fifth parameter $\alpha$ represents the rotation of the rectangle around
+the point $\left(x_0, y_0 + \frac{h}{2}\right)$. The parameters are illustrated
+in \figref{fig-rectangle}.
+
+\begin{figure}
+    \centering
+    \includegraphics[trim=10 40 10 20]{rectangle.eps}
+    \caption{Rotated Rectangle}\label{fig-rectangle}
+\end{figure}
+
 \section{Circle}
-\label{sec:circle}
+\label{sec-circle}
 
 The standard implicit equation for a circle of radius $r$  centered at the 
 point $(x_0, y_0)$ is
@@ -117,10 +146,10 @@ point $(x_0, y_0)$ is
 \end{equation}
 
 \section{Intersection}
-\label{sec:intersection}
+\label{sec-intersection}
 
 \subsection{Line Segment}
-\label{sec:intersection:line:segment}
+\label{sec-intersection-line-segment}
 The intersection of a straight line $y=ax+b$ (a sensor ray) with a line segment
 $y = a_s x + b_s, x\in[x_0, x_1]$ is given by 
 \begin{equation}
@@ -128,7 +157,7 @@ $y = a_s x + b_s, x\in[x_0, x_1]$ is given by
 \end{equation}
 
 \subsection{Circle}
-\label{sec:intersection:circle}
+\label{sec-intersection-circle}
 The intersection of a straight line $y=ax+b$ with a circle 
 $(x-x_0)^2+(y-y_0)^2=r^2$ is given by
 \begin{equation}
@@ -141,9 +170,9 @@ In order to simplify calculations, we translate the origin to $(x_0, y_0)$. Let
 The intersection of the straight line $\yhat = a\xhat + \bhat$ with the circle
 $\xhat^2 + \yhat^2 = r^2$ is given by
 \begin{equation}
-    \xhat^2 + (a\xhat + \bhat)^2 = r^2 \label{eq:intersection:circle}
+    \xhat^2 + (a\xhat + \bhat)^2 = r^2 \label{eq-intersection-circle}
 \end{equation}
-The solutions $\xhat$ to \eqref{eq:intersection:circle} are given by
+The solutions $\xhat$ to \eqref{eq-intersection-circle} are given by
 \begin{equation}
     \xhat = -\frac{a\bhat}{1+a^2}\pm 
         \sqrt{\frac{1}{1+a^2}\left(r^2-\bhat+\frac{a^2 b^2}{1+a^2}\right)}
@@ -155,7 +184,7 @@ From this, we see that if
 there is no intersection of the line and the circle.
 
 \section{Representation}
-\label{sec:representation}
+\label{sec-representation}
 In this section we describe how circles, sensor rays and line segments will be
 represented in code. There is no particular polygon object given that a
 polygon is just a collection of line segments.
@@ -191,7 +220,7 @@ general straight line with inequalities:
 Parameters $x_0, y_0, r$.
 
 \section{Game Objects}
-\label{sec:game:objects}
+\label{sec-game-objects}
 There are four types of objects in the game. 
 \begin{enumerate}
     \item The game surface. A rectangle with $(0,0)$ in the upper left corner. 
@@ -205,7 +234,7 @@ There are four types of objects in the game.
 \end{enumerate}
 
 \section{The Game}
-\label{sec:the:game}
+\label{sec-the-game}
 \begin{itemize}
     \item There are two players in the game, one on each Arduboy. 
     \item The objective of the game is to reach the target first without 
@@ -218,11 +247,11 @@ There are four types of objects in the game.
 \end{itemize}
 
 \subsection{User Interface}
-\label{sec:user:interface}
-The main screen Figure \figref{fig:main:screen}.
+\label{sec-user-interface}
+The main screen Figure \figref{fig-main-screen}.
 \begin{figure}
     \includegraphics[width=\textwidth]{screen.eps}
-\caption{Mockup of the main game screen}\label{fig:main:screen}
+\caption{Mockup of the main game screen}\label{fig-main-screen}
 \end{figure}
 \begin{itemize}
     \item The numbers next to the four triangles, top, left right and botton 
@@ -236,7 +265,7 @@ The main screen Figure \figref{fig:main:screen}.
 \end{itemize}
 
 \subsection{Game Map}
-\label{sec:game:map}
+\label{sec-game-map}
 The game map is a rectangle given by two values $x_M, y_M > 0$. The resulting
 rectangle is defined by the four points
 \begin{equation*}
@@ -251,7 +280,7 @@ with a suitable drawing program. Ultimately, a small program for conversion
 into an SVG file can be written.
 
 \subsection{Controls}
-\label{sec:controls}
+\label{sec-controls}
 
 \begin{tabular}{>{\sffamily\bfseries}ll}
     Up Button & Accelerate forward $1m/s^2$. \\
@@ -263,7 +292,7 @@ into an SVG file can be written.
 \end{tabular}
 
 \subsection{Vehicle Movement}
-\label{sec:vehicle:movement}
+\label{sec-vehicle-movement}
 
 The vehicle is defined as a rectangle given by four points. Two points at the
 front of the vehicle and two points at the rear of the vehicle. These points 
@@ -271,11 +300,11 @@ define four line segments.
 
 Turning the vehicle with the left or right button rotates the four buttons 
 around the midpoint of the two points at the rear of the vehicle, as
-illustrated in \figref{fig:vehicle:rotate}.
+illustrated in \figref{fig-vehicle-rotate}.
 \begin{figure}
     \centering
-    \includegraphics{vehicle-turn.eps}
-    \caption{Vehicle Turn}\label{fig:vehicle:rotate}
+    \includegraphics[trim=0 30 0 30]{vehicle-turn.eps}
+    \caption{Vehicle Turn}\label{fig-vehicle-rotate}
 \end{figure}
 The vehicles' forward movement is in the direction of the front of the vehicle
 parallel to the sides of the vehicle. 
@@ -283,14 +312,14 @@ The vehicles' backward movement is in the direction of the rear of the vehicle
 parallel to the sides of the vehicle. 
 
 \subsection{Target and Obstacles}
-\label{sec:obstacles}
+\label{sec-obstacles}
 
 The obstacles are line segments and circles. The target is a circle. The
 vehicle is a rectangle. The limits of the game map are obstacles.
 
 \pagebreak
 \section{Scanning}
-\label{sec:scanning}
+\label{sec-scanning}
 In each frame, the vehicle scans for obstacles in the following way.
 
 The straight lines prolonging the sides of the vehicle are checked for
@@ -300,12 +329,12 @@ obstacle is displayed on the user interface.
 The straight line perpendicular to the vehicle and running through the center
 of the vehicle is checked for intersections with all obstacles in the list.
 The distance to the closest obstacle is displayed on the user interface
-\figref{fig:scanning}.
+\figref{fig-scanning}.
 
 \begin{figure}
     \centering
     \includegraphics{scanning.eps}
-    \caption{Scanning and Distance}\label{fig:scanning}
+    \caption{Scanning and Distance}\label{fig-scanning}
 \end{figure}
 
 \end{document}
