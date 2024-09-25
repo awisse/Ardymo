@@ -1,5 +1,5 @@
 TARGET := ardusdl
-VPATH := ../Rotation
+VPATH := ../Ardymo
 PKGCONFIG := $(shell which pkg-config)
 CXXFLAGS := -g $(shell $(PKGCONFIG) --cflags sdl2)
 LDLIBS := $(shell $(PKGCONFIG) --libs sdl2)

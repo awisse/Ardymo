@@ -5,10 +5,10 @@
 #include <time.h>
 #include <iostream>
 #include "EEPROM.h"
-#include "../Rotation/defines.h"
-#include "../Rotation/structs.h"
-#include "../Rotation/platform.h"
-#include "../Rotation/model.h"
+#include "../Ardymo/defines.h"
+#include "../Ardymo/structs.h"
+#include "../Ardymo/platform.h"
+#include "../Ardymo/model.h"
 #include "Font5x7.h"
 
 #define ZOOM_SCALE 4
