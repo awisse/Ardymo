@@ -137,7 +137,7 @@ in \figref{fig-rectangle}.
 The standard implicit equation for a circle of radius $r$  centered at the 
 point $(x_0, y_0)$ is
 \begin{equation}
-    (x - x_0)^2 + (y - y_0)^2 = r^2 
+    (x - x_0)^2 + (y - y_0)^2 = r^2\label{eq-circle}
 \end{equation}
 
 \TODO: We might generalize to an ellipsis later if this adds something
@@ -186,14 +186,34 @@ table~\eqref{tab-condition-intersection-seg}.
 
 \subsection{Circle}
 \label{sec-intersection-circle}
-The intersection of a straight line $y=ax+b$ with a circle 
-$(x-x_0)^2+(y-y_0)^2=r^2$ is given by
+For the sensor ray, we must consider the three cases $(x,y)=(x_0,y)\,\forall y$
+\eqref{eq-line-x1x0}, $(x,y)=(x,y_0)\,\forall x$ \eqref{eq-line-y1y0} and $y=ax+b$
+\eqref{eq-line-general}.
+
+Let $(x_c, y_c)$ be the center of the circle. 
+
+For the case $(x,y)=(x_0, y)$, the intersection with the circle 
+$(x-x_c)^2+(y-y_c)^2=r^2$ is given by
 \begin{equation}
-    (x-x_0)^2 + (ax+b - y_0)^2 = r^2 
+    y = y_c \pm\sqrt{r^2 - (x_0-x_c)^2}.
 \end{equation}
-In order to simplify calculations, we translate the origin to $(x_0, y_0)$. Let
+If $r^2 < (x_0-x_c)^2$, there is no intersection with the circle.
+
+For the case $(x,y)=(x, y_0)$, the intersection with the circle 
+$(x-x_c)^2+(y-y_c)^2=r^2$ is given by
 \begin{equation}
-    \xhat = x-x_0,\quad \yhat = y-y_0,\quad \bhat = ax_0 + b - y_0.
+    x = x_c \pm\sqrt{r^2 - (y_0-y_c)^2}.
+\end{equation}
+If $r^2 < (y_0-y_c)^2$, there is no intersection with the circle.
+
+For the general case, the intersection of a 
+straight line $y=ax+b$ with a circle $(x-x_c)^2+(y-y_c)^2=r^2$ is given by
+\begin{equation}
+    (x-x_c)^2 + (ax+b - y_c)^2 = r^2 
+\end{equation}
+In order to simplify calculations, we translate the origin to $(x_c, y_c)$. Let
+\begin{equation}
+    \xhat = x-x_c,\quad \yhat = y-y_c,\quad \bhat = ax_c + b - y_c.
 \end{equation}
 The intersection of the straight line $\yhat = a\xhat + \bhat$ with the circle
 $\xhat^2 + \yhat^2 = r^2$ is given by
@@ -203,7 +223,7 @@ $\xhat^2 + \yhat^2 = r^2$ is given by
 The solutions $\xhat$ to \eqref{eq-intersection-circle} are given by
 \begin{equation}
     \xhat = -\frac{a\bhat}{1+a^2}\pm 
-        \sqrt{\frac{1}{1+a^2}\left(r^2-\bhat+\frac{a^2 b^2}{1+a^2}\right)}
+        \sqrt{\frac{1}{1+a^2}\left(r^2-\bhat+\frac{a^2 \bhat^2}{1+a^2}\right)}
 \end{equation}
 From this, we see that if 
 \begin{equation}
