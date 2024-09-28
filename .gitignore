@@ -1,5 +1,7 @@
 *.o
 ardusdl
+ardymo.pdf
+*converted-to.pd   
 build
 RotationMatrix.csv
 *.dvi
@@ -7,7 +9,6 @@ RotationMatrix.csv
 *.fdb_latexmk
 *.fls
 *.log
-*.pdf
 *.synctex.gz
 *.png
 .~*
