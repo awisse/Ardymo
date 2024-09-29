@@ -32,7 +32,7 @@ typedef long long_;
 typedef int int_;
 #endif
 
-#define FRAME_DURATION 20
+#define FRAME_DURATION 50
 #define PI 3.141592653589793
 
 #define SCREEN_WIDTH 128

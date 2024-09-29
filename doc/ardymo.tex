@@ -14,7 +14,7 @@
 \usepackage{array}
 \usepackage{amsmath,bm}
 \usepackage{color}
-% \usepackage{paralist}
+\usepackage{booktabs}
 %
 % Dimensions
 % \setlength{\textwidth}{5.5in}
@@ -26,16 +26,19 @@
 %
 % Definitions
 % Mathematical symbols
-\newcommand{\Rb}{{\mathbf{R}}}
-\newcommand{\diota}{d_\iota}
-\newcommand{\xiota}{x_\iota}
-\newcommand{\xsigma}{x_\sigma}
-\newcommand{\yiota}{y_\iota}
-\newcommand{\ysigma}{y_\sigma}
+\newcommand{\asig}{a_\sigma}
 \newcommand{\bhat}{{\hat{b}}}
-\newcommand{\xhat}{{\hat{x}}}
-\newcommand{\yhat}{{\hat{y}}}
 \newcommand{\bfx}{\mathbf{x}}
+\newcommand{\bsig}{b_\sigma}
+\newcommand{\diota}{d_\iota}
+\newcommand{\xhat}{{\hat{x}}}
+\newcommand{\xiota}{x_\iota}
+\newcommand{\xsig}{x_\sigma}
+\newcommand{\Xsig}{X_\sigma}
+\newcommand{\yhat}{{\hat{y}}}
+\newcommand{\yiota}{y_\iota}
+\newcommand{\ysig}{y_\sigma}
+\newcommand{\Rb}{{\mathbf{R}}}
 % Labels and text
 \newcommand{\eqn}[1]{(\ref{#1})}
 \newcommand{\figref}[1]{Fig.~\eqref{#1}}
@@ -155,28 +158,85 @@ interesting to the gameplay:
     \frac{(x-x_0)^2}{a^2} + \frac{(y-y_0)^2}{b^2} = 1
 \end{equation}
 
+\section{Representation}
+\label{sec-representation}
+In this section we describe how circles, sensor rays and line segments will be
+represented in code. There is no particular polygon object given that a
+polygon is just a collection of line segments.
+
+\subsection{Unbound Straight Line}
+
+
+Parameters $(a, b, X, z_0, z_1)$.
+The parameters $z_0, z_1$ are set to zero for an unbound line. They define
+the endpoints of a line segment.
+
+\begin{enumerate}
+    \item For an unbound straight horizontal line, $a=X=0, y=b$.
+    \item For an unbound straight vertical line, $a=b=0, x=X$.
+    \item For an unbound general line, $X=0$.
+\end{enumerate}
+
+\subsection{Line Segment}
+\label{sec-representation-line-segment}
+
+Parameters $(a, b, X, z_0, z_1)$.
+
+Covers all cases. We must define a transformation of the points $(x_0, y_0)$
+and $(x_1, y_1)$  into a general straight line with constraints on $x$ and $y$.
+\begin{equation}
+    (a, b, X, z_0, z_1) =
+    \begin{cases}
+        (0, y_0, 0, x_0, x_1)  &
+        \text{if $y_1 = y_0\land x_0 < x_1$}\\
+        (0, 0, x_0, y_0, y_1) &
+        \text{if $x_1 = x_0\land  y_0 < y_1 $}\\
+        \left(\frac{y_0 - y_1}{x_0-x_1},
+            \frac{x_0 y_1 - x_1 y_0}{x_0 - x_1}, 0, x_0, x_1\right) &
+            \text{if $x_0< x_1\,\land\,y_0< y_1$}
+    \end{cases}
+\end{equation}
+
+\subsection{Rectangle}
+
+A rectangle is given by the parameters $(x_0, y_0, w, h, \alpha)$
+(Section~\ref{sec-rectangle}).
+
+
+\subsection{Circle}
+
+Parameters $x_0, y_0, r$.
+
+
 \section{Intersection and Distance}
 \label{sec-intersection-distance}
 
-The general form of the distance $\diota$ between the origin of the sensor ray
-$\bfx_\sigma=(\xsigma,\ysigma)$ and the point of intersection
-$\bfx_\iota=(\xiota,\yiota)$ is given by Pythagoras' Theorem:
+In this section, we determine the algoritm that finds the intersection of a
+sensor ray $(\asig, \bsig, \Xsig, 0, 0)$ with an obstacle. If the intersection
+exists, we compute the distance of the origin $(\xsig, \ysig)$ of the sensor
+ray to the obstacle.
+
+The general form of the distance $d$ between the origin of the sensor ray
+$(\xsig,\ysig)$ and the point of intersection $(\xiota,\yiota)$ is given by 
+Pythagoras' Theorem:
 \begin{equation}
-    \diota = \sqrt{(\xiota-\xsigma)^2 + (\yiota-\ysigma)^2}
+    \diota = \sqrt{(\xiota-\xsig)^2 + (\yiota-\ysig)^2}
 \end{equation}
 
 \subsection{Line Segment}
 \label{sec-intersection-line-segment}
 
 \subsubsection*{Intersection}
+
 We must consider the intersections of all three possibilities of sensor rays
-$(x, y) =(x_0, y)$ \eqref{eq-line-xx0}, $(x, y)=(x, b)$ \eqref{eq-line-yy0}
-and $(x, y) = (x, ax+b)$
+$(x, y) =(\xsig, y)$ \eqref{eq-line-xx0}, $(x, y)=(x, \bsig)$ 
+\eqref{eq-line-yy0} and $(x, y) = (x, \asig x+\bsig)$
 \eqref{eq-line-general} with all three possibilities of line segments
 $x_{s0}=x_{s1}$ \eqref{eq-seg-x1x0}, $y_{s0}=y_{s1}$ \eqref{eq-seg-yb} and
 $y=a_{s}x+b_{s}$ \eqref{eq-seg-general}, where $(x_{s0}, x_{s1})$ are the
 limits of the $x$-parameter, $(y_{s0}, y_{s1})$ the limits of the
-$y$-parameter and $(a_{s}, b_{s}),\,a_{s}\neq 0$ the parameters of the general case
+$y$-parameter and $(a_{s}, b_{s}),\,a_{s}\neq 0$ the parameters of the 
+general case
 \eqref{eq-seg-general}.
 
 We present the conditions for intersections of the sensor ray (first column)
@@ -185,30 +245,60 @@ table~\eqref{tab-condition-intersection-seg}.
 % Definitions: Math mode columns
 \newcolumntype{C}{>{$\scriptstyle}c<{$}}
 \newcolumntype{L}{>{$\scriptstyle}l<{$}}
-% The table
+% Table: Conditions for intersection with line segments
 \begin{table}
     \centering
-    \begin{tabular}{L|CCC}
-    \text{Sensor}& x_{s1}=x_{s0} & y_{s1}=y_{s0} & a_{s}x + b_{s} \\ \hline
-    x=x_0 & x_0=x_{s0} & \multicolumn{2}{C}{x_{s0}\leq x_0\leq x_{s1}} \\
-    y=b & y_{s0}\leq b\leq y_{s1} & b=y_{s0} &
-    x_{s0}\leq \frac{b - b_s}{a_s}\leq x_{s1} \\
-    ax+b & y_{s0}\leq ax_{s0}+b\leq y_{s1} &
-    x_{s0}\leq \frac{y_{s0}-b}{a}\leq x_{s1} &
-    \left\{\begin{tabular}{C}a=a_s\,\land\,b=bs\\ \text{or}\\
-            x_{s0}\leq \frac{b_s-b}{a_s-a}\leq x_{s1}
-        \end{tabular}\right\}
+    \begin{tabular}{LCCC}
+    \toprule
+        \multicolumn{1}{c}{Sensor}&\multicolumn{3}{c}{Line Segment} \\
+    \cmidrule(l){2-4}
+    \multicolumn{1}{c}{Params}& x_{s1}=x_{s0} & y_{s1}=y_{s0} & a_{s}x + b_{s}\\
+    \hline
+    x=\xsig & \xsig=x_{s0} & 
+        \multicolumn{2}{C}{x_{s0}\leq \xsig\leq x_{s1}} \\
+    y=\bsig & y_{s0}\leq \bsig \leq y_{s1} & \bsig=y_{s0} &
+    a_s x_{s0}\leq \bsig - b_s\leq a_s x_{s1} \\
+    \asig x+\bsig & y_{s0}\leq \asig x_{s0}+\bsig\leq y_{s1} &
+    \asig x_{s0}\leq y_{s0}-\bsig\leq \asig x_{s1} &
+    \left\{\begin{tabular}{C}\asig=a_s\,\land\,\bsig=b_s\\ \text{or}\\
+            x_{s0}\leq \frac{\bsig - b_s}{a_s-\asig}\leq x_{s1}
+        \end{tabular}\right\}\\
+    \bottomrule
     \end{tabular}
-    \caption{Conditions for intersections with line
-    segments}\label{tab-condition-intersection-seg}
+    \caption{Conditions for intersections with line segments}\label{tab-condition-intersection-seg}
 \end{table}
 
-\subsubsection*{Distance}
 
-Let ${\bfx}_\sigma=(x_\sigma, y_\sigma)$ be the origin of the sensor ray. We
-want to compute the distance between $\bfx$ and the point of intersection with
-the line segment. In certain cases, there is more than one point of
-intersection and we must choose the nearest. In Table~\eqref{tab-distance-seg}.
+\subsubsection*{Distance}
+Provided an intersection exists, we can compute the distance from $(x_\sigma,
+y_\sigma)$ the origin of the sensor ray to the obstacle. In 
+Table~\eqref{tab-distance-seg}, we present the distances for all cases of
+existing intersections seen in Table~\eqref{tab-condition-intersection-seg}.
+% Table: Distance from origin of sensor ray to obstacle
+\begin{table}
+    \centering
+    \begin{tabular}
+    \begin{tabular}{LLL}
+    \toprule
+    \multicolumn{1}{c}{Sensor}&\multicolumn{1}{c}{Line Segment}&
+    \multicolumn{1}{c}{Distance}\\
+    \midrule
+    \multicolum{1}{c}{Params}& x_{s1}=x_{s0} & y_{s1}=y_{s0} & a_{s}x + b_{s}\\
+    \hline
+    x=\xsig & \xsig=x_{s0} & 
+        \multicolumn{2}{C}{x_{s0}\leq \xsig\leq x_{s1}} \\
+    y=\bsig & y_{s0}\leq \bsig \leq y_{s1} & \bsig=y_{s0} &
+    a_s x_{s0}\leq \bsig - b_s\leq a_s x_{s1} \\
+    \asig x+\bsig & y_{s0}\leq \asig x_{s0}+\bsig\leq y_{s1} &
+    \asig x_{s0}\leq y_{s0}-\bsig\leq \asig x_{s1} &
+    \left\{\begin{tabular}{C}\asig=a_s\,\land\,\bsig=b_s\\ \text{or}\\
+            x_{s0}\leq \frac{\bsig - b_s}{a_s-\asig}\leq x_{s1}
+        \end{tabular}\right\}\\
+    \bottomrule
+    \end{tabular}
+    \caption{Conditions for intersections with line segments}\label{tab-condition-intersection-seg}
+\end{table}
+
 
 \subsection{Rectangle}
 \label{sec-intersection-rectangle}
@@ -286,55 +376,6 @@ From this, we see that if
 \end{equation}
 there is no intersection of the line and the circle.
 
-\section{Representation}
-\label{sec-representation}
-In this section we describe how circles, sensor rays and line segments will be
-represented in code. There is no particular polygon object given that a
-polygon is just a collection of line segments.
-
-\subsection{Unbound Straight Line}
-
-
-Parameters $(a, b, X, z_0, z_1)$.
-The parameters $z_0, z_1$ are set to zero for an unbound line. They define
-the endpoints of a line segment.
-
-\begin{enumerate}
-    \item For an unbound straight horizontal line, $a=X=0, y=b$.
-    \item For an unbound straight vertical line, $a=b=0, x=X$.
-    \item For an unbound general line, $X=0$.
-\end{enumerate}
-
-\subsection{Line Segment}
-\label{sec-representation-line-segment}
-
-Parameters $(a, b, X, z_0, z_1)$.
-
-Covers all cases. We must define a transformation of the points $(x_0, y_0)$
-and $(x_1, y_1)$  into a general straight line with inequalities:
-\begin{equation}
-    (a, b, X, z_0, z_1) =
-    \begin{cases}
-        (0, y_0, 0, x_0, x_1)  &
-        \text{if $y_1 = y_0\land x_0 < x_1$}\\
-        (0, 0, x_0, y_0, y_1) &
-        \text{if $x_1 = x_0\land  y_0 < y_1 $}\\
-        \left(\frac{y_0 - y_1}{x_0-x_1},
-            \frac{x_0 y_1 - x_1 y_0}{x_0 - x_1}, 0, x_0, x_1\right) &
-            \text{if $x_0< x_1\,\land\,y_0< y_1$}
-    \end{cases}
-\end{equation}
-
-\subsection{Rectangle}
-
-A rectangle is given by the parameters $(x_0, y_0, w, h, \alpha)$
-(Section~\ref{sec-rectangle}).
-
-
-\subsection*{Circle}
-
-Parameters $x_0, y_0, r$.
-
 \section{Game Objects}
 \label{sec-game-objects}
 There are four types of objects in the game.
@@ -363,7 +404,7 @@ There are four types of objects in the game.
 
 \subsection{User Interface}
 \label{sec-user-interface}
-The main screen Figure \figref{fig-main-screen}.
+The main screen \figref{fig-main-screen}.
 \begin{figure}
     \includegraphics[width=\textwidth]{screen.pdf}
 \caption{Mockup of the main game screen}\label{fig-main-screen}
@@ -371,7 +412,7 @@ The main screen Figure \figref{fig-main-screen}.
 \begin{itemize}
     \item The numbers next to the four triangles, top, left right and botton
         show the distance to the nearest object (obstacle or target).
-    \item The arrow shows the direction of the vehicle.
+    \item The arrow points towards the north, parallel to the x-axis.
     \item The dot on the circle shows in which direction the target is
         located.
     \item The elapsed game time is the number at the top left in the white

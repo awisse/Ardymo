@@ -15,7 +15,8 @@ void initialize() {}
 void step_model(uint16_t frame) {
 
   static uint16_t alpha = 0;
-  Pt pt(30, 0), offset(64, 32), rotated, target;
+  Pt start(-30, 0), end(30, 0), offset(64, 32);
+  Pt rotated, start_rotated, end_rotated;
   int i;
 
   /* Platform::pollButtons(); */
@@ -33,12 +34,12 @@ void step_model(uint16_t frame) {
   Platform::print("alpha: ");
   Platform::print(alpha);
 
-  rotate(&pt, &rotated, alpha);
-  target = offset + rotated;
-  Platform::drawLine(offset.x, offset.y, 
-      target.x, target.y, COLOUR_WHITE);
-  for (i=0; i<ARROW_LENGTH; i++) {
-  }
+  rotate(&start, &start_rotated, alpha);
+  start_rotated = offset + start_rotated;
+  rotate(&end, &end_rotated, alpha);
+  end_rotated = offset + end_rotated;
+  Platform::drawLine(start_rotated.x, start_rotated.y,
+      end_rotated.x, end_rotated.y, COLOUR_WHITE);
 }
 
 /*************** Rotation matrix *******************
@@ -49,7 +50,7 @@ void step_model(uint16_t frame) {
 */
 
 void rotate(Pt *from, Pt *to, int16_t theta) {
-  /* Rotate point `from` by angle degrees clockwise around the center of the 
+  /* Rotate point `from` by angle degrees clockwise around the center of the
    * screen.
    * Return the rotated point in *to.
    * Positive angle `theta` between 0 and 359 degrees.
