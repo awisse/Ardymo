@@ -7,7 +7,7 @@
 
 #define ARROW_LENGTH 7
 // This is a small triangle used as an arrow point.
-const PROGMEM point arrow[ARROW_LENGTH] = {
+extern const PROGMEM point arrow[ARROW_LENGTH] = {
   {0, -2},
   {0, 0},
   {0, 2},
@@ -17,3 +17,10 @@ const PROGMEM point arrow[ARROW_LENGTH] = {
   {2, 0}
 };
 
+#define OBST_COUNT 7
+extern const obstacle PROGMEM layout[OBST_COUNT] = {
+  {LINE, 20.0, 10.0, 30.0, 10.0},
+  {LINE, 150.0, 150.0, 300.0, 300.0},
+  // A Rectangle
+  {LINE , 150.0, 150.0, 300.0, 300.0},
+};

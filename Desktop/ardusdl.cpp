@@ -426,7 +426,9 @@ void Platform::DebugPrint(float value, uint8_t decimals) {
 }
 
 void Platform::DebugPrint(double value, uint8_t decimals) {
-  std::cout << value;
+  char strdouble[64];
+  formatFloat(strdouble, value, decimals);
+  std::cout << strdouble;
   std::cout.flush();
 }
 

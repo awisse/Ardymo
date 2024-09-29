@@ -48,20 +48,28 @@ void step_model(uint16_t frame) {
  * We need only two float values per angle: cos(\theta) and sin(\theta)
 */
 
-void rotate(Pt *from, Pt *to, int16_t angle) {
-  /* Rotate point `from` by angle degrees around the center of the screen.
+void rotate(Pt *from, Pt *to, int16_t theta) {
+  /* Rotate point `from` by angle degrees clockwise around the center of the 
+   * screen.
    * Return the rotated point in *to.
-   * Positive angle between 0 and 359 degrees.
+   * Positive angle `theta` between 0 and 359 degrees.
    */
-  rotn  r = get_rotn(angle);
+
+  if ((theta < 0) || (theta > 359)) {
+    *to=*from;
+    Platform::setCursor(0, 0);
+    Platform::print("rotate: theta!!");
+    return;
+  }
+  rotn  rot = get_rotn(theta);
 
   // Matrix multiplication
-  to->x = r.cos * from->x - r.sin * from->y;
-  to->y = r.sin * from->x + r.cos * from->y;
+  to->x = rot.cos * from->x - rot.sin * from->y;
+  to->y = rot.sin * from->x + rot.cos * from->y;
 }
 
 rotn get_rotn(int16_t alpha) {
-  // Get the correct element of the rotation matrix omega.
+  // Get the cosinus and the sinus of the angle alpha.
   rotn rot_vect;
   float x;
 

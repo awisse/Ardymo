@@ -37,6 +37,8 @@ typedef int int_;
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
+#define BOARD_WIDTH 16 * SCREEN_WIDTH
+#define BOARD_HEIGHT 16 * SCREEN_HEIGHT
 #define DEC 10
 #define HEX 16
 #define OCT 8
