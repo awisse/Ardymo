@@ -12,7 +12,7 @@
 %
 \usepackage{graphicx}
 \usepackage{array}
-\usepackage{amsmath}
+\usepackage{amsmath,bm}
 \usepackage{color}
 % \usepackage{paralist}
 %
@@ -26,10 +26,16 @@
 %
 % Definitions
 % Mathematical symbols
-\newcommand{\Rb}{{\bf{R}}}
+\newcommand{\Rb}{{\mathbf{R}}}
+\newcommand{\diota}{d_\iota}
+\newcommand{\xiota}{x_\iota}
+\newcommand{\xsigma}{x_\sigma}
+\newcommand{\yiota}{y_\iota}
+\newcommand{\ysigma}{y_\sigma}
 \newcommand{\bhat}{{\hat{b}}}
 \newcommand{\xhat}{{\hat{x}}}
 \newcommand{\yhat}{{\hat{y}}}
+\newcommand{\bfx}{\mathbf{x}}
 % Labels and text
 \newcommand{\eqn}[1]{(\ref{#1})}
 \newcommand{\figref}[1]{Fig.~\eqref{#1}}
@@ -67,9 +73,9 @@ y)$ on the line.
 We have two special cases:
 \begin{eqnarray}
     (x, y) &=& (x_0, y)\quad\forall y\in\Rb\quad \text{ if } x_1 = x_0
-    \label{eq-line-x1x0} \\
+    \label{eq-line-xx0} \\
     (x, y) &=& (x, y_0)\quad\forall x\in\Rb\quad \text{ if } y_1 = y_0
-    \label{eq-line-y1y0}
+    \label{eq-line-yy0}
 \end{eqnarray}
 
 For the general case, $x_0 \neq x_1 \land y_0 \neq y_1$, we have
@@ -89,10 +95,10 @@ given by
     (x, y) = (x_0, y)\quad y\in [y_0, y_1]\label{eq-seg-x1x0}
 \end{equation}
 
-For the special case $y_0 = y_1$ the points $(x, y)$ on the line segment
-$[(x_0, y_0):(x_1, y_0)]$ are given by
+For the special case $y = b$ the points $(x, y)$ on the line segment
+$[(x_0, b):(x_1, b)]$ are given by
 \begin{equation}
-    (x, y) = (x, y_0)\quad x\in [x_0, x_1]\label{eq-seg-y1y0}
+    (x, y) = (x, b)\quad x\in [x_0, x_1]\label{eq-seg-yb}
 \end{equation}
 
 For the general case given by \eqn{eq-line-general}, the points $(x, y)$ on
@@ -100,6 +106,7 @@ the line segment $[(x_0, y_0):(x_1, y_1)]$ are given by
 \begin{equation}
     (x, y) = (x, ax + b)\quad x\in [x_0, x_1]\label{eq-seg-general}
 \end{equation}
+where $a\neq 0$.
 
 \section{Polygons}
 \label{sec-polygons}
@@ -123,9 +130,9 @@ the x-axis and the y-axis, given by the four parameters
     \item $w$ the width (x-direction) of the rectangle.
     \item $h$ the height (y-direction) of the rectangle.
 \end{enumerate}
-The fifth parameter $\alpha$ represents the rotation of the rectangle around
-the point $\left(x_0, y_0\right)$. The parameters are illustrated
-in \figref{fig-rectangle}.
+The fifth parameter $\alpha$ represents the clockwise rotation of the 
+rectangle around the point $\left(x_0, y_0\right)$. The parameters are 
+illustrated in \figref{fig-rectangle}.
 
 \begin{figure}
     \centering
@@ -148,18 +155,28 @@ interesting to the gameplay:
     \frac{(x-x_0)^2}{a^2} + \frac{(y-y_0)^2}{b^2} = 1
 \end{equation}
 
-\section{Intersection}
-\label{sec-intersection}
+\section{Intersection and Distance}
+\label{sec-intersection-distance}
+
+The general form of the distance $\diota$ between the origin of the sensor ray
+$\bfx_\sigma=(\xsigma,\ysigma)$ and the point of intersection
+$\bfx_\iota=(\xiota,\yiota)$ is given by Pythagoras' Theorem:
+\begin{equation}
+    \diota = \sqrt{(\xiota-\xsigma)^2 + (\yiota-\ysigma)^2}
+\end{equation}
 
 \subsection{Line Segment}
 \label{sec-intersection-line-segment}
+
+\subsubsection*{Intersection}
 We must consider the intersections of all three possibilities of sensor rays
-$x_0=x_1$ \eqref{eq-line-x1x0}, $y_0=y_1$ \eqref{eq-line-y1y0} and $y=ax+b$
+$(x, y) =(x_0, y)$ \eqref{eq-line-xx0}, $(x, y)=(x, b)$ \eqref{eq-line-yy0} 
+and $(x, y) = (x, ax+b)$
 \eqref{eq-line-general} with all three possibilities of line segments
-$x_{s0}=x_{s1}$ \eqref{eq-seg-x1x0}, $y_{s0}=y_{s1}$ \eqref{eq-seg-y1y0} and
+$x_{s0}=x_{s1}$ \eqref{eq-seg-x1x0}, $y_{s0}=y_{s1}$ \eqref{eq-seg-yb} and
 $y=a_{s}x+b_{s}$ \eqref{eq-seg-general}, where $(x_{s0}, x_{s1})$ are the
 limits of the $x$-parameter, $(y_{s0}, y_{s1})$ the limits of the
-$y$-parameter and $(a_{s}, b_{s})$ the parameters of the general case
+$y$-parameter and $(a_{s}, b_{s}),\,a_{s}\neq 0$ the parameters of the general case
 \eqref{eq-seg-general}.
 
 We present the conditions for intersections of the sensor ray (first column)
@@ -173,9 +190,9 @@ table~\eqref{tab-condition-intersection-seg}.
     \centering
     \begin{tabular}{L|CCC}
     \text{Sensor}& x_{s1}=x_{s0} & y_{s1}=y_{s0} & a_{s}x + b_{s} \\ \hline
-    x_1=x_0 & x_0=x_{s0} & \multicolumn{2}{C}{x_{s0}\leq x_0\leq x_{s1}} \\
-    y_1=y_0 & y_{s0}\leq y_0\leq y_{s1} & y_0=y_{s0} &
-    x_{s0}\leq \frac{y_0 - b_s}{a_s}\leq x_{s1} \\
+    x=x_0 & x_0=x_{s0} & \multicolumn{2}{C}{x_{s0}\leq x_0\leq x_{s1}} \\
+    y=b & y_{s0}\leq b\leq y_{s1} & b=y_{s0} &
+    x_{s0}\leq \frac{b - b_s}{a_s}\leq x_{s1} \\
     ax+b & y_{s0}\leq ax_{s0}+b\leq y_{s1} &
     x_{s0}\leq \frac{y_{s0}-b}{a}\leq x_{s1} &
     \left\{\begin{tabular}{C}a=a_s\,\land\,b=bs\\ \text{or}\\
@@ -186,6 +203,13 @@ table~\eqref{tab-condition-intersection-seg}.
     segments}\label{tab-condition-intersection-seg}
 \end{table}
 
+\subsubsection*{Distance}
+
+Let ${\bfx}_\sigma=(x_\sigma, y_\sigma)$ be the origin of the sensor ray. We 
+want to compute the distance between $\bfx$ and the point of intersection with
+the line segment. In certain cases, there is more than one point of
+intersection and we must choose the nearest. In Table~\eqref{tab-distance-seg}.
+
 \subsection{Rectangle}
 \label{sec-intersection-rectangle}
 
@@ -193,20 +217,20 @@ A rectangle is given by the parameters $(x_0, y_0, w, h, \alpha)$
 (Section~\ref{sec-rectangle}). The rectangle is defined at the origin with
 width $w$ and height $h$. The upper left corner of the rectangle at the
 origin is at the point $\left(-\frac{h}{2},0\right)$.
-The points of the rectangle
-are rotated around the origin by $\alpha$ and translated by adding the vector
+The points of the rectangle are rotated clockwise around the origin by 
+$\alpha$ and translated by adding the vector
 $(x_0, y_0)$.
 
 There are two ways to determine the intersection of the sensor ray with the
 rectangle.
 \begin{enumerate}
-    \item Transform $(x_0, y_0, w, h, \alpha)$ into four line segments and
+    \item Transform the rectangle into four line segments and
         proceed with the algorithm in
         section~(\ref{sec-intersection-line-segment}) for each segment.
     \item Rotate and translate the sensor ray by the inverse transformation of
         the rectangle: Translate by $(-x_0, -y_0)$ and rotate by $\-alpha$.
 \end{enumerate}
-We are using the second approach which will be easier.
+We are using the second approach.
 
 Let $(x, y)$ be a point on the sensor ray. Let $(\xhat, \yhat)$ the
 corresponding transformed point, given by
@@ -218,7 +242,7 @@ corresponding transformed point, given by
 \subsection{Circle}
 \label{sec-intersection-circle}
 For the sensor ray, we must consider the three cases $(x,y)=(x_0,y)\,\forall y$
-\eqref{eq-line-x1x0}, $(x,y)=(x,y_0)\,\forall x$ \eqref{eq-line-y1y0} and $y=ax+b$
+\eqref{eq-line-xx0}, $(x,y)=(x,y_0)\,\forall x$ \eqref{eq-line-yy0} and $y=ax+b$
 \eqref{eq-line-general}.
 
 Let $(x_c, y_c)$ be the center of the circle.
@@ -341,7 +365,7 @@ There are four types of objects in the game.
 \label{sec-user-interface}
 The main screen Figure \figref{fig-main-screen}.
 \begin{figure}
-    \includegraphics[width=\textwidth]{screen.eps}
+    \includegraphics[width=\textwidth]{screen.pdf}
 \caption{Mockup of the main game screen}\label{fig-main-screen}
 \end{figure}
 \begin{itemize}
