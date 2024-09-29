@@ -16,6 +16,8 @@
 \usepackage{color}
 \usepackage{booktabs}
 %
+% General
+\pdfminorversion=6
 % Dimensions
 % \setlength{\textwidth}{5.5in}
 % \setlength{\textheight}{8.4in}
@@ -43,7 +45,7 @@
 \newcommand{\eqn}[1]{(\ref{#1})}
 \newcommand{\figref}[1]{Fig.~\eqref{#1}}
 \newcommand{\TODO}{{\bf TODO}}
-% For graphics alignment:
+% For graphics alignment, not used in production
 \newcommand{\HR}{\rule{1em}{0.4pt}}
 \newcommand{\bluefbox}[1]{\textcolor{blue}{%
         \setlength\fboxsep{0pt}\fbox{\textcolor{black}{#1}}}}
@@ -252,7 +254,7 @@ table~\eqref{tab-condition-intersection-seg}.
     \toprule
         \multicolumn{1}{c}{Sensor}&\multicolumn{3}{c}{Line Segment} \\
     \cmidrule(l){2-4}
-    \multicolumn{1}{c}{Params}& x_{s1}=x_{s0} & y_{s1}=y_{s0} & a_{s}x + b_{s}\\
+    \multicolumn{1}{c}{Ray}& x_{s1}=x_{s0} & y_{s1}=y_{s0} & a_{s}x + b_{s}\\
     \hline
     x=\xsig & \xsig=x_{s0} & 
         \multicolumn{2}{C}{x_{s0}\leq \xsig\leq x_{s1}} \\
@@ -267,38 +269,48 @@ table~\eqref{tab-condition-intersection-seg}.
     \end{tabular}
     \caption{Conditions for intersections with line segments}\label{tab-condition-intersection-seg}
 \end{table}
-
 
 \subsubsection*{Distance}
 Provided an intersection exists, we can compute the distance from $(x_\sigma,
 y_\sigma)$ the origin of the sensor ray to the obstacle. In 
-Table~\eqref{tab-distance-seg}, we present the distances for all cases of
+Table~\eqref{tab-distance-seg}, we present the distances for all ten cases of
 existing intersections seen in Table~\eqref{tab-condition-intersection-seg}.
+
+All ten cases must be handled provided a corresponding intersection exists.
 % Table: Distance from origin of sensor ray to obstacle
 \begin{table}
     \centering
-    \begin{tabular}
     \begin{tabular}{LLL}
     \toprule
-    \multicolumn{1}{c}{Sensor}&\multicolumn{1}{c}{Line Segment}&
-    \multicolumn{1}{c}{Distance}\\
+    \multicolumn{1}{l}{Sensor Ray}&\multicolumn{1}{l}{Line Segment}&
+    \multicolumn{1}{l}{Distance}\\
     \midrule
-    \multicolum{1}{c}{Params}& x_{s1}=x_{s0} & y_{s1}=y_{s0} & a_{s}x + b_{s}\\
-    \hline
-    x=\xsig & \xsig=x_{s0} & 
-        \multicolumn{2}{C}{x_{s0}\leq \xsig\leq x_{s1}} \\
-    y=\bsig & y_{s0}\leq \bsig \leq y_{s1} & \bsig=y_{s0} &
-    a_s x_{s0}\leq \bsig - b_s\leq a_s x_{s1} \\
-    \asig x+\bsig & y_{s0}\leq \asig x_{s0}+\bsig\leq y_{s1} &
-    \asig x_{s0}\leq y_{s0}-\bsig\leq \asig x_{s1} &
-    \left\{\begin{tabular}{C}\asig=a_s\,\land\,\bsig=b_s\\ \text{or}\\
-            x_{s0}\leq \frac{\bsig - b_s}{a_s-\asig}\leq x_{s1}
-        \end{tabular}\right\}\\
+    % a) (x,y) = (x, \bsig)
+    y=\bsig & x_{s1}=x_{s0} & |\xsig - x_{s0}| \\
+    & y_{s1}=y_{s0} & \min\{|\xsig - x_{s0}|,|\xsig - x_{s1}| \\
+    & a_s x + b_s & \left|\xsig - \frac{b_s - \bsig}{a_s}\right| \\
+    % a) (x,y) = (\xsig, y)
+    \midrule[0.5pt]
+    x=\xsig & x_{s1}=x_{s0} & \min\{|\ysig - y_{s0}|,|\ysig - y_{s1}|\} \\
+    & y_{s1}=y_{s0} & |\ysig - y_{s0}| \\
+    & a_s x + b_s & \left|\ysig - a_s\xsig - \bsig\right| \\
+    \midrule[0.5pt]
+    % a) (x,y) = (x, \asig x + \bsig)
+    y=\asig x + \bsig & x_{s1}=x_{s0} & 
+    \sqrt{(x_{s0}-\xsig)^2 + (\asig x_{s0} + \bsig - \ysig)^2} \\
+    & y_{s1}=y_{s0} & 
+        \sqrt{\left(\frac{y_{s0}-\bsig}{\asig} - \xsig\right)^2
+            + (y_{s0} - \ysig)^2}\\
+    & a_s x + b_s, a_s=\asig\land b_s=\bsig & 
+        \sqrt{\min_{j=0,1}\{(x_{sj}-\xsig)^2+(y_{sj}-\ysig)^2\}} \\
+    & a_s x + b_s, a_s\neq\asig\land b_s\neq\bsig & 
+    \sqrt{\left(\frac{\bsig-b_s}{a_s-\asig}-\xsig\right)^2
+    +\left(\frac{a_s\bsig-\asig b_s}{a_s-\asig}+b_s-\ysig\right)^2} \\
     \bottomrule
     \end{tabular}
-    \caption{Conditions for intersections with line segments}\label{tab-condition-intersection-seg}
+    \caption{Distance from origin of sensor ray to
+    intersection}\label{tab-distance-seg}
 \end{table}
-
 
 \subsection{Rectangle}
 \label{sec-intersection-rectangle}
