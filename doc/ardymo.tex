@@ -44,6 +44,7 @@
 % Labels and text
 \newcommand{\eqn}[1]{(\ref{#1})}
 \newcommand{\figref}[1]{Fig.~\eqref{#1}}
+\newcommand{\tabref}[1]{Table~\eqref{#1}}
 \newcommand{\TODO}{{\bf TODO}}
 % For graphics alignment, not used in production
 \newcommand{\HR}{\rule{1em}{0.4pt}}
@@ -75,7 +76,8 @@ We develop the representation of a straight line going through
 coordinates $(x_0, y_0)$ and $(x_1, y_1)$. Let us determine the points $(x,
 y)$ on the line.
 
-We have two special cases:
+We have two special cases, a horizontal line \eqref{eq-line-xx0} and a
+vertical line~\eqref{eq-line-yy0}:
 \begin{eqnarray}
     (x, y) &=& (x_0, y)\quad\forall y\in\Rb\quad \text{ if } x_1 = x_0
     \label{eq-line-xx0} \\
@@ -129,21 +131,26 @@ y_0),\ldots,(x_{n-1}, y_{n-1})$. The $n$ sides are defined by the line segments
 While general polygons are useful as obstacles, they lack the direction
 information we need for the vehicle.  Hence we define a rectangle with five
 parameters by starting with a rectangle of which the sides are parallel to
-the x-axis and the y-axis, given by the four parameters
-\begin{enumerate}
-    \item $(x_0, y_0)$ the center of the left side of the rectangle.
-    \item $w$ the width (x-direction) of the rectangle.
-    \item $h$ the height (y-direction) of the rectangle.
-\end{enumerate}
-The fifth parameter $\alpha$ represents the clockwise rotation of the
-rectangle around the point $\left(x_0, y_0\right)$. The parameters are
-illustrated in \figref{fig-rectangle}.
+the x-axis and the y-axis and the center of the left side is at the origin,
+given by two parameters $(w, h)$ the width (x-direction) and the height 
+(y-direction) of the rectangle. This rectangle is illustrated by the dotted 
+line in~\figref{fig-rectangle}.
+
+In the next step, the rectangle is rotated clockwise around the origin by the
+angle $\alpha$, see the dashed line in~\figref{fig-rectangle}.
+
+Finally, the dashed rectangle is translated to its final position by adding the
+vector $(x_0, y_0)$ as illustrated in \figref{fig-rectangle}.
 
 \begin{figure}
     \centering
-    \includegraphics[trim=10 40 10 20]{rectangle.pdf}
+    \includegraphics[trim=0 0 0 0]{rectangle.pdf}
     \caption{Rotated Rectangle}\label{fig-rectangle}
 \end{figure}
+
+A general rotation matrix for the 2-dimensional plane is presented in
+appendix~\ref{appendix-rotation-matrix}.
+
 
 \section{Circle}
 \label{sec-circle}
@@ -201,25 +208,32 @@ and $(x_1, y_1)$  into a general straight line with constraints on $x$ and $y$.
 
 \subsection{Rectangle}
 
-A rectangle is given by the parameters $(x_0, y_0, w, h, \alpha)$
-(Section~\ref{sec-rectangle}).
-
+A rectangle is given by the parameters $(x_0, y_0, w, h, \alpha)$, where $(x_0,
+y_0)$ is the center of the left side of the rectangle before the rotation, $w,
+h$ are the width and height of the rectangle and $\alpha$ is the angle of the
+clockwise rotation of the rectangle around $(x_0, y_0)$. See also
+Section~\ref{sec-rectangle}.
 
 \subsection{Circle}
 
-Parameters $x_0, y_0, r$.
+A circle in the 2-dimensional plane is fully defined by three parameters
+$x_0, y_0, r$, where $(x_0,y_0)$ is the center of the circle and $r>0$ is the
+radius of the circle.
 
 
 \section{Intersection and Distance}
 \label{sec-intersection-distance}
 
 In this section, we determine the algoritm that finds the intersection of a
-sensor ray $(\asig, \bsig, \Xsig, 0, 0)$ with an obstacle. If the intersection
-exists, we compute the distance of the origin $(\xsig, \ysig)$ of the sensor
-ray to the obstacle.
+sensor ray  with an obstacle. If the intersection
+exists, we also compute the distance of the origin $(\xsig, \ysig)$ of the
+sensor ray to the obstacle. The origin of the sensor ray is a point on the
+unbound line $(\asig, \bsig, \Xsig, 0, 0)$ defining the sensor ray. In the
+context of this application, it corresponds to a point on the vehicle from
+which the sensor ray emanates.
 
-The general form of the distance $d$ between the origin of the sensor ray
-$(\xsig,\ysig)$ and the point of intersection $(\xiota,\yiota)$ is given by 
+The general form of the distance $d$ between the origin of a sensor ray
+$(\xsig,\ysig)$ and the point of intersection $(\xiota,\yiota)$ is given by
 Pythagoras' Theorem:
 \begin{equation}
     \diota = \sqrt{(\xiota-\xsig)^2 + (\yiota-\ysig)^2}
@@ -231,19 +245,19 @@ Pythagoras' Theorem:
 \subsubsection*{Intersection}
 
 We must consider the intersections of all three possibilities of sensor rays
-$(x, y) =(\xsig, y)$ \eqref{eq-line-xx0}, $(x, y)=(x, \bsig)$ 
+$(x, y) =(\xsig, y)$ \eqref{eq-line-xx0}, $(x, y)=(x, \bsig)$
 \eqref{eq-line-yy0} and $(x, y) = (x, \asig x+\bsig)$
 \eqref{eq-line-general} with all three possibilities of line segments
 $x_{s0}=x_{s1}$ \eqref{eq-seg-x1x0}, $y_{s0}=y_{s1}$ \eqref{eq-seg-yb} and
 $y=a_{s}x+b_{s}$ \eqref{eq-seg-general}, where $(x_{s0}, x_{s1})$ are the
 limits of the $x$-parameter, $(y_{s0}, y_{s1})$ the limits of the
-$y$-parameter and $(a_{s}, b_{s}),\,a_{s}\neq 0$ the parameters of the 
+$y$-parameter and $(a_{s}, b_{s}),\,a_{s}\neq 0$ the parameters of the
 general case
 \eqref{eq-seg-general}.
 
-We present the conditions for intersections of the sensor ray (first column)
-with the line segments (first row) in
-table~\eqref{tab-condition-intersection-seg}.
+We present the conditions for intersections of a sensor ray (first column)
+with a line segment (first row) in
+\tabref{tab-condition-intersection-seg}.
 % Definitions: Math mode columns
 \newcolumntype{C}{>{$\scriptstyle}c<{$}}
 \newcolumntype{L}{>{$\scriptstyle}l<{$}}
@@ -252,11 +266,13 @@ table~\eqref{tab-condition-intersection-seg}.
     \centering
     \begin{tabular}{LCCC}
     \toprule
-        \multicolumn{1}{c}{Sensor}&\multicolumn{3}{c}{Line Segment} \\
+    \multicolumn{1}{c}{\sffamily Sensor}&
+    \multicolumn{3}{c}{\sffamily Line Segment} \\
     \cmidrule(l){2-4}
-    \multicolumn{1}{c}{Ray}& x_{s1}=x_{s0} & y_{s1}=y_{s0} & a_{s}x + b_{s}\\
+    \multicolumn{1}{c}{\sffamily Ray}&
+        x_{s1}=x_{s0} & y_{s1}=y_{s0} & a_{s}x + b_{s}\\
     \hline
-    x=\xsig & \xsig=x_{s0} & 
+    x=\xsig & \xsig=x_{s0} &
         \multicolumn{2}{C}{x_{s0}\leq \xsig\leq x_{s1}} \\
     y=\bsig & y_{s0}\leq \bsig \leq y_{s1} & \bsig=y_{s0} &
     a_s x_{s0}\leq \bsig - b_s\leq a_s x_{s1} \\
@@ -271,10 +287,10 @@ table~\eqref{tab-condition-intersection-seg}.
 \end{table}
 
 \subsubsection*{Distance}
-Provided an intersection exists, we can compute the distance from $(x_\sigma,
-y_\sigma)$ the origin of the sensor ray to the obstacle. In 
-Table~\eqref{tab-distance-seg}, we present the distances for all ten cases of
-existing intersections seen in Table~\eqref{tab-condition-intersection-seg}.
+Provided an intersection exists, we can compute the distance from
+ the origin $(\xsig, \ysig)$ of the sensor ray to the obstacle. In
+\tabref{tab-distance-seg}, we present the distances for all ten cases of
+existing intersections seen in \tabref{tab-condition-intersection-seg}.
 
 All ten cases must be handled provided a corresponding intersection exists.
 % Table: Distance from origin of sensor ray to obstacle
@@ -282,28 +298,29 @@ All ten cases must be handled provided a corresponding intersection exists.
     \centering
     \begin{tabular}{LLL}
     \toprule
-    \multicolumn{1}{l}{Sensor Ray}&\multicolumn{1}{l}{Line Segment}&
-    \multicolumn{1}{l}{Distance}\\
+    \multicolumn{1}{l}{\sffamily Sensor Ray}&
+    \multicolumn{1}{l}{\sffamily Line Segment}&
+    \multicolumn{1}{l}{\sffamily Distance}\\
     \midrule
     % a) (x,y) = (x, \bsig)
-    y=\bsig & x_{s1}=x_{s0} & |\xsig - x_{s0}| \\
+    y=\bsig,\,\asig=0 & x_{s1}=x_{s0} & |\xsig - x_{s0}| \\
     & y_{s1}=y_{s0} & \min\{|\xsig - x_{s0}|,|\xsig - x_{s1}| \\
-    & a_s x + b_s & \left|\xsig - \frac{b_s - \bsig}{a_s}\right| \\
+    & a_s x + b_s & \left|\xsig - \frac{\bsig- b_s}{a_s}\right|\\
     % a) (x,y) = (\xsig, y)
     \midrule[0.5pt]
     x=\xsig & x_{s1}=x_{s0} & \min\{|\ysig - y_{s0}|,|\ysig - y_{s1}|\} \\
     & y_{s1}=y_{s0} & |\ysig - y_{s0}| \\
-    & a_s x + b_s & \left|\ysig - a_s\xsig - \bsig\right| \\
+    & a_s x + b_s & \left|a_s\xsig + b_s - \ysig\right| \\
     \midrule[0.5pt]
     % a) (x,y) = (x, \asig x + \bsig)
-    y=\asig x + \bsig & x_{s1}=x_{s0} & 
+    y=\asig x + \bsig & x_{s1}=x_{s0} &
     \sqrt{(x_{s0}-\xsig)^2 + (\asig x_{s0} + \bsig - \ysig)^2} \\
-    & y_{s1}=y_{s0} & 
+    & y_{s1}=y_{s0} &
         \sqrt{\left(\frac{y_{s0}-\bsig}{\asig} - \xsig\right)^2
             + (y_{s0} - \ysig)^2}\\
-    & a_s x + b_s, a_s=\asig\land b_s=\bsig & 
+    & a_s x + b_s, a_s=\asig\land b_s=\bsig &
         \sqrt{\min_{j=0,1}\{(x_{sj}-\xsig)^2+(y_{sj}-\ysig)^2\}} \\
-    & a_s x + b_s, a_s\neq\asig\land b_s\neq\bsig & 
+    & a_s x + b_s, a_s\neq\asig\land b_s\neq\bsig &
     \sqrt{\left(\frac{\bsig-b_s}{a_s-\asig}-\xsig\right)^2
     +\left(\frac{a_s\bsig-\asig b_s}{a_s-\asig}+b_s-\ysig\right)^2} \\
     \bottomrule
@@ -315,14 +332,15 @@ All ten cases must be handled provided a corresponding intersection exists.
 \subsection{Rectangle}
 \label{sec-intersection-rectangle}
 
-A rectangle is given by the parameters $(x_0, y_0, w, h, \alpha)$
+A rectangle is given by the parameters $(x_{r0}, y_{r0}, w, h, \alpha)$
 (Section~\ref{sec-rectangle}). The rectangle is defined at the origin with
 width $w$ and height $h$. The upper left corner of the rectangle at the
 origin is at the point $\left(-\frac{h}{2},0\right)$.
 The points of the rectangle are rotated clockwise around the origin by
 $\alpha$ and translated by adding the vector
-$(x_0, y_0)$.
+$(x_{r0}, y_{r0})$.
 
+\subsubsection*{Intersection}
 There are two ways to determine the intersection of the sensor ray with the
 rectangle.
 \begin{enumerate}
@@ -337,9 +355,39 @@ We are using the second approach.
 Let $(x, y)$ be a point on the sensor ray. Let $(\xhat, \yhat)$ the
 corresponding transformed point, given by
 \begin{eqnarray}
-    \xhat &=& (x - x_0) \cos(\alpha) + (y - y_0) \sin(\alpha) \\
-    \yhat &=& (x_0 - x) \sin(\alpha) + (y - y_0) \cos(\alpha)
+    \xhat &=& (x - x_{r0}) \cos(\alpha) + (y - y_{r0}) \sin(\alpha) \\
+    \yhat &=& - (x - x_{r0}) \sin(\alpha) + (y - y_{r0}) \cos(\alpha),
 \end{eqnarray}
+using $\cos(-\alpha)=\cos(\alpha)$ and $\sin(-\alpha)=-sin(\alpha)$.
+
+The conditions for an intersection of the sensor ray with the rectangle are
+summarized in \tabref{tab-intersection-rect}. The proofs are detailed in
+Appendix~\ref{appendix-proofs-rectangle-intersections}.
+
+\begin{table}
+    \centering
+    \begin{tabular}{LLL}
+        \toprule
+        \multicolumn{1}{l}{\sffamily Sensor Ray} &
+        \multicolumn{1}{l}{\sffamily Constraints} &
+        \multicolumn{1}{l}{\sffamily Conditions} \\
+        \midrule
+        y = \bsig, \asig=0 &
+        \alpha\in\{90^\circ,270^\circ\} & 
+        |\bsig - y_{r0}| \leq w \,\land\, |x-x_{r0}| \leq \frac{h}{2} \\
+            &\alpha\notin\{90^\circ,270^\circ\} & 
+            \left\{\begin{tabular}{L!{:}L}
+                \xhat=0 & \left|\frac{\bsig-y_{r0}}
+                    {\cos(\alpha)}\right| \leq \frac{h}{2}\\
+                \xhat=w & \left|\frac{-\sin(\alpha)w + \bsig - y_{r0}}
+                    {\cos(\alpha)}\right| \leq \frac{h}{2}
+            \end{tabular}
+        \right.
+    \end{tabular}
+    \caption{Conditions for intersection with a
+    rectangle}\label{tab-intersection-rect}
+\end{table}
+
 
 \subsection{Circle}
 \label{sec-intersection-circle}
@@ -504,5 +552,20 @@ The distance to the closest obstacle is displayed on the user interface
     \includegraphics{scanning.pdf}
     \caption{Scanning and Distance}\label{fig-scanning}
 \end{figure}
+
+\appendix
+\section{Rotation Matrix}
+\label{appendix-rotation-matrix}
+A general rotation matrix $\Omega(\alpha)$ for clockwise rotation in the
+2-dimensional plane by the angle $\alpha$ is given by
+\begin{equation}
+    \Omega(\alpha) = \begin{pmatrix}
+        \cos(\alpha) & -\sin(\alpha) \\
+        \sin(\alpha) & \cos(\alpha)
+    \end{pmatrix}
+\end{equation}
+
+\section{Proofs for rectangle intersections}
+\label{appendix-proofs-rectangle-intersections}
 
 \end{document}
