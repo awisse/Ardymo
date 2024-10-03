@@ -15,19 +15,21 @@
 \usepackage{amsmath,bm}
 \usepackage{color}
 \usepackage{booktabs}
+\usepackage{hyperref}
 %
 % General
 \pdfminorversion=6
 % Dimensions
-% \setlength{\textwidth}{5.5in}
+\setlength{\textwidth}{5.5in}
 % \setlength{\textheight}{8.4in}
-% \setlength{\hoffset}{-0.25in}
+\setlength{\hoffset}{-0.25in}
 % \setlength{\topmargin}{0pt}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.5\baselineskip}
 %
 % Definitions
 % Mathematical symbols
+\newcommand{\ahat}{\hat{a}}
 \newcommand{\asig}{a_\sigma}
 \newcommand{\bhat}{{\hat{b}}}
 \newcommand{\bfx}{\mathbf{x}}
@@ -36,6 +38,7 @@
 \newcommand{\xhat}{{\hat{x}}}
 \newcommand{\xiota}{x_\iota}
 \newcommand{\xsig}{x_\sigma}
+\newcommand{\Xhat}{\hat{X}}
 \newcommand{\Xsig}{X_\sigma}
 \newcommand{\yhat}{{\hat{y}}}
 \newcommand{\yiota}{y_\iota}
@@ -65,12 +68,19 @@ Mini Jam project due on October 31st, 2024. We present the algorithms used to
 compute the intersection of straight lines (sensor ray for identification
 of obstacles) with circles, rectangles and line segments.
 \end{abstract}
-
 %
-\section{Straight Line}
+\pagebreak
+\tableofcontents
+\listoftables
+\listoffigures
+\pagebreak
+%
+\section{Geometric Objects}
+\label{sec-geometric-objects}
+\subsection{Straight Line}
 \label{sec-straight-line}
 
-\subsection{Unbound}
+\subsubsection{Unbound}
 \label{sec:unbound}
 We develop the representation of a straight line going through
 coordinates $(x_0, y_0)$ and $(x_1, y_1)$. Let us determine the points $(x,
@@ -92,7 +102,7 @@ For the general case, $x_0 \neq x_1 \land y_0 \neq y_1$, we have
     b &=& \frac{x_0 y_1 - y_0 x_1}{x_0 - x_1} \notag
 \end{eqnarray}
 
-\subsection{Line Segment}
+\subsubsection{Line Segment}
 \label{sec-line-segment}
 A line segment is the compact version of a straight line. It is of finite
 length. For the special case $x_0 = x_1$ the points $(x, y)$ on the line
@@ -115,7 +125,7 @@ the line segment $[(x_0, y_0):(x_1, y_1)]$ are given by
 \end{equation}
 where $a\neq 0$.
 
-\section{Polygons}
+\subsection{Polygons}
 \label{sec-polygons}
 
 We are concerned with a general polygon in the two-dimensional plane. A polygon
@@ -126,13 +136,13 @@ y_0),\ldots,(x_{n-1}, y_{n-1})$. The $n$ sides are defined by the line segments
 \cup\left\{[(x_{n-1}, y_{n-1}):(x_{0}, y_{0})]\right\}
 \end{equation}
 
-\section{Rectangle}
+\subsection{Rectangle}
 \label{sec-rectangle}
 While general polygons are useful as obstacles, they lack the direction
 information we need for the vehicle.  Hence we define a rectangle with five
 parameters by starting with a rectangle of which the sides are parallel to
 the x-axis and the y-axis and the center of the left side is at the origin,
-given by two parameters $(w, h)$ the width (x-direction) and the height 
+given by two parameters $(w, h)$, the width (x-direction) and the height 
 (y-direction) of the rectangle. This rectangle is illustrated by the dotted 
 line in~\figref{fig-rectangle}.
 
@@ -145,14 +155,14 @@ vector $(x_0, y_0)$ as illustrated in \figref{fig-rectangle}.
 \begin{figure}
     \centering
     \includegraphics[trim=0 0 0 0]{rectangle.pdf}
-    \caption{Rotated Rectangle}\label{fig-rectangle}
+    \caption{General Rectangle}\label{fig-rectangle}
 \end{figure}
 
 A general rotation matrix for the 2-dimensional plane is presented in
 appendix~\ref{appendix-rotation-matrix}.
 
 
-\section{Circle}
+\subsection{Circle}
 \label{sec-circle}
 
 The standard implicit equation for a circle of radius $r$  centered at the
@@ -174,7 +184,7 @@ represented in code. There is no particular polygon object given that a
 polygon is just a collection of line segments.
 
 \subsection{Unbound Straight Line}
-
+\label{sec-representation-line}
 
 Parameters $(a, b, X, z_0, z_1)$.
 The parameters $z_0, z_1$ are set to zero for an unbound line. They define
@@ -208,11 +218,12 @@ and $(x_1, y_1)$  into a general straight line with constraints on $x$ and $y$.
 
 \subsection{Rectangle}
 
-A rectangle is given by the parameters $(x_0, y_0, w, h, \alpha)$, where $(x_0,
-y_0)$ is the center of the left side of the rectangle before the rotation, $w,
-h$ are the width and height of the rectangle and $\alpha$ is the angle of the
-clockwise rotation of the rectangle around $(x_0, y_0)$. See also
-Section~\ref{sec-rectangle}.
+A rectangle is given by the parameters $(x_0, y_0, w, h, \alpha)$, where $w, 
+h$ are the width and height of the rectangle, $\alpha$ is the angle 
+of the clockwise rotation of the rectangle around the center of the left side
+of the rectangle which is at the origin and $(x_0, y_0)$ is the translation 
+of the rectangle from the origin.
+See also Section~\ref{sec-rectangle} and \figref{fig-rectangle}.
 
 \subsection{Circle}
 
@@ -292,7 +303,6 @@ Provided an intersection exists, we can compute the distance from
 \tabref{tab-distance-seg}, we present the distances for all ten cases of
 existing intersections seen in \tabref{tab-condition-intersection-seg}.
 
-All ten cases must be handled provided a corresponding intersection exists.
 % Table: Distance from origin of sensor ray to obstacle
 \begin{table}
     \centering
@@ -313,7 +323,7 @@ All ten cases must be handled provided a corresponding intersection exists.
     & a_s x + b_s & \left|a_s\xsig + b_s - \ysig\right| \\
     \midrule[0.5pt]
     % a) (x,y) = (x, \asig x + \bsig)
-    y=\asig x + \bsig & x_{s1}=x_{s0} &
+    y=\asig x + \bsig,\,\asig\neq 0 & x_{s1}=x_{s0} &
     \sqrt{(x_{s0}-\xsig)^2 + (\asig x_{s0} + \bsig - \ysig)^2} \\
     & y_{s1}=y_{s0} &
         \sqrt{\left(\frac{y_{s0}-\bsig}{\asig} - \xsig\right)^2
@@ -325,7 +335,7 @@ All ten cases must be handled provided a corresponding intersection exists.
     +\left(\frac{a_s\bsig-\asig b_s}{a_s-\asig}+b_s-\ysig\right)^2} \\
     \bottomrule
     \end{tabular}
-    \caption{Distance from origin of sensor ray to
+    \caption{Distance from origin $(\xsig, \ysig)$ of sensor ray to
     intersection}\label{tab-distance-seg}
 \end{table}
 
@@ -348,7 +358,8 @@ rectangle.
         proceed with the algorithm in
         section~(\ref{sec-intersection-line-segment}) for each segment.
     \item Rotate and translate the sensor ray by the inverse transformation of
-        the rectangle: Translate by $(-x_0, -y_0)$ and rotate by $\-alpha$.
+        the rectangle: Translate by $(-x_{r0}, -y_{r0})$ and rotate by 
+        $-\alpha$ around the origin. 
 \end{enumerate}
 We are using the second approach.
 
@@ -358,34 +369,143 @@ corresponding transformed point, given by
     \xhat &=& (x - x_{r0}) \cos(\alpha) + (y - y_{r0}) \sin(\alpha) \\
     \yhat &=& - (x - x_{r0}) \sin(\alpha) + (y - y_{r0}) \cos(\alpha),
 \end{eqnarray}
-using $\cos(-\alpha)=\cos(\alpha)$ and $\sin(-\alpha)=-sin(\alpha)$.
+using $\cos(-\alpha)=\cos(\alpha)$ and $\sin(-\alpha)=-\sin(\alpha)$. In these
+coordinates, the rectangle is represented by $(0, 0, w, h, 0)$.
 
-The conditions for an intersection of the sensor ray with the rectangle are
-summarized in \tabref{tab-intersection-rect}. The proofs are detailed in
-Appendix~\ref{appendix-proofs-rectangle-intersections}.
-
+After the translation and rotation, the sensor ray has the possible
+representations $(\ahat, \bhat, \Xhat, 0, 0)$ illustrated in
+\tabref{tab-sensor-ray-after-transformation}
+(see also Section~\ref{sec-representation-line}), depending on $\alpha$ and 
+the initial form. 
 \begin{table}
     \centering
     \begin{tabular}{LLL}
         \toprule
         \multicolumn{1}{l}{\sffamily Sensor Ray} &
-        \multicolumn{1}{l}{\sffamily Constraints} &
-        \multicolumn{1}{l}{\sffamily Conditions} \\
+        \multicolumn{1}{l}{\sffamily Rotation} &
+        \multicolumn{1}{l}{\sffamily Transformation $(\ahat,\bhat,\Xhat)$} \\
         \midrule
-        y = \bsig, \asig=0 &
-        \alpha\in\{90^\circ,270^\circ\} & 
-        |\bsig - y_{r0}| \leq w \,\land\, |x-x_{r0}| \leq \frac{h}{2} \\
-            &\alpha\notin\{90^\circ,270^\circ\} & 
-            \left\{\begin{tabular}{L!{:}L}
-                \xhat=0 & \left|\frac{\bsig-y_{r0}}
-                    {\cos(\alpha)}\right| \leq \frac{h}{2}\\
-                \xhat=w & \left|\frac{-\sin(\alpha)w + \bsig - y_{r0}}
-                    {\cos(\alpha)}\right| \leq \frac{h}{2}
-            \end{tabular}
-        \right.
+        \asig=0,\,y = \bsig,\,\Xsig=0 
+            & \alpha=90^\circ & \ahat=0,\,\bhat=0,\,\Xhat = \bsig - y_{r0} \\
+            & \alpha=270^\circ & \ahat=0,\,\bhat=0,\,\Xhat = y_{r0} - \bsig \\
+            & \alpha\notin\{90^\circ,270^\circ\} 
+            & \ahat=-\frac{\sin(\alpha)}{\cos(\alpha)},\,  
+                \bhat=\frac{\bsig-y_{r0}}{\cos(\alpha)},\,\Xhat=0 \\
+        \asig=0,\,\bsig=0,\,x = \Xsig
+            & \alpha=0^\circ & \ahat=0,\, \bhat=0,\,\Xhat=x_{r0}-\Xsig \\
+            & \alpha=180^\circ & \ahat=0,\, \bhat=0,\,\Xhat=\Xsig-x_{r0} \\
+            & \alpha\notin\{0^\circ,180^\circ\} 
+            & \ahat=\frac{\cos(\alpha)}{\sin(\alpha)},\,
+                \bhat=\frac{x_{r0}-\Xsig}{\sin(\alpha)},\,\Xhat=0 \\
+        \asig\neq 0,\,y=\asig x + \bsig 
+            & \cos(\alpha)+\asig\sin(\alpha)=0 
+                & \ahat=0,\,\bhat=0,\,\Xhat= (\bsig-y_{r0})\sin(\alpha)-x_{r0}\\
+            & \cos(\alpha)+\asig\sin(\alpha)\neq 0 
+                & \ahat = \frac{\asig\cos(\alpha)-\sin(\alpha)}
+                    {cos(\alpha) + \asig\sin(\alpha)},\,
+                    \bhat = \frac{\asig x_{r0} + \bsig - y_{r0}}
+                    {cos(\alpha) + \asig\sin(\alpha)},\,\Xhat=0\\
+        \bottomrule
+    \end{tabular}
+    \caption{Sensor ray after
+    transformation}\label{tab-sensor-ray-after-transformation}
+\end{table}
+
+The conditions for an intersection of the sensor ray with the rectangle are
+summarized in \tabref{tab-intersection-rect}. We check wheter the transformed 
+sensor ray has an intersection with the rectangle $(0, 0, w, h, 0)$ at the 
+origin. The proofs are detailed in 
+Appendix~\ref{appendix-proofs-rectangle-intersections}.
+
+\begin{table}
+    \centering
+    \begin{tabular}{LLLL}
+        \toprule
+        \multicolumn{1}{l}{\sffamily Sensor Ray} &
+        \multicolumn{1}{l}{\sffamily Rotation} &
+        \multicolumn{1}{l}{\sffamily Segment} &
+        \multicolumn{1}{l}{\sffamily Intersection Conditions} \\
+        \midrule
+        \asig=0,\,y = \bsig,\,\Xsig=0 
+            & \alpha=0^\circ &
+                & 0 \leq x-x_{r0} \leq w\,\land\, 
+                     |\bsig - y_{r0}| \leq \frac{h}{2} \\
+            & \alpha=90^\circ &  
+                & 0 \leq \bsig - y_{r0} \leq w \,\land\,
+                    |x-x_{r0}| \leq \frac{h}{2} \\
+            & \alpha=180^\circ &
+                & 0 \leq x_{r0} - x\leq w\,\land\, 
+                     |\bsig - y_{r0}| \leq \frac{h}{2} \\
+            & \alpha=270^\circ &
+                & 0\leq y_{r0}- \bsig \leq w \,\land\, 
+                    |x-x_{r0}| \leq \frac{h}{2} \\
+            &\alpha\notin\{0^\circ,90^\circ,180^\circ,270^\circ\} 
+            & \xhat\in\{0,w\}
+                & \left\{
+                    \begin{tabular}{L}
+                        x=x_{r0} +\frac{\xhat+(y_{r0}-\bsig)\sin(\alpha)}
+                            {\cos(\alpha)}\\
+                        \left|\frac{-\sin(\alpha)\xhat + \bsig - y_{r0}}
+                            {\cos(\alpha)}\right| \leq \frac{h}{2}
+                    \end{tabular}
+                  \right. \\
+            & & \yhat\in\left\{-\frac{h}{2},\frac{h}{2}\right\} 
+                & \left\{
+                    \begin{tabular}{L}
+                        x=x_{r0}+\frac{(\bsig-y_{r0})\cos(\alpha) - \yhat}
+                            {\sin(\alpha)} \\
+                        0\leq \frac{\bsig - y_{r0} + \cos(\alpha)\yhat}
+                            {\sin(\alpha)} \leq w
+                    \end{tabular}
+                \right. \\
+        \asig=0,\,\bsig=0,\,x = \Xsig
+            & \alpha=0^\circ &
+                & 0 \leq \Xsig-x_{r0} \leq w\,
+                    \land\, |y- y_{r0}| \leq \frac{h}{2} \\
+            & \alpha=90^\circ & 
+                & 0\leq y-y_{r0}\leq w\,
+                    \land\,|\Xsig - x_{r0}|\leq\frac{h}{2}\\
+            & \alpha=180^\circ &
+                & 0 \leq x_{r0}-\Xsig \leq w\,\land\, 
+                     |y- y_{r0}| \leq \frac{h}{2} \\
+            & \alpha=270^\circ & 
+                & 0\leq y_{r0}-y\leq w\,
+                    \land\,|\Xsig - x_{r0}|\leq\frac{h}{2}\\
+            &\alpha\notin\{0^\circ,90^\circ,180^\circ,270^\circ\} 
+                & \xhat\in\{0,w\}
+                & \left\{
+                    \begin{tabular}{L}
+                        y=y_{r0}+\frac{\xhat-(\Xsig-x_{r0})\cos(\alpha)}
+                            {\sin(\alpha)} \\
+                        \left|\frac{\cos(\alpha)\xhat - \Xsig + x_{r0}}
+                            {\sin(\alpha)}\right| \leq \frac{h}{2} 
+                    \end{tabular}
+                  \right. \\
+            & & \yhat\in\left\{-\frac{h}{2},\frac{h}{2}\right\} 
+                & \left\{
+                    \begin{tabular}{L}
+                        y=y_{r0}+\frac{\yhat+(\Xsig-x_{r0})\sin(\alpha)}
+                            {\cos(\alpha)}\\
+                        0\leq \frac{\sin(\alpha)\yhat - \Xsig + x_{r0}}
+                            {\cos(\alpha)} \leq w
+                    \end{tabular}
+                  \right. \\
+        \asig\neq 0,\,y=\asig x + \bsig 
+            & \cos(\alpha)+\asig\sin(\alpha)=0 & 
+                & \left\{
+                    \begin{tabular}{L}
+                    |\sin(\alpha)((1+\asig^2)x+\asig(\bsig-y_{r0})-x_{r0})|
+                        \leq \frac{h}{2}\\
+                    0\leq (\bsig - y_{r0})\sin(\alpha)-x_{r0}\cos(\alpha)
+                        \leq w\\
+                    \end{tabular}
+                \right. \\
+            & \cos(\alpha)+\asig\sin(\alpha)\neq 0 
+            & \xhat\in\{0,w\} & \\
+        \bottomrule
     \end{tabular}
     \caption{Conditions for intersection with a
-    rectangle}\label{tab-intersection-rect}
+        rectangle}\label{tab-intersection-rect}
 \end{table}
 
 
