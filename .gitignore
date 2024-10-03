@@ -8,6 +8,10 @@ RotationMatrix.csv
 *.aux
 *.fdb_latexmk
 *.fls
+*.lof
+*.lot
+*.out
+*.toc
 *.log
 *.synctex.gz
 *.png
