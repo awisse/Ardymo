@@ -2,7 +2,7 @@
  *
  * Struct and classes used in program
  */
-#include "structs.h"
+#include "pt.h"
 
 
 

@@ -19,8 +19,8 @@ extern const PROGMEM point arrow[ARROW_LENGTH] = {
 
 #define OBST_COUNT 7
 extern const obstacle PROGMEM layout[OBST_COUNT] = {
-  {LINE, 20.0, 10.0, 30.0, 10.0},
-  {LINE, 150.0, 150.0, 300.0, 300.0},
+  {LINE, 20.0, 10.0, 30.0, 10.0, false},
+  {LINE, 150.0, 150.0, 300.0, 300.0, false},
   // A Rectangle
-  {LINE , 150.0, 150.0, 300.0, 300.0},
+  {LINE , 150.0, 150.0, 300.0, 300.0, true},
 };
