@@ -24,7 +24,7 @@ typedef struct {
   float sin;
 } rotn;
 
-const PROGMEM rotn omega[ANGLES] = {
+const PROGMEM rotn Omega[ANGLES] = {
 { 1, 0 },
 { 0.9998477, 0.0174524 },
 { 0.9993908, 0.0348995 },

@@ -4,12 +4,12 @@
  */
 #pragma once
 #include <stdint.h>
-#include "pt.h"
+#include "objects.h"
 
 typedef enum {
   LINE,
-  RECTANGLE,
   CIRCLE,
+  RECTANGLE,
 } geometry;
 
 typedef enum {
@@ -23,26 +23,26 @@ typedef enum {
 typedef struct {
   point p; // A point on the line
   point v; // Direction of the line
-  bool is_segment; // For segments.
+  int8_t seg; // seg=1 for segments, seg=0 for lines.
 } line_t;
 
 typedef struct {
   point p; // Center of the circle
   float r; // radius
-  float _dummy0; // Alignment
-  bool _dummy1; // Alignment
 } circle_t;
+
+typedef struct {
+  point p; // Origin of rectangle
+  point v; // Direction of rectangle (width = ∥v∥)
+  float mu; // height = mu * width
+} rectangle_t;
 
 typedef struct {
   geometry type;
   union {
     line_t line;
     circle_t circle;
+    rectangle_t rectangle;
   } object;
 } obstacle;
-
-typedef struct {
-  Pt p0; // Origin of rectangle
-  Pt v0, v1, v2, v3; // Directional vectors
-} rectangle_t;
 
