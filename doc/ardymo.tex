@@ -455,11 +455,11 @@ There are four types of objects in the game.
 \begin{enumerate}
     \item The game surface. A rectangle with $(0,0)$ in the upper left corner.
         It is defined by two values $x_G > 0, y_G>0$ respectively on the x-axis
-        and the y-axis.
-    \item The {\sl vehicle} which is a rectangle with a direction $\alpha$
-    \item The target which is a single point $T = (x_T, y_T)$ on the game
-        surface.
-    \item The obstacles. A collection of line segments and circles.
+        and the y-axis. The positive direction of the x-axis is right and the
+        positive direction of the y-axis is \textbf{down}.
+    \item The {\sl vehicle} is a rectangle.
+    \item The {\sl target} is a circle on the game surface.
+    \item The {\sl obstacles} are a collection of line segments and circles.
 \end{enumerate}
 
 \section{The Game}
@@ -506,7 +506,9 @@ obstacles which are a collection of line segments and circles.
 Given that the map can be quite big, no bitmap representation of the game map
 is displayed on the Arduboy. However, the map can be converted to a bitmap
 with a suitable drawing program. Ultimately, a small program for conversion
-into an SVG file can be written.
+into an SVG file can be written. Alternatively, the map, or zoomed parts of it,
+could be displayed on the Arduboy or another device while the gameplay is
+proceeding.
 
 \subsection{Controls}
 \label{sec-controls}
@@ -523,18 +525,13 @@ into an SVG file can be written.
 \subsection{Vehicle Movement}
 \label{sec-vehicle-movement}
 
-The vehicle is defined as a rectangle given by four points. Two points at the
-front of the vehicle and two points at the rear of the vehicle. These points
-define four line segments.
+The vehicle is defined as a rectangle $(\pb, \vb, \mu)$ as described in
+section~\ref{sec-representation-rectangle}. 
 
-Turning the vehicle with the left or right button rotates the four buttons
-around the midpoint of the two points at the rear of the vehicle, as
-illustrated in \figref{fig-vehicle-rotate}.
-\begin{figure}
-    \centering
-    \includegraphics[trim=0 30 0 30]{odg/vehicle-turn.pdf}
-    \caption{Vehicle Turn}\label{fig-vehicle-rotate}
-\end{figure}
+Turning the vehicle with the left or right button rotates the rectangle
+around the midpoint of the rear of the vehicle, as
+illustrated in \figref{fig-vehicle-rotation}.
+
 The vehicles' forward movement is in the direction of the front of the vehicle
 parallel to the sides of the vehicle.
 The vehicles' backward movement is in the direction of the rear of the vehicle
@@ -546,7 +543,6 @@ parallel to the sides of the vehicle.
 The obstacles are line segments and circles. The target is a circle. The
 vehicle is a rectangle. The limits of the game map are obstacles.
 
-\pagebreak
 \section{Scanning}
 \label{sec-scanning}
 In each frame, the vehicle scans for obstacles in the following way.
@@ -581,4 +577,5 @@ A general rotation matrix $\Omega(\alpha)$ for clockwise rotation in the
 \section{Proofs for rectangle intersections}
 \label{appendix-proofs-rectangle-intersections}
 
+\textbf{\color{red}TODO}
 \end{document}
