@@ -10,6 +10,7 @@
 %
 % Packages
 %
+\usepackage{subfig}
 \usepackage{graphicx}
 \usepackage{array}
 \usepackage{amsmath,bm}
@@ -32,23 +33,52 @@
 \newcommand{\ahat}{\hat{a}}
 \newcommand{\asig}{a_\sigma}
 \newcommand{\bhat}{{\hat{b}}}
-\newcommand{\bfx}{\mathbf{x}}
 \newcommand{\bsig}{b_\sigma}
 \newcommand{\diota}{d_\iota}
+\newcommand{\Dsigl}{D_{\sigma l}}
+\newcommand{\dsigl}{d_{\sigma l}}
+\newcommand{\pb}{\mathbf{p}}
+\newcommand{\pbc}{\mathbf{p}_c}
+\newcommand{\pbl}{\mathbf{p}_l}
+\newcommand{\pbs}{\mathbf{p}_s}
+\newcommand{\pbiot}{\mathbf{p}_\iota}
+\newcommand{\pbiotp}{\mathbf{p}_{\iota+}}
+\newcommand{\pbiotm}{\mathbf{p}_{\iota-}}
+\newcommand{\pbsig}{\mathbf{p}_\sigma}
+\newcommand{\pxc}{p_{xc}}
+\newcommand{\pyc}{p_{yc}}
+\newcommand{\pxl}{p_{xl}}
+\newcommand{\pyl}{p_{yl}}
+\newcommand{\pxsig}{p_{x\sigma}}
+\newcommand{\pysig}{p_{y\sigma}}
+\newcommand{\Rb}{\mathbf{R}}
+\newcommand{\Sb}{\mathbf{S}}
+\newcommand{\vb}{\mathbf{v}}
+\newcommand{\vbl}{\mathbf{v}_l}
+\newcommand{\vxl}{v_{xl}}
+\newcommand{\vyl}{v_{yl}}
+\newcommand{\vbsig}{\mathbf{v}_\sigma}
+\newcommand{\vbiot}{\mathbf{v}_\iota}
+\newcommand{\vxsig}{v_{x\sigma}}
+\newcommand{\vysig}{v_{y\sigma}}
+\newcommand{\xb}{\mathbf{x}}
+\newcommand{\Xhat}{\hat{X}}
 \newcommand{\xhat}{{\hat{x}}}
 \newcommand{\xiota}{x_\iota}
 \newcommand{\xsig}{x_\sigma}
-\newcommand{\Xhat}{\hat{X}}
 \newcommand{\Xsig}{X_\sigma}
+\newcommand{\yb}{\mathbf{y}}
 \newcommand{\yhat}{{\hat{y}}}
 \newcommand{\yiota}{y_\iota}
 \newcommand{\ysig}{y_\sigma}
-\newcommand{\Rb}{{\mathbf{R}}}
 % Labels and text
 \newcommand{\eqn}[1]{(\ref{#1})}
 \newcommand{\figref}[1]{Fig.~\eqref{#1}}
 \newcommand{\tabref}[1]{Table~\eqref{#1}}
 \newcommand{\TODO}{{\bf TODO}}
+\newcommand{\segbool}{\text{\ttfamily segment}}
+\newcommand{\true}{\textsf{true}}
+\newcommand{\false}{\textsf{false}}
 % For graphics alignment, not used in production
 \newcommand{\HR}{\rule{1em}{0.4pt}}
 \newcommand{\bluefbox}[1]{\textcolor{blue}{%
@@ -81,86 +111,115 @@ of obstacles) with circles, rectangles and line segments.
 \label{sec-straight-line}
 
 \subsubsection{Unbound}
-\label{sec:unbound}
+\label{sec-line-unbound}
 We develop the representation of a straight line going through
-coordinates $(x_0, y_0)$ and $(x_1, y_1)$. Let us determine the points $(x,
-y)$ on the line.
+points $\pb_0=(x_0, y_0)$ and $\pb_1=(x_1, y_1)$. 
+Let us determine the points $\pb=(x, y)$ on the line.
 
-We have two special cases, a horizontal line \eqref{eq-line-xx0} and a
-vertical line~\eqref{eq-line-yy0}:
-\begin{eqnarray}
-    (x, y) &=& (x_0, y)\quad\forall y\in\Rb\quad \text{ if } x_1 = x_0
-    \label{eq-line-xx0} \\
-    (x, y) &=& (x, y_0)\quad\forall x\in\Rb\quad \text{ if } y_1 = y_0
-    \label{eq-line-yy0}
-\end{eqnarray}
+Let $\vb=\pb_1-\pb_0$ the {\bf direction} of the line. The points $\pb$ on the 
+line are given by
+\begin{equation}
+    \pb=\pb_0 + \tau \vb,\quad \tau\in\Rb \label{eq-line-general} \\
+\end{equation}
+The general line is illustrated in \figref{fig-general-line}
+\begin{figure}
+    \centering
+    \includegraphics{odg/general-line.pdf}
+    \caption{General Line}\label{fig-general-line}
+\end{figure}
 
-For the general case, $x_0 \neq x_1 \land y_0 \neq y_1$, we have
-\begin{eqnarray}
-    y &=& ax+b,\quad \forall x\in\Rb\quad \text{where}\label{eq-line-general}\\
-    a &=& \frac{y_0 - y_1}{x_0 - x_1}, \notag \\
-    b &=& \frac{x_0 y_1 - y_0 x_1}{x_0 - x_1} \notag
-\end{eqnarray}
 
 \subsubsection{Line Segment}
 \label{sec-line-segment}
 A line segment is the compact version of a straight line. It is of finite
-length. For the special case $x_0 = x_1$ the points $(x, y)$ on the line
-segment $[(x_0, y_0):(x_0, y_1)]$ between $(x_0, y_0)$ and $(x_0, y_1)$ are
-given by
+length. The points on a {\bf canonical} line segment between $\pb_0$ and 
+$\pb_1$ are given by
 \begin{equation}
-    (x, y) = (x_0, y)\quad y\in [y_0, y_1]\label{eq-seg-x1x0}
+    \pb=\pb_0 + \tau \vb,\quad \tau\in[0,1] \label{eq-line-canonical}
+\end{equation}
+A general line segment is given by
+\begin{equation}
+    \pb=\pb_0 + \tau \vb,\quad \tau\in[a,b], \label{eq-line-ab}
+\end{equation}
+where $a<b$. It can easily be transformed into a canonical line segment.
+\begin{equation}
+    \pb_0+\tau \vb,\,\tau\in [a,b]\quad\Leftrightarrow\quad
+    (\pb_0+a\vb) +\nu(b-a) \vb,\,\nu\in [0,1]
 \end{equation}
 
-For the special case $y = b$ the points $(x, y)$ on the line segment
-$[(x_0, b):(x_1, b)]$ are given by
-\begin{equation}
-    (x, y) = (x, b)\quad x\in [x_0, x_1]\label{eq-seg-yb}
-\end{equation}
 
-For the general case given by \eqn{eq-line-general}, the points $(x, y)$ on
-the line segment $[(x_0, y_0):(x_1, y_1)]$ are given by
+\subsubsection{Rotation}
+\label{sec-rotation-line}
+
+A line given by $(\pb_0, \vb)$ can easily be rotated clockwise around 
+$\pb_0$ by the angle $\alpha$. Define the rotation matrix $\Omega(\alpha)$.
 \begin{equation}
-    (x, y) = (x, ax + b)\quad x\in [x_0, x_1]\label{eq-seg-general}
+    \Omega(\alpha)=\left(
+    \begin{matrix}
+        \cos(\alpha) & \sin(\alpha) \\
+        -\sin(\alpha) & \cos(\alpha)
+    \end{matrix}
+    \right)\label{eq-rotation-matrix-Omega}
 \end{equation}
-where $a\neq 0$.
+The rotated line is given by $(\pb_0, \Omega(\alpha)\vb)$.
 
 \subsection{Polygons}
 \label{sec-polygons}
 
 We are concerned with a general polygon in the two-dimensional plane. A polygon
-with $n$ sides is well defined by $n$ line segments and $n$ points $(x_0,
-y_0),\ldots,(x_{n-1}, y_{n-1})$. The $n$ sides are defined by the line segments
+with $n$ sides is well defined by $n$ points $\pb_0,\ldots,\pb_{n-1}$ 
+defining $n$ line segments. The $n$ sides are defined by the line segments
 \begin{equation}
-    \left\{[(x_i, y_i):(x_{i+1}, y_{i+1})], i=0,\ldots,n-2\right\}\\
-\cup\left\{[(x_{n-1}, y_{n-1}):(x_{0}, y_{0})]\right\}
+    \left\{[\pb_i:\pb_{i+1}], i=0,\ldots,n-2\right\}\\
+\cup\left\{[\pb_{n-1}:\pb_{0}]\right\}
 \end{equation}
+A polygon can be given a direction $\vb$  by using one of its line segments. 
+Without losing generality, define 
+\begin{equation*}
+    \vb=\pb_1-\pb_0.
+\end{equation*}
+See also \figref{fig-general-line}.
 
 \subsection{Rectangle}
 \label{sec-rectangle}
-While general polygons are useful as obstacles, they lack the direction
-information we need for the vehicle.  Hence we define a rectangle with five
-parameters by starting with a rectangle of which the sides are parallel to
-the x-axis and the y-axis and the center of the left side is at the origin,
-given by two parameters $(w, h)$, the width (x-direction) and the height 
-(y-direction) of the rectangle. This rectangle is illustrated by the dotted 
-line in~\figref{fig-rectangle}.
-
-In the next step, the rectangle is rotated clockwise around the origin by the
-angle $\alpha$, see the dashed line in~\figref{fig-rectangle}.
-
-Finally, the dashed rectangle is translated to its final position by adding the
-vector $(x_0, y_0)$ as illustrated in \figref{fig-rectangle}.
+A rectangle is a special case of a polygon. In Ardymo, we are using a directed
+rectangle (a rectangle with a direction) as the vehicle. The vehicle has thus a
+front and a back. The vehicle is given by four positon points
+$\pb_i,\,i=0,\ldots,3,$ and four
+direction vectors $\vb_0, \vb_1, \vb_2, \vb_3$, as illustrated in 
+\figref{fig-vehicle-definition}. The direction of the vehicle is given by 
+$\vb_0$.  Nous avons
+\begin{eqnarray}
+    \vb_{i+2} &=& -\vb_{i},\: i\in\{0,1\},\label{eq-v-v-rectangle} \\
+    \pb_{i} &=& \pb_{i-1} + \vb_{i-1},\:i\in\{1,2,3\}.
+\end{eqnarray}
 
 \begin{figure}
     \centering
-    \includegraphics[trim=0 0 0 0]{rectangle.pdf}
-    \caption{General Rectangle}\label{fig-rectangle}
+    \subfloat[Definition]
+        {\includegraphics[trim=40 40 0 20]
+        {odg/vehicle.pdf}\label{fig-vehicle-definition}}
+    \subfloat[Rotation]
+        {\includegraphics[trim=20 20 20 20]
+        {odg/vehicle-turn-vector.pdf}\label{fig-vehicle-rotation}}
+    \caption{Vehicle}\label{fig-vehicle}
 \end{figure}
 
-A general rotation matrix for the 2-dimensional plane is presented in
-appendix~\ref{appendix-rotation-matrix}.
+The vehicle is turning around the midpoint $\pb_c$ of the segment 
+$[\pb_3:\pb_0]$, given by 
+\begin{equation*}
+    \pb_c = \pb_3 + \frac{1}{2}\vb_3.
+\end{equation*}
 
+In order to turn the rectangle clockwise by $\alpha$, we find new points 
+$\pb'_i,i=0,\ldots,3$ and directional vectors $\vb'_i,i=0,\ldots,3$.
+We have
+\begin{eqnarray}
+    \vb'_i &=& \Omega(\alpha)\vb_i,\quad i=0,\ldots,3 \\
+    \pb'_0 &=& \pb_c + \Omega(\alpha)(\pb_0 - \pb_c) \\
+    \pb'_i &=& \pb'_{i-1} + \vb'_{i-1},\quad i=1,\ldots,3
+\end{eqnarray}
+The rotation of the rectangle is illustrated in \figref{fig-vehicle-rotation}.
 
 \subsection{Circle}
 \label{sec-circle}
@@ -183,52 +242,41 @@ In this section we describe how circles, sensor rays and line segments will be
 represented in code. There is no particular polygon object given that a
 polygon is just a collection of line segments.
 
-\subsection{Unbound Straight Line}
+\subsection{Line}
 \label{sec-representation-line}
 
-Parameters $(a, b, X, z_0, z_1)$.
-The parameters $z_0, z_1$ are set to zero for an unbound line. They define
-the endpoints of a line segment.
-
-\begin{enumerate}
-    \item For an unbound straight horizontal line, $a=X=0, y=b$.
-    \item For an unbound straight vertical line, $a=b=0, x=X$.
-    \item For an unbound general line, $X=0$.
-\end{enumerate}
-
-\subsection{Line Segment}
-\label{sec-representation-line-segment}
-
-Parameters $(a, b, X, z_0, z_1)$.
-
-Covers all cases. We must define a transformation of the points $(x_0, y_0)$
-and $(x_1, y_1)$  into a general straight line with constraints on $x$ and $y$.
-\begin{equation}
-    (a, b, X, z_0, z_1) =
-    \begin{cases}
-        (0, y_0, 0, x_0, x_1)  &
-        \text{if $y_1 = y_0\land x_0 < x_1$}\\
-        (0, 0, x_0, y_0, y_1) &
-        \text{if $x_1 = x_0\land  y_0 < y_1 $}\\
-        \left(\frac{y_0 - y_1}{x_0-x_1},
-            \frac{x_0 y_1 - x_1 y_0}{x_0 - x_1}, 0, x_0, x_1\right) &
-            \text{if $x_0< x_1\,\land\,y_0< y_1$}
-    \end{cases}
-\end{equation}
+The parameters for a line are $(\pb, \vb, \Sb)$, where $\pb=(p_{x}, p_{y})$ is
+a point on the line and $\vb=(v_{x}, v_{y})$ is the direction of the line. The
+parameter $\Sb$ is a boolean which is \false{} for an unbound line and \true{}
+for a segment. A segment is defined by the points $\pb+t\vb,\,t\in[0,1]$.
 
 \subsection{Rectangle}
+\label{sec-representation-rectangle}
 
-A rectangle is given by the parameters $(x_0, y_0, w, h, \alpha)$, where $w, 
-h$ are the width and height of the rectangle, $\alpha$ is the angle 
-of the clockwise rotation of the rectangle around the center of the left side
-of the rectangle which is at the origin and $(x_0, y_0)$ is the translation 
-of the rectangle from the origin.
-See also Section~\ref{sec-rectangle} and \figref{fig-rectangle}.
+A rectangle is given by the parameters $(\pb, \vb, \mu)$, where 
+$\pb=(p_{0}, p_{1})$ is the origin of the rectangle and $\vb=(v_{0}, v_{1})$ is
+the direction of the rectangle. The width $w$ of the rectangle is given by
+the length $\Vert\vb\Vert$ of $\vb$, given by
+\begin{equation}
+    w = \Vert\vb\Vert = \sqrt{v_{0}^2 + v_{1}^2}.\label{eq-width-rectangle}
+\end{equation}
+The height $h$ of the rectangle is given by
+\begin{equation}
+    h = \mu w.\label{eq-height-rectangle}
+\end{equation}
+
+The second directional parameter $\vb_1$ (section~\ref{sec-rectangle}) is given
+by
+\begin{equation}
+    \vb_1 = \mu\Omega(90^\circ)\vb_0.\label{eq-vb1-rectangle}
+\end{equation}
+The remaining directional parameters, $\vb_2,\,\vb_3$ can be computed with
+\eqref{eq-v-v-rectangle}.   
 
 \subsection{Circle}
 
-A circle in the 2-dimensional plane is fully defined by three parameters
-$x_0, y_0, r$, where $(x_0,y_0)$ is the center of the circle and $r>0$ is the
+A circle in the 2-dimensional plane is fully defined by two parameters
+$\pb, r$, where $\pb$ is the center of the circle and $r>0$ is the
 radius of the circle.
 
 
@@ -237,17 +285,15 @@ radius of the circle.
 
 In this section, we determine the algoritm that finds the intersection of a
 sensor ray  with an obstacle. If the intersection
-exists, we also compute the distance of the origin $(\xsig, \ysig)$ of the
-sensor ray to the obstacle. The origin of the sensor ray is a point on the
-unbound line $(\asig, \bsig, \Xsig, 0, 0)$ defining the sensor ray. In the
-context of this application, it corresponds to a point on the vehicle from
-which the sensor ray emanates.
+exists, we also compute the distance of the origin $\pbsig$ of the
+sensor ray to the obstacle. In the context of this application, it 
+corresponds to a point on the vehicle from which the sensor ray emanates.
 
-The general form of the distance $d$ between the origin of a sensor ray
-$(\xsig,\ysig)$ and the point of intersection $(\xiota,\yiota)$ is given by
-Pythagoras' Theorem:
+The general form of the distance $\diota$ between the origin of a sensor ray
+$\pbsig$ and the point of intersection $\pbiot$ is given by
+Pythagoras' Theorem (see also \eqref{eq-width-rectangle}).
 \begin{equation}
-    \diota = \sqrt{(\xiota-\xsig)^2 + (\yiota-\ysig)^2}
+    \diota = \Vert\pbsig-\pbiot\Vert
 \end{equation}
 
 \subsection{Line Segment}
@@ -255,306 +301,153 @@ Pythagoras' Theorem:
 
 \subsubsection*{Intersection}
 
-We must consider the intersections of all three possibilities of sensor rays
-$(x, y) =(\xsig, y)$ \eqref{eq-line-xx0}, $(x, y)=(x, \bsig)$
-\eqref{eq-line-yy0} and $(x, y) = (x, \asig x+\bsig)$
-\eqref{eq-line-general} with all three possibilities of line segments
-$x_{s0}=x_{s1}$ \eqref{eq-seg-x1x0}, $y_{s0}=y_{s1}$ \eqref{eq-seg-yb} and
-$y=a_{s}x+b_{s}$ \eqref{eq-seg-general}, where $(x_{s0}, x_{s1})$ are the
-limits of the $x$-parameter, $(y_{s0}, y_{s1})$ the limits of the
-$y$-parameter and $(a_{s}, b_{s}),\,a_{s}\neq 0$ the parameters of the
-general case
-\eqref{eq-seg-general}.
+The intersection of a sensor ray $(\pbsig,\vbsig)$ with a line segment
+$(\pbl,\vbl)$ is given by parameters $\nu\in\Rb,\,\tau\in[0,1]$ such that
+\begin{eqnarray}
+    \pbsig + \nu \vbsig = \pbl + \tau \vbl. \label{eq-intersection-segment}
+\end{eqnarray}
 
-We present the conditions for intersections of a sensor ray (first column)
-with a line segment (first row) in
-\tabref{tab-condition-intersection-seg}.
-% Definitions: Math mode columns
-\newcolumntype{C}{>{$\scriptstyle}c<{$}}
-\newcolumntype{L}{>{$\scriptstyle}l<{$}}
-% Table: Conditions for intersection with line segments
-\begin{table}
-    \centering
-    \begin{tabular}{LCCC}
-    \toprule
-    \multicolumn{1}{c}{\sffamily Sensor}&
-    \multicolumn{3}{c}{\sffamily Line Segment} \\
-    \cmidrule(l){2-4}
-    \multicolumn{1}{c}{\sffamily Ray}&
-        x_{s1}=x_{s0} & y_{s1}=y_{s0} & a_{s}x + b_{s}\\
-    \hline
-    x=\xsig & \xsig=x_{s0} &
-        \multicolumn{2}{C}{x_{s0}\leq \xsig\leq x_{s1}} \\
-    y=\bsig & y_{s0}\leq \bsig \leq y_{s1} & \bsig=y_{s0} &
-    a_s x_{s0}\leq \bsig - b_s\leq a_s x_{s1} \\
-    \asig x+\bsig & y_{s0}\leq \asig x_{s0}+\bsig\leq y_{s1} &
-    \asig x_{s0}\leq y_{s0}-\bsig\leq \asig x_{s1} &
-    \left\{\begin{tabular}{C}\asig=a_s\,\land\,\bsig=b_s\\ \text{or}\\
-            x_{s0}\leq \frac{\bsig - b_s}{a_s-\asig}\leq x_{s1}
-        \end{tabular}\right\}\\
-    \bottomrule
-    \end{tabular}
-    \caption{Conditions for intersections with line segments}\label{tab-condition-intersection-seg}
-\end{table}
+Writing \eqref{eq-intersection-segment} in cartesian coordinates,
+\begin{equation}
+    \pbsig=(\pxsig, \pysig),\:
+    \vbsig=(\vxsig, \vysig),\:
+    \pbl=(\pxl, \pyl),\:
+    \vbl=(\vxl, \vyl),\label{eq-intersection-cartesian}
+\end{equation}
+we obtain a system of two linear equations
+\begin{eqnarray*}
+    \pxsig + \nu \vxsig &=& \pxl + \tau \vxl \\
+    \pysig + \nu \vysig &=& \pyl + \tau \vyl 
+\end{eqnarray*}
+which can be transformed into the canonical form
+\begin{equation}
+    \left(
+        \begin{matrix}
+            \vxsig & -\vxl \\ \vysig & -\vyl
+        \end{matrix}
+    \right)
+    \left(
+        \begin{matrix}
+            \nu \\ \tau
+        \end{matrix}
+    \right)
+    = 
+    \left(
+        \begin{matrix}
+            \pxl - \pxsig \\ \pyl - \pysig 
+        \end{matrix}
+    \right).\label{eq-intersection-linear-eq}
+\end{equation}
+
+A unique solution to \eqref{eq-intersection-linear-eq} exists if the
+determinant $\Dsigl$ of the matrix is nonzero:
+\begin{equation}
+    \Dsigl=\det\left(
+        \begin{matrix}
+            \vxsig & -\vxl \\ \vysig & -\vyl
+        \end{matrix}
+    \right)=
+    \vysig\vxl - \vxsig\vyl \neq 0.\label{eq-intersection-determinant}
+\end{equation}
+If however the determinant \eqref{eq-intersection-determinant} \textbf{is} 
+zero, there exists a $\mu\in\Rb$ such that $\vbsig=\mu\vbl$ and an 
+intersection exists \textbf{if and only if} there exists an $\eta\in\Rb$ such 
+that $\pbl = \pbsig + \eta\vbl$.
+
+The solution to \eqref{eq-intersection-linear-eq} is an intersection if
+$\tau\in[0,1]$. It is given by
+\begin{eqnarray}
+\tau &=& \frac{\vxsig(\pyl - \pysig) - \vysig(\pxl - \pxsig)}{\Dsigl}
+    \label{eq-intersection-tau}  \\
+\nu &=& \frac{\vxl(\pyl-\pysig)-\vyl(\pxl-\pxsig)}{\Dsigl}
+    \label{eq-intersection-nu}
+\end{eqnarray}
+
+To summarize, these are the steps to find an intersection between the sensor
+ray and the line segment:
+\begin{enumerate}
+    \item Compute the determinant $\Dsigl$ \eqref{eq-intersection-determinant}.
+    \item If $\Dsigl\neq 0$, compute $\tau$ \eqref{eq-intersection-tau}.
+    \item If $\tau\in[0,1]$ the point of intersection is given by
+        \eqref{eq-intersection-segment} and we are done.
+    \item If $\Dsigl=0$, an intersection exists if the vectors $\pbl-\pbsig$ 
+        and $\vbl$ are collinear, which means that we must have
+        \begin{equation}
+            \dsigl=(\pxl-\pxsig)\vyl - (\pyl - \pysig)\vxl=0.
+            \label{eq-dsigl-zero}
+        \end{equation}
+        If \eqref{eq-dsigl-zero} is satisfied, the points of intersection are 
+        given by $\pbl+\tau\vbl,\,\tau\in[0,1]$. 
+\end{enumerate}
 
 \subsubsection*{Distance}
-Provided an intersection exists, we can compute the distance from
- the origin $(\xsig, \ysig)$ of the sensor ray to the obstacle. In
-\tabref{tab-distance-seg}, we present the distances for all ten cases of
-existing intersections seen in \tabref{tab-condition-intersection-seg}.
+If the intersection exists and is unique, and $\tau$ is given by
+\eqref{eq-intersection-tau}, the distance $\delta$ between $\pbsig$ and the 
+line segment $(\pbl, \vbl)$ is given by
+\begin{equation}
+    \delta = \Vert \pbsig - \pbl - \tau\vbl\Vert.
+    \label{eq-distance-line-segment-unique}
+\end{equation}
 
-% Table: Distance from origin of sensor ray to obstacle
-\begin{table}
-    \centering
-    \begin{tabular}{LLL}
-    \toprule
-    \multicolumn{1}{l}{\sffamily Sensor Ray}&
-    \multicolumn{1}{l}{\sffamily Line Segment}&
-    \multicolumn{1}{l}{\sffamily Distance}\\
-    \midrule
-    % a) (x,y) = (x, \bsig)
-    y=\bsig,\,\asig=0 & x_{s1}=x_{s0} & |\xsig - x_{s0}| \\
-    & y_{s1}=y_{s0} & \min\{|\xsig - x_{s0}|,|\xsig - x_{s1}| \\
-    & a_s x + b_s & \left|\xsig - \frac{\bsig- b_s}{a_s}\right|\\
-    % a) (x,y) = (\xsig, y)
-    \midrule[0.5pt]
-    x=\xsig & x_{s1}=x_{s0} & \min\{|\ysig - y_{s0}|,|\ysig - y_{s1}|\} \\
-    & y_{s1}=y_{s0} & |\ysig - y_{s0}| \\
-    & a_s x + b_s & \left|a_s\xsig + b_s - \ysig\right| \\
-    \midrule[0.5pt]
-    % a) (x,y) = (x, \asig x + \bsig)
-    y=\asig x + \bsig,\,\asig\neq 0 & x_{s1}=x_{s0} &
-    \sqrt{(x_{s0}-\xsig)^2 + (\asig x_{s0} + \bsig - \ysig)^2} \\
-    & y_{s1}=y_{s0} &
-        \sqrt{\left(\frac{y_{s0}-\bsig}{\asig} - \xsig\right)^2
-            + (y_{s0} - \ysig)^2}\\
-    & a_s x + b_s, a_s=\asig\land b_s=\bsig &
-        \sqrt{\min_{j=0,1}\{(x_{sj}-\xsig)^2+(y_{sj}-\ysig)^2\}} \\
-    & a_s x + b_s, a_s\neq\asig\land b_s\neq\bsig &
-    \sqrt{\left(\frac{\bsig-b_s}{a_s-\asig}-\xsig\right)^2
-    +\left(\frac{a_s\bsig-\asig b_s}{a_s-\asig}+b_s-\ysig\right)^2} \\
-    \bottomrule
-    \end{tabular}
-    \caption{Distance from origin $(\xsig, \ysig)$ of sensor ray to
-    intersection}\label{tab-distance-seg}
-\end{table}
+If $\Dsigl=0$ and equation~\eqref{eq-dsigl-zero} is satisfied, the distance
+$\delta$ is given by
+\begin{equation}
+    \delta = \min\{\Vert\pbsig-\pbl\Vert, \Vert\pbsig-\pbl-\vbl\Vert\}
+    \label{eq-distance-line-segment-collinear}
+\end{equation}
 
 \subsection{Rectangle}
 \label{sec-intersection-rectangle}
 
-A rectangle is given by the parameters $(x_{r0}, y_{r0}, w, h, \alpha)$
-(Section~\ref{sec-rectangle}). The rectangle is defined at the origin with
-width $w$ and height $h$. The upper left corner of the rectangle at the
-origin is at the point $\left(-\frac{h}{2},0\right)$.
-The points of the rectangle are rotated clockwise around the origin by
-$\alpha$ and translated by adding the vector
-$(x_{r0}, y_{r0})$.
-
-\subsubsection*{Intersection}
-There are two ways to determine the intersection of the sensor ray with the
-rectangle.
-\begin{enumerate}
-    \item Transform the rectangle into four line segments and
-        proceed with the algorithm in
-        section~(\ref{sec-intersection-line-segment}) for each segment.
-    \item Rotate and translate the sensor ray by the inverse transformation of
-        the rectangle: Translate by $(-x_{r0}, -y_{r0})$ and rotate by 
-        $-\alpha$ around the origin. 
-\end{enumerate}
-We are using the second approach.
-
-Let $(x, y)$ be a point on the sensor ray. Let $(\xhat, \yhat)$ the
-corresponding transformed point, given by
-\begin{eqnarray}
-    \xhat &=& (x - x_{r0}) \cos(\alpha) + (y - y_{r0}) \sin(\alpha) \\
-    \yhat &=& - (x - x_{r0}) \sin(\alpha) + (y - y_{r0}) \cos(\alpha),
-\end{eqnarray}
-using $\cos(-\alpha)=\cos(\alpha)$ and $\sin(-\alpha)=-\sin(\alpha)$. In these
-coordinates, the rectangle is represented by $(0, 0, w, h, 0)$.
-
-After the translation and rotation, the sensor ray has the possible
-representations $(\ahat, \bhat, \Xhat, 0, 0)$ illustrated in
-\tabref{tab-sensor-ray-after-transformation}
-(see also Section~\ref{sec-representation-line}), depending on $\alpha$ and 
-the initial form. 
-\begin{table}
-    \centering
-    \begin{tabular}{LLL}
-        \toprule
-        \multicolumn{1}{l}{\sffamily Sensor Ray} &
-        \multicolumn{1}{l}{\sffamily Rotation} &
-        \multicolumn{1}{l}{\sffamily Transformation $(\ahat,\bhat,\Xhat)$} \\
-        \midrule
-        \asig=0,\,y = \bsig,\,\Xsig=0 
-            & \alpha=90^\circ & \ahat=0,\,\bhat=0,\,\Xhat = \bsig - y_{r0} \\
-            & \alpha=270^\circ & \ahat=0,\,\bhat=0,\,\Xhat = y_{r0} - \bsig \\
-            & \alpha\notin\{90^\circ,270^\circ\} 
-            & \ahat=-\frac{\sin(\alpha)}{\cos(\alpha)},\,  
-                \bhat=\frac{\bsig-y_{r0}}{\cos(\alpha)},\,\Xhat=0 \\
-        \asig=0,\,\bsig=0,\,x = \Xsig
-            & \alpha=0^\circ & \ahat=0,\, \bhat=0,\,\Xhat=x_{r0}-\Xsig \\
-            & \alpha=180^\circ & \ahat=0,\, \bhat=0,\,\Xhat=\Xsig-x_{r0} \\
-            & \alpha\notin\{0^\circ,180^\circ\} 
-            & \ahat=\frac{\cos(\alpha)}{\sin(\alpha)},\,
-                \bhat=\frac{x_{r0}-\Xsig}{\sin(\alpha)},\,\Xhat=0 \\
-        \asig\neq 0,\,y=\asig x + \bsig 
-            & \cos(\alpha)+\asig\sin(\alpha)=0 
-                & \ahat=0,\,\bhat=0,\,\Xhat= (\bsig-y_{r0})\sin(\alpha)-x_{r0}\\
-            & \cos(\alpha)+\asig\sin(\alpha)\neq 0 
-                & \ahat = \frac{\asig\cos(\alpha)-\sin(\alpha)}
-                    {cos(\alpha) + \asig\sin(\alpha)},\,
-                    \bhat = \frac{\asig x_{r0} + \bsig - y_{r0}}
-                    {cos(\alpha) + \asig\sin(\alpha)},\,\Xhat=0\\
-        \bottomrule
-    \end{tabular}
-    \caption{Sensor ray after
-    transformation}\label{tab-sensor-ray-after-transformation}
-\end{table}
-
-The conditions for an intersection of the sensor ray with the rectangle are
-summarized in \tabref{tab-intersection-rect}. We check wheter the transformed 
-sensor ray has an intersection with the rectangle $(0, 0, w, h, 0)$ at the 
-origin. The proofs are detailed in 
-Appendix~\ref{appendix-proofs-rectangle-intersections}.
-
-\begin{table}
-    \centering
-    \begin{tabular}{LLLL}
-        \toprule
-        \multicolumn{1}{l}{\sffamily Sensor Ray} &
-        \multicolumn{1}{l}{\sffamily Rotation} &
-        \multicolumn{1}{l}{\sffamily Segment} &
-        \multicolumn{1}{l}{\sffamily Intersection Conditions} \\
-        \midrule
-        \asig=0,\,y = \bsig,\,\Xsig=0 
-            & \alpha=0^\circ &
-                & 0 \leq x-x_{r0} \leq w\,\land\, 
-                     |\bsig - y_{r0}| \leq \frac{h}{2} \\
-            & \alpha=90^\circ &  
-                & 0 \leq \bsig - y_{r0} \leq w \,\land\,
-                    |x-x_{r0}| \leq \frac{h}{2} \\
-            & \alpha=180^\circ &
-                & 0 \leq x_{r0} - x\leq w\,\land\, 
-                     |\bsig - y_{r0}| \leq \frac{h}{2} \\
-            & \alpha=270^\circ &
-                & 0\leq y_{r0}- \bsig \leq w \,\land\, 
-                    |x-x_{r0}| \leq \frac{h}{2} \\
-            &\alpha\notin\{0^\circ,90^\circ,180^\circ,270^\circ\} 
-            & \xhat\in\{0,w\}
-                & \left\{
-                    \begin{tabular}{L}
-                        x=x_{r0} +\frac{\xhat+(y_{r0}-\bsig)\sin(\alpha)}
-                            {\cos(\alpha)}\\
-                        \left|\frac{-\sin(\alpha)\xhat + \bsig - y_{r0}}
-                            {\cos(\alpha)}\right| \leq \frac{h}{2}
-                    \end{tabular}
-                  \right. \\
-            & & \yhat\in\left\{-\frac{h}{2},\frac{h}{2}\right\} 
-                & \left\{
-                    \begin{tabular}{L}
-                        x=x_{r0}+\frac{(\bsig-y_{r0})\cos(\alpha) - \yhat}
-                            {\sin(\alpha)} \\
-                        0\leq \frac{\bsig - y_{r0} + \cos(\alpha)\yhat}
-                            {\sin(\alpha)} \leq w
-                    \end{tabular}
-                \right. \\
-        \asig=0,\,\bsig=0,\,x = \Xsig
-            & \alpha=0^\circ &
-                & 0 \leq \Xsig-x_{r0} \leq w\,
-                    \land\, |y- y_{r0}| \leq \frac{h}{2} \\
-            & \alpha=90^\circ & 
-                & 0\leq y-y_{r0}\leq w\,
-                    \land\,|\Xsig - x_{r0}|\leq\frac{h}{2}\\
-            & \alpha=180^\circ &
-                & 0 \leq x_{r0}-\Xsig \leq w\,\land\, 
-                     |y- y_{r0}| \leq \frac{h}{2} \\
-            & \alpha=270^\circ & 
-                & 0\leq y_{r0}-y\leq w\,
-                    \land\,|\Xsig - x_{r0}|\leq\frac{h}{2}\\
-            &\alpha\notin\{0^\circ,90^\circ,180^\circ,270^\circ\} 
-                & \xhat\in\{0,w\}
-                & \left\{
-                    \begin{tabular}{L}
-                        y=y_{r0}+\frac{\xhat-(\Xsig-x_{r0})\cos(\alpha)}
-                            {\sin(\alpha)} \\
-                        \left|\frac{\cos(\alpha)\xhat - \Xsig + x_{r0}}
-                            {\sin(\alpha)}\right| \leq \frac{h}{2} 
-                    \end{tabular}
-                  \right. \\
-            & & \yhat\in\left\{-\frac{h}{2},\frac{h}{2}\right\} 
-                & \left\{
-                    \begin{tabular}{L}
-                        y=y_{r0}+\frac{\yhat+(\Xsig-x_{r0})\sin(\alpha)}
-                            {\cos(\alpha)}\\
-                        0\leq \frac{\sin(\alpha)\yhat - \Xsig + x_{r0}}
-                            {\cos(\alpha)} \leq w
-                    \end{tabular}
-                  \right. \\
-        \asig\neq 0,\,y=\asig x + \bsig 
-            & \cos(\alpha)+\asig\sin(\alpha)=0 & 
-                & \left\{
-                    \begin{tabular}{L}
-                    |\sin(\alpha)((1+\asig^2)x+\asig(\bsig-y_{r0})-x_{r0})|
-                        \leq \frac{h}{2}\\
-                    0\leq (\bsig - y_{r0})\sin(\alpha)-x_{r0}\cos(\alpha)
-                        \leq w\\
-                    \end{tabular}
-                \right. \\
-            & \cos(\alpha)+\asig\sin(\alpha)\neq 0 
-            & \xhat\in\{0,w\} & \\
-        \bottomrule
-    \end{tabular}
-    \caption{Conditions for intersection with a
-        rectangle}\label{tab-intersection-rect}
-\end{table}
-
+The intersection of the sensor ray with a rectangle is given by the
+intersection of one or two of the rectangles' line segments.
 
 \subsection{Circle}
 \label{sec-intersection-circle}
-For the sensor ray, we must consider the three cases $(x,y)=(x_0,y)\,\forall y$
-\eqref{eq-line-xx0}, $(x,y)=(x,y_0)\,\forall x$ \eqref{eq-line-yy0} and $y=ax+b$
-\eqref{eq-line-general}.
+Let the circle be given by $(\pbc, r)$, where $\pbc=(\pxc, \pyc)$ is the 
+center of the circle.
 
-Let $(x_c, y_c)$ be the center of the circle.
+For the general case, the intersection of the sensor ray $(\pbsig, \vbsig)$
+with the circle is given by the solutions $\xi$ of the equation
+\begin{equation}
+    \Vert\pbsig + \xi\vbsig - \pbc\Vert^2 = r^2\label{eq-intersection-circle}
+\end{equation}
 
-For the case $(x,y)=(x_0, y)$, the intersection with the circle
-$(x-x_c)^2+(y-y_c)^2=r^2$ is given by
+Expanding \eqref{eq-intersection-circle}, and defining
+\begin{eqnarray}
+    a &=& \vxsig^2+\vysig^2 \\
+    b &=& 2(\vxsig(\pxsig-\pxc)+\vysig(\pysig-\pyc)) \\
+    c &=& (\pxsig-\pxc)^2 + (\pysig-\pyc)^2
+\end{eqnarray}
+we obtain the equation
+\begin{gather}
+    (\pxsig+\xi\vxsig-\pxc)^2 + (\pysig+\xi\vysig-\pyc)^2 - r^2 = 0\\
+    \Leftrightarrow\quad a^2\xi^2 + b\xi + c = 0\label{eq-quadratic-equation}
+\end{gather}
+If they exist, one or two solutions to \eqref{eq-quadratic-equation} are 
+given by
 \begin{equation}
-    y = y_c \pm\sqrt{r^2 - (x_0-x_c)^2}.
+    \xi = \frac{-b\pm\sqrt{b^2-4ac}}{2a}\label{eq-quadratic-solutions}
 \end{equation}
-If $r^2 < (x_0-x_c)^2$, there is no intersection with the circle.
+An intersection exists if a solution \eqref{eq-quadratic-solutions} exists. The
+condition for the existence of a solution is $b^2-4ac=0$ which requires
+\begin{equation}
+    (\vxsig(\pysig-\pyc)+\vysig(\pxsig-\pxc))^2 = r^2(\vxsig^2+\vysig^2).
+    \label{eq-condition-intersection-circle}
+\end{equation}
 
-For the case $(x,y)=(x, y_0)$, the intersection with the circle
-$(x-x_c)^2+(y-y_c)^2=r^2$ is given by
+Given the solutions $\xi_-,\xi_+$ to \eqref{eq-quadratic-solutions}, the points
+of intersection  $\pbiotp,\pbiot-$ of the sensor ray with the circle are given 
+by
 \begin{equation}
-    x = x_c \pm\sqrt{r^2 - (y_0-y_c)^2}.
+    \pbiotp=\pbsig + \xi_+\vbsig\qquad\pbiotm=\pbsig + \xi_-\vbsig.
 \end{equation}
-If $r^2 < (y_0-y_c)^2$, there is no intersection with the circle.
-
-For the general case, the intersection of a
-straight line $y=ax+b$ with a circle $(x-x_c)^2+(y-y_c)^2=r^2$ is given by
+The distance $\diota$ between the origin $\pbsig$ of the sensor ray and the
+circle is given by
 \begin{equation}
-    (x-x_c)^2 + (ax+b - y_c)^2 = r^2
+    \diota = \min\{\Vert\pbsig-\pbiotp\Vert,\Vert\pbsig-\pbiotm\Vert\}
+    \label{eq-distance-circle}
 \end{equation}
-In order to simplify calculations, we translate the origin to $(x_c, y_c)$. Let
-\begin{equation}
-    \xhat = x-x_c,\quad \yhat = y-y_c,\quad \bhat = ax_c + b - y_c.
-\end{equation}
-The intersection of the straight line $\yhat = a\xhat + \bhat$ with the circle
-$\xhat^2 + \yhat^2 = r^2$ is given by
-\begin{equation}
-    \xhat^2 + (a\xhat + \bhat)^2 = r^2 \label{eq-intersection-circle}
-\end{equation}
-The solutions $\xhat$ to \eqref{eq-intersection-circle} are given by
-\begin{equation}
-    \xhat = -\frac{a\bhat}{1+a^2}\pm
-        \sqrt{\frac{1}{1+a^2}\left(r^2-\bhat+\frac{a^2 \bhat^2}{1+a^2}\right)}
-\end{equation}
-From this, we see that if
-\begin{equation}
-    r^2-\bhat+\frac{a^2 b^2}{1+a^2} < 0,
-\end{equation}
-there is no intersection of the line and the circle.
 
 \section{Game Objects}
 \label{sec-game-objects}
@@ -586,7 +479,7 @@ There are four types of objects in the game.
 \label{sec-user-interface}
 The main screen \figref{fig-main-screen}.
 \begin{figure}
-    \includegraphics[width=\textwidth]{screen.pdf}
+    \includegraphics[width=\textwidth]{odg/screen.pdf}
 \caption{Mockup of the main game screen}\label{fig-main-screen}
 \end{figure}
 \begin{itemize}
@@ -639,7 +532,7 @@ around the midpoint of the two points at the rear of the vehicle, as
 illustrated in \figref{fig-vehicle-rotate}.
 \begin{figure}
     \centering
-    \includegraphics[trim=0 30 0 30]{vehicle-turn.pdf}
+    \includegraphics[trim=0 30 0 30]{odg/vehicle-turn.pdf}
     \caption{Vehicle Turn}\label{fig-vehicle-rotate}
 \end{figure}
 The vehicles' forward movement is in the direction of the front of the vehicle
@@ -669,7 +562,7 @@ The distance to the closest obstacle is displayed on the user interface
 
 \begin{figure}
     \centering
-    \includegraphics{scanning.pdf}
+    \includegraphics{odg/scanning.pdf}
     \caption{Scanning and Distance}\label{fig-scanning}
 \end{figure}
 
