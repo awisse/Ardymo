@@ -79,6 +79,7 @@
 \newcommand{\segbool}{\text{\ttfamily segment}}
 \newcommand{\true}{\textsf{true}}
 \newcommand{\false}{\textsf{false}}
+\newcommand{\mssq}{\frac{m}{s^2}}
 % For graphics alignment, not used in production
 \newcommand{\HR}{\rule{1em}{0.4pt}}
 \newcommand{\bluefbox}[1]{\textcolor{blue}{%
@@ -473,6 +474,9 @@ There are four types of objects in the game.
     \item Colliding with the other players car from the side or behind places
         the player at the start with a 30 second suspension.
     \item A frontal collision of both players ends the game without a winner.
+    \item The winner is the first player to reach the target.
+    \item The score is the time elapsed to reach the target, including
+        penalties for collisions. The score is specific to the map.
 \end{itemize}
 
 \subsection{User Interface}
@@ -514,13 +518,20 @@ proceeding.
 \label{sec-controls}
 
 \begin{tabular}{>{\sffamily\bfseries}ll}
-    Up Button & Accelerate forward $1m/s^2$. \\
-    Down Button & Accelerate backwards (also "braking").\\
+    Up Button & Accelerate forward. \\
+    Down Button & Accelerate backwards.\\
     Left Button & Turn left $\alpha$ degrees.\\
     Right Button & Turn right $\alpha$ degrees.\\
     A Button & TBD.\\
     B Button & Show menu.\\
 \end{tabular}
+
+Forward acceleration is $1\mssq$ when the speed is zero or positive,
+$3\mssq$ when the vehicle is moving backward (breaking).
+Backward acceleration is $-1\mssq$ when the speed is zero or negative,
+$-3\mssq$ when the vehicle is moving forward (breaking).
+
+A top speed of $6\mssq$ forward and $3\mssq$ backward may be defined.
 
 \subsection{Vehicle Movement}
 \label{sec-vehicle-movement}
