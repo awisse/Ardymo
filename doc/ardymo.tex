@@ -414,17 +414,24 @@ with the circle is given by the solutions $\xi$ of the equation
     \Vert\pbsig + \xi\vbsig - \pbc\Vert^2 = r^2\label{eq-intersection-circle}
 \end{equation}
 
+Let the inner product $\pb_0\cdot\pb_1$ of two points 
+$\pb_i=(p_{ix},p_{iy}),\,i\in\{0,1\}$ be defined by
+\begin{equation}
+    \pb_0\cdot\pb_1 = p_{0x}p_{1x} + p_{0y}p_{1y}
+\end{equation}
+
 Expanding \eqref{eq-intersection-circle}, and defining
 \begin{eqnarray}
-    a &=& \vxsig^2+\vysig^2 \\
-    b &=& 2(\vxsig(\pxsig-\pxc)+\vysig(\pysig-\pyc)) \\
-    c &=& (\pxsig-\pxc)^2 + (\pysig-\pyc)^2
+    a &=& \Vert\vbsig\Vert^2 = \vxsig^2+\vysig^2 \\
+    b &=& 2\vbsig\cdot(\pbsig-\pbc) = 
+        2(\vxsig(\pxsig-\pxc)+\vysig(\pysig-\pyc)) \\
+    c &=& \Vert\pbsig-\pbc\Vert^2 - r^2 = 
+        (\pxsig-\pxc)^2 + (\pysig-\pyc)^2 - r^2
 \end{eqnarray}
 we obtain the equation
-\begin{gather}
-    (\pxsig+\xi\vxsig-\pxc)^2 + (\pysig+\xi\vysig-\pyc)^2 - r^2 = 0\\
+\begin{equation}
     \Leftrightarrow\quad a^2\xi^2 + b\xi + c = 0\label{eq-quadratic-equation}
-\end{gather}
+\end{equation}
 If they exist, one or two solutions to \eqref{eq-quadratic-equation} are 
 given by
 \begin{equation}
@@ -433,7 +440,7 @@ given by
 An intersection exists if a solution \eqref{eq-quadratic-solutions} exists. The
 condition for the existence of a solution is $b^2-4ac=0$ which requires
 \begin{equation}
-    (\vxsig(\pysig-\pyc)+\vysig(\pxsig-\pxc))^2 = r^2(\vxsig^2+\vysig^2).
+    (\vbsig\cdot(\pbsig-\pbc))^2 = r^2 \Vert\vbsig\Vert^2
     \label{eq-condition-intersection-circle}
 \end{equation}
 
