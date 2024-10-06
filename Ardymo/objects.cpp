@@ -12,10 +12,16 @@ Vec Vec::operator+=(const Vec& p) {
   this->y += p.y;
   return *this;
 }
+
 Vec Vec::operator+(const Vec& p) {
   Vec newpt = p;
-  newpt.x = this->x + p.x;
-  newpt.y = this->y + p.y;
+  newpt += *this;
+  return newpt;
+}
+
+Vec Vec::operator+(const point p) {
+  Vec newpt = Vec(p);
+  newpt += *this;
   return newpt;
 }
 
@@ -41,8 +47,13 @@ float Vec::operator*(const Vec& p) {
 }
 
 bool Vec::operator==(const Vec& p) {
-  return (this->x == p.x) && (this->y == p.y);
+  return (x == p.x) && (y == p.y);
 
+}
+
+point Vec::as_point(void) {
+  point p = {this->x, this->y};
+  return p;
 }
 
 /*************** Rotation matrix *******************

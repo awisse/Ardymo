@@ -26,11 +26,14 @@ class Vec {
 
     Vec operator+=(const Vec&);
     Vec operator+(const Vec&);
+    Vec operator+(const point p);
     Vec operator-(void); // Inverse sign
     Vec operator-(const Vec&);
     Vec operator*(const float a); // Scalar product
     float operator*(const Vec&); // Inner product
     bool operator==(const Vec&);
+
+    point as_point(void); // Transform into simple `point`
 
     Vec rotate(const int16_t alpha);
 };

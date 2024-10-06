@@ -43,6 +43,6 @@ typedef struct {
     line_t line;
     circle_t circle;
     rectangle_t rectangle;
-  } object;
+  };
 } obstacle;
 
