@@ -34,6 +34,7 @@ class Vec {
     bool operator==(const Vec&);
 
     point as_point(void); // Transform into simple `point`
+    float sq(void);     // ∥v∥^2
 
     Vec rotate(const int16_t alpha);
 };

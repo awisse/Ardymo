@@ -56,6 +56,10 @@ point Vec::as_point(void) {
   return p;
 }
 
+float Vec::sq(void) {
+  return x*x + y*y;
+}
+
 /*************** Rotation matrix *******************
  * | cos(\theta) -sin(\theta) |
  * | sin(\theta)  cos(\theta) |

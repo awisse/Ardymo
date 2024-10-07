@@ -1,9 +1,8 @@
 *.o
 ardusdl
+structs
 ardymo.pdf
-*converted-to.pdf
 build
-RotationMatrix.csv
 *.dvi
 *.aux
 *.fdb_latexmk
@@ -16,4 +15,4 @@ RotationMatrix.csv
 *.synctex.gz
 *.png
 .~*
-test
+intersections.odg
