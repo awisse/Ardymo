@@ -5,12 +5,13 @@ PKGCONFIG := $(shell which pkg-config)
 ARDYMOSRC := ../objects.cpp ../intersection.cpp
 SOURCES := $(wildcard *.cpp) $(ARDYMOSRC)
 OBJECTS := $(notdir $(SOURCES:%.cpp=%.o))
-INCLUDES := $(wildcard *.h)
+ARDYMOINC := ../objects.h ../intersection.h ../structs.h
+INCLUDES := $(wildcard *.h) $(ARDYMOINC)
 
 all: $(TARGET)
 
-%.o : %.cpp $(INCLUDES)
-	$(CXX) $(CXXFLAGS) -c -o $(@F) -I.. $<
+%.o : %.cpp $(SOURCES) $(INCLUDES)
+	$(CXX) $(CXXFLAGS) -c -o $(@F) -iquote .. $<
 
 $(TARGET) : $(OBJECTS)
 	$(CXX) -o $@ $^

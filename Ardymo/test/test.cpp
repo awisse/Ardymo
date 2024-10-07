@@ -17,6 +17,10 @@ void print(const obstacle object) {
       print ("circle p", Vec(object.circle.p));
       std::cout << "circle r = " << object.circle.r << "\n";
       break;
+    case RECTANGLE:
+      print("rectangle p", Vec(object.rectangle.p));
+      print("rectangle v", Vec(object.rectangle.v));
+      break;
     default:
       std::cout << "Not Implemented\n";
   }
@@ -37,7 +41,7 @@ void test_Vec() {
   print("c", c);
   print("d", d);
   print("a+b", a+b);
-  a += b;   
+  a += b;
   std::cout << "a+=b: ";
   print("a", a);
   print("-c", -c);
@@ -75,9 +79,11 @@ void test_intersects(void) {
   obstacle seg1 = {LINE, {5.0, 6.0, 2.0, -2.0, 1}};
   obstacle seg2 = {LINE, {2.0, 3.0, 1.0, 2.0, 1}};
   obstacle circ = {CIRCLE, {3.0, 4.0, 2.0}};
+  obstacle rect1 = {RECTANGLE,{3.0, 7.0, 4.0, 0.0, 0.5}};
+  obstacle rect2 = {RECTANGLE,{5.0, 6.0, 3.4841, -2.0, 0.5}};
   uint8_t i;
 
-  std::cout << "Sensor: \n";
+  std::cout << "Sensor: Intersection and Distance\n";
   print("p", sensor.p);
   print("v", sensor.v);
   print(seg1);
@@ -100,9 +106,23 @@ void test_intersects(void) {
   for (i=0; i<n; i++) {
     std::printf("circ: X[%hhu]", i);
     print("", intersect_point(i));
-    }
+  }
 
+  print(rect1);
+  n = intersects(sensor, rect1);
+  std::cout << "sensor with rect1: " << (int)n << "\n";
+  for (i=0; i<n; i++) {
+    std::printf("rect1: X[%hhu]", i);
+    print("", intersect_point(i));
+  }
 
+  print(rect2);
+  n = intersects(sensor, rect2);
+  std::cout << "sensor with rect2: " << (int)n << "\n";
+  for (i=0; i<n; i++) {
+    std::printf("rect2: X[%hhu]", i);
+    print("", intersect_point(i));
+  }
 }
 
 
@@ -110,7 +130,7 @@ int main() {
 
   test_Vec();
   test_intersects();
-  
+
   return 0;
 
 }

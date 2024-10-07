@@ -60,9 +60,9 @@ float Vec::sq(void) {
   return x*x + y*y;
 }
 
-/*************** Rotation matrix *******************
- * | cos(\theta) -sin(\theta) |
- * | sin(\theta)  cos(\theta) |
+/*************** Rotation matrix (clockwise)  *******************
+ * |  cos(\theta)  sin(\theta) |
+ * | -sin(\theta)  cos(\theta) |
  *
  * We need only two float values per angle: cos(\theta) and sin(\theta)
  * The parameter \theta is an integer as we only have sines and cosines for
@@ -76,7 +76,7 @@ Vec Vec::rotate(int16_t theta) {
   rotn  rot = get_rotn(theta);
 
   // Matrix multiplication
-  return Vec(rot.cos * x + rot.sin * y, - rot.sin * x + rot.cos * y);
+  return Vec(rot.cos * x - rot.sin * y, rot.sin * x + rot.cos * y);
 }
 
 rotn get_rotn(int16_t alpha) {

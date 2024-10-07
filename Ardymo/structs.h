@@ -40,9 +40,9 @@ typedef struct {
 typedef struct {
   geometry type;
   union {
-    line_t line;
+    rectangle_t rectangle; // First declaration must be the most general member
     circle_t circle;
-    rectangle_t rectangle;
+    line_t line;
   };
 } obstacle;
 
