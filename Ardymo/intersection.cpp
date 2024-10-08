@@ -10,7 +10,6 @@
 #include "intersection.h"
 
 static Vec X[2]; // Intersection points if they exists
-constexpr static float epsilon = 1E-7;
 
 uint8_t intersects_line(line_t sensor, line_t line);
 uint8_t intersects_circle(line_t sensor, circle_t circle);
@@ -53,30 +52,76 @@ float distance(Vec origin, uint8_t i) {
   return sqrt(origin * X[i]);
 }
 
+inline bool cmp01(float x) {
+  return (x >= 0.0) && (x <= 1);
+}
+
 uint8_t intersects_line(line_t sensor, line_t line) {
   float det; // determinant
-  float tau; // scalar determining intersection point
-  Vec ps_minus_pl;
+  float tau, nu; // scalars determining intersection point
+  float s_xy, l_xy; // Either the x or the y component of a point
+  Vec pl = Vec(line.p);
+  Vec ps = Vec(sensor.p);
+  Vec vl = Vec(line.v);
+  Vec vs = Vec(sensor.v);
+  Vec ps_minus_pl = ps - pl;
+  uint8_t n = 0;
 
-  det = -determinant(sensor.v, line.v); // = det(sensor.v, -line.v)
-  // Are the lines collinear?
+  det = -vs.det(vl); // = det(sensor.v, -line.v)
+  // Are the lines parallel ?
   if (abs(det) < epsilon) {
-    // Yes. Are (p_sig - p_l) and v_l collinear?
-    ps_minus_pl = Vec(sensor.p) - Vec(line.p);
-    if (abs(determinant(ps_minus_pl.as_point(), line.v))
-          < epsilon) {
+    // Yes. Are (p_sigma - p_l) and v_l collinear?
+    if (abs(ps_minus_pl.det(vl)) > epsilon) {
+      // No intersection.
       return 0;
     }
-
-
+    // Yes. Is sensor a segment?
+    if (!sensor.seg) {
+      // No. sensor is unbound. The endpoints of the `line` segment
+      // are on sensor.
+      X[0] = pl;
+      X[1] = pl + vl;
+      return 2;
+    }
+    // Yes, sensor is a segment. Check the four cases for intersections
+    // intersection points are the endpoints of one segment which are
+    // included in the other segment
+    tau = ps_minus_pl.div(vl);
+    if (cmp01(tau)) {
+      X[n++] = ps;
+    }
+    tau = (ps_minus_pl + vs).div(vl);
+    if (cmp01(tau)) {
+      X[n++] = ps + vs;
+      if (n == 2) return 2;
+    }
+    nu = -ps_minus_pl.div(vs);
+    if (cmp01(nu)) {
+      X[n++] = pl;
+      if (n == 2) return 2;
+    }
+    nu = (vl-ps_minus_pl).div(vs);
+    if (cmp01(nu)) {
+      X[n++] = pl + vl;
+    }
+    return n;
   }
 
-  tau = (sensor.v.x*(line.p.y - sensor.p.y) \
-        - sensor.v.y*(line.p.x - sensor.p.x)) / det;
+  // ps_minus_pl = -(p_l - p_sigma)
+  tau = (sensor.v.y * ps_minus_pl.x - sensor.v.x * ps_minus_pl.y) / det;
 
   // If this is a segment, the intersection must be within the segment.
   if (line.seg && ((tau < 0) || (tau > 1))) {
     return 0;
+  }
+
+  // Is `sensor` a segment?
+  if (sensor.seg == 1) {
+    // Compute nu
+    nu = (line.v.y * ps_minus_pl.x - line.v.y * ps_minus_pl.y) / det;
+    if ((nu < 0) || (nu > 1)) {
+      return 0;
+    }
   }
 
   // Compute intersection point

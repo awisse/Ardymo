@@ -4,22 +4,27 @@
 #include "../intersection.h"
 
 void print(const char* name, Vec v) {
-  std::cout << name << " = (" << v.x << ", " << v.y << ")\n";
+  std::cout << ((name==NULL) ? "" : name) <<\
+                      " (" << v.x << ", " << v.y << ")\n";
 }
 
-void print(const obstacle object) {
+void print(const char* name, const obstacle object) {
+  if (name) std::cout << name << ": ";
   switch (object.type) {
     case LINE:
-      print("line p", Vec(object.line.p));
-      print("line v", Vec(object.line.v));
+      std::cout << (object.line.seg ? "segment" : "line") << "\n";
+      print("p", Vec(object.line.p));
+      print("v", Vec(object.line.v));
       break;
     case CIRCLE:
-      print ("circle p", Vec(object.circle.p));
-      std::cout << "circle r = " << object.circle.r << "\n";
+      std::cout << "circle\n";
+      print ("p", Vec(object.circle.p));
+      std::cout << "r = " << object.circle.r << "\n";
       break;
     case RECTANGLE:
-      print("rectangle p", Vec(object.rectangle.p));
-      print("rectangle v", Vec(object.rectangle.v));
+      std::cout << "rectangle\n";
+      print("p", Vec(object.rectangle.p));
+      print("v", Vec(object.rectangle.v));
       break;
     default:
       std::cout << "Not Implemented\n";
@@ -74,55 +79,90 @@ void test_Vec() {
   std::cout << "\n";
 }
 
-void test_intersects(void) {
-  line_t sensor = {{5.0, 5.0}, {3.0, 4.0}, 0};
-  obstacle seg1 = {LINE, {5.0, 6.0, 2.0, -2.0, 1}};
-  obstacle seg2 = {LINE, {2.0, 3.0, 1.0, 2.0, 1}};
-  obstacle circ = {CIRCLE, {3.0, 4.0, 2.0}};
-  obstacle rect1 = {RECTANGLE,{3.0, 7.0, 4.0, 0.0, 0.5}};
-  obstacle rect2 = {RECTANGLE,{5.0, 6.0, 3.4841, -2.0, 0.5}};
+void print_intersection(uint8_t n) {
   uint8_t i;
+  for (i=0; i<n; i++) {
+    std::printf("X[%hhu] = ", i);
+    print("", intersect_point(i));
+  }
+}
+void test_intersects(void) {
+  line_t sensor = {5.0, 5.0, 3.0, 4.0, 0};
+  obstacle seg0 = {LINE, .line={6.0, 5.0, 2.0, -2.0, 1}};
+  obstacle seg1 = {LINE, .line={5.0, 6.0, 2.0, -2.0, 1}};
+  obstacle seg2 = {LINE, .line={2.0, 3.0, 1.0, 2.0, 1}};
+  obstacle seg3 = {LINE, .line={5.0, 4.0, 1.0, 2.0, 1}};
+  obstacle seg4 = {LINE, .line={2.25, 3.5, 0.5, 1.0, 1}};
+  obstacle seg5 = {LINE, .line={2.0, 1.0, 1.5, 2.0, 1}};
+  obstacle circ = {CIRCLE, {3.0, 4.0, 2.0}};
+  obstacle rect1 = {RECTANGLE,.rectangle={3.0, 7.0, 4.0, 0.0, 0.5}};
+  obstacle rect2 = {RECTANGLE,.rectangle={5.0, 6.0, 3.4841, -2.0, 0.5}};
 
-  std::cout << "Sensor: Intersection and Distance\n";
+  std::cout << "\nIntersection and Distance\nsensor:\n";
   print("p", sensor.p);
   print("v", sensor.v);
-  print(seg1);
-  uint8_t n = intersects(sensor, seg1);
-  std::cout << "sensor with seg1: " << (int)n << "\n";
-  if (n) {
-    print("seg1: X[0]", intersect_point(0));
-  }
 
-  print(seg2);
+  std::cout << "Lines and Segments\n";
+  uint8_t n;
+  n = intersects(sensor, seg1);
+  std::cout << "============\nsensor with seg1: " << (int)n << "\n";
+  print_intersection(n);
+  print("seg1", seg1);
+
   n = intersects(sensor, seg2);
-  std::cout << "sensor with seg2: " << (int)n << "\n";
-  if (n) {
-    print("seg2: X[0]", intersect_point(0));
-  }
+  std::cout << "============\nsensor with seg2: " << (int)n << "\n";
+  print_intersection(n);
+  print("seg2", seg2);
 
-  print(circ);
+  n = intersects(sensor, seg3);
+  std::cout << "============\nsensor with seg3: " << (int)n << "\n";
+  print_intersection(n);
+  print("seg3", seg3);
+
+  n = intersects(sensor, seg5);
+  std::cout << "============\nsensor with seg5: " << (int)n << "\n";
+  print_intersection(n);
+  print("seg5", seg5);
+
+  n = intersects(seg0.line, seg1);
+  std::cout << "============\nseg0 with seg1: " << (int)n << "\n";
+  print_intersection(n);
+  print("seg0", seg0);
+
+  n = intersects(seg1.line, seg2);
+  std::cout << "============\nseg1 with seg2: " << (int)n << "\n";
+  print_intersection(n);
+
+  n = intersects(seg2.line, seg3);
+  std::cout << "============\nseg2 with seg3: " << (int)n << "\n";
+  print_intersection(n);
+
+  n = intersects(seg1.line, seg3);
+  std::cout << "============\nseg1 with seg3: " << (int)n << "\n";
+  print_intersection(n);
+
+  n = intersects(seg2.line, seg4);
+  std::cout << "============\nseg2 with seg4: " << (int)n << "\n";
+  print_intersection(n);
+  print("seg4", seg4);
+
+  n = intersects(seg4.line, seg2);
+  std::cout << "============\nseg4 with seg2: " << (int)n << "\n";
+  print_intersection(n);
+
   n = intersects(sensor, circ);
-  std::cout << "sensor with circ: " << (int)n << "\n";
-  for (i=0; i<n; i++) {
-    std::printf("circ: X[%hhu]", i);
-    print("", intersect_point(i));
-  }
+  std::cout << "============\nsensor with circ: " << (int)n << "\n";
+  print_intersection(n);
+  print("circ", circ);
 
-  print(rect1);
   n = intersects(sensor, rect1);
-  std::cout << "sensor with rect1: " << (int)n << "\n";
-  for (i=0; i<n; i++) {
-    std::printf("rect1: X[%hhu]", i);
-    print("", intersect_point(i));
-  }
+  std::cout << "============\nsensor with rect1: " << (int)n << "\n";
+  print_intersection(n);
+  print("rect1", rect1);
 
-  print(rect2);
   n = intersects(sensor, rect2);
-  std::cout << "sensor with rect2: " << (int)n << "\n";
-  for (i=0; i<n; i++) {
-    std::printf("rect2: X[%hhu]", i);
-    print("", intersect_point(i));
-  }
+  std::cout << "============\nsensor with rect2: " << (int)n << "\n";
+  print_intersection(n);
 }
 
 

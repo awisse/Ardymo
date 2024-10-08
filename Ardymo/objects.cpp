@@ -4,6 +4,7 @@
  */
 #include "objects.h"
 #include "matrix.h"
+#include "math.h"
 
 rotn get_rotn(int16_t angle);
 
@@ -54,6 +55,18 @@ bool Vec::operator==(const Vec& p) {
 point Vec::as_point(void) {
   point p = {this->x, this->y};
   return p;
+}
+
+float Vec::det(const Vec& p) {
+  return x * p.y - y * p.x;
+}
+
+float Vec::div(const Vec& p) {
+  if (abs(det(p)) > epsilon) {
+    // this and p are not collinear. Division doesn't make sense
+    return 0.0 / 0.0; // NaN
+  }
+  return (abs(x)>abs(y)) ? x / p.x : y / p.y;
 }
 
 float Vec::sq(void) {
