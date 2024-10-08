@@ -55,6 +55,7 @@
 \newcommand{\Sb}{\mathbf{S}}
 \newcommand{\vb}{\mathbf{v}}
 \newcommand{\vbl}{\mathbf{v}_l}
+\newcommand{\vbs}{\mathbf{v}_s}
 \newcommand{\vxl}{v_{xl}}
 \newcommand{\vyl}{v_{yl}}
 \newcommand{\vbsig}{\mathbf{v}_\sigma}
@@ -71,6 +72,8 @@
 \newcommand{\yhat}{{\hat{y}}}
 \newcommand{\yiota}{y_\iota}
 \newcommand{\ysig}{y_\sigma}
+% Operators
+\DeclareMathOperator{\vecdiv}{div}
 % Labels and text
 \newcommand{\eqn}[1]{(\ref{#1})}
 \newcommand{\figref}[1]{Fig.~\eqref{#1}}
@@ -377,8 +380,8 @@ ray and the line segment:
             \dsigl=(\pxl-\pxsig)\vyl - (\pyl - \pysig)\vxl=0.
             \label{eq-dsigl-zero}
         \end{equation}
-        If \eqref{eq-dsigl-zero} is satisfied, the points of intersection are 
-        given by $\pbl+\tau\vbl,\,\tau\in[0,1]$. 
+        If \eqref{eq-dsigl-zero} is satisfied, the two points of intersection 
+        are given by $\pbl+\tau\vbl,\,\tau\in\{0,1\}$. 
 \end{enumerate}
 
 \subsubsection*{Distance}
@@ -435,12 +438,13 @@ we obtain the equation
 If they exist, one or two solutions to \eqref{eq-quadratic-equation} are 
 given by
 \begin{equation}
-    \xi = \frac{-b\pm\sqrt{b^2-4ac}}{2a}\label{eq-quadratic-solutions}
+    \xi_+ = \frac{-b+\sqrt{b^2-4ac}}{2a},\:
+    \xi_- = \frac{-b-\sqrt{b^2-4ac}}{2a}\label{eq-quadratic-solutions}
 \end{equation}
 An intersection exists if a solution \eqref{eq-quadratic-solutions} exists. The
-condition for the existence of a solution is $b^2-4ac=0$ which requires
+condition for the existence of a solution is $b^2-4ac\geq0$ which requires
 \begin{equation}
-    (\vbsig\cdot(\pbsig-\pbc))^2 = r^2 \Vert\vbsig\Vert^2
+    (\vbsig\cdot(\pbsig-\pbc))^2 \geq r^2 \Vert\vbsig\Vert^2
     \label{eq-condition-intersection-circle}
 \end{equation}
 
@@ -456,6 +460,63 @@ circle is given by
     \diota = \min\{\Vert\pbsig-\pbiotp\Vert,\Vert\pbsig-\pbiotm\Vert\}
     \label{eq-distance-circle}
 \end{equation}
+
+
+\section{Collision}
+\label{sec-collision}
+
+A collision between two objects happens if there is an intersection between the
+surface of two objects, including the interior. In this context, we only need 
+to consider a collision between a vehicle (a rectangle) and a line, a circle 
+or a rectangle. This reduces to identifying the intersection of one or more 
+of the four line segments of the rectangle with another object. 
+
+We have computed the intersection of an unbound line with a circle or a
+line segment in section~\ref{sec-intersection-distance}. We generalize this to
+the intersection of a segment by checking for the corresponding constraints.
+
+\subsection{Line Segment}
+\label{sec-collision-line-segment}
+
+Let $S_s=(\pbs,\vbs)$ and $S_l=(\pbl,\vbl)$ be two line segments. The 
+intersection between $S_s$ and $S_l$ exists if and only if there exist
+$\tau,\nu\in[0,1]$ such that\footnote{See also
+\eqref{eq-intersection-segment}}.
+\begin{eqnarray}
+    \pbs + \nu \vbs = \pbl + \tau \vbl. \label{eq-collision-segment}
+\end{eqnarray}
+Hence the intersection exists if the solutions 
+$\tau$ of \eqref{eq-intersection-tau} and $\nu$ of \eqref{eq-intersection-nu}
+exist and are \textbf{both} between 0 and 1. A necessary condition for the
+solutions to exist is that the determinant of the matrix formed by the vectors
+$(\vbs,\vbl)$ is nonzero (see \eqref{eq-intersection-determinant}). 
+
+If the determinant of $(\vbs,\vbl)$ is zero, an intersection exists if $\vbl$
+and $\pbs-\pbl$ are collinear, which is true if and only if the
+determinant of the matrix $(\pbs-\pbl,\vbl)$ is zero 
+(see~\eqref{eq-dsigl-zero}). Any solution $\tau_p,\tau_v,\nu_p,\nu_v\in[0,1]$ 
+of the four following equations represents a point of intersection. 
+\begin{eqnarray*}
+    \tau_p &=& \vecdiv(\pbs - \pbl, \vbl)\\
+    \tau_v &=& \vecdiv(\pbs - \pbl + \vbs, \vbl)\\
+    \nu_p &=& \vecdiv(\pbl - \pbs, \vbs)\\
+    \nu_v &=& \vecdiv(\pbl - \pbs + \vbl, \vbs),
+\end{eqnarray*}
+where $\vecdiv(\pb,\vb),\,\pb=(p_x,p_y),\,\vb=(v_x, v_y)$ is defined by
+\begin{equation*}
+    \vecdiv(\pb, \vb) = \begin{cases}
+        \frac{p_x}{v_x} & |v_x| > |v_y| \\
+        \frac{p_y}{v_y} & |v_x| \leq |v_y|
+    \end{cases}
+\end{equation*}
+
+
+
+\subsection{Circle}
+\label{sec-collision-circle}
+
+Let $S_s=(\pbs,\vbs)$ be a line segment and $C=(\pbc,r)$ a circle. The points
+of intersection $\pbiot$ with the circle are
 
 \section{Game Objects}
 \label{sec-game-objects}
