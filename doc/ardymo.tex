@@ -449,7 +449,7 @@ condition for the existence of a solution is $b^2-4ac\geq0$ which requires
 \end{equation}
 
 Given the solutions $\xi_-,\xi_+$ to \eqref{eq-quadratic-solutions}, the points
-of intersection  $\pbiotp,\pbiot-$ of the sensor ray with the circle are given 
+of intersection  $\pbiotp,\pbiotm$ of the sensor ray with the circle are given 
 by
 \begin{equation}
     \pbiotp=\pbsig + \xi_+\vbsig\qquad\pbiotm=\pbsig + \xi_-\vbsig.
@@ -516,8 +516,24 @@ where $\vecdiv(\pb,\vb),\,\pb=(p_x,p_y),\,\vb=(v_x, v_y)$ is defined by
 \label{sec-collision-circle}
 
 Let $S_s=(\pbs,\vbs)$ be a line segment and $C=(\pbc,r)$ a circle. The points
-of intersection $\pbiot$ with the circle are
+of intersection $\pbiotp,\pbiotm$ of an unbound line with the circle are 
+given in section~\ref{sec-intersection-circle} as a function of $\xi_+,\xi_-$
+\eqref{eq-quadratic-solutions}. The points $\pbiotp$ and $\pbiotm$ are 
+intersections of $S_s$ with $C$ if $\xi_+\in[0,1]$ and $\xi_-\in[0,1]$,
+respectively.
 
+In \figref{fig-intersection-circle}, the point $\pbiotm=\pbs+\xi_-\vbs$ is a
+collision because $\xi_-=0.3\in[0,1]$. The point $\pbiotp=\pbs+\xi_+\vbs$ is not
+a collision with the segment $S_s$ because $\xi_+=2.7\notin[0,1]$.
+
+\begin{figure}
+    \centering
+    \includegraphics{odg/circle-segment.pdf}
+    \caption{Intersection of Segment with Circle}
+    \label{fig-intersection-circle}
+\end{figure}
+
+\pagebreak
 \section{Game Objects}
 \label{sec-game-objects}
 There are four types of objects in the game.

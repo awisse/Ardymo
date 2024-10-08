@@ -87,7 +87,9 @@ void print_intersection(uint8_t n) {
   }
 }
 void test_intersects(void) {
-  line_t sensor = {5.0, 5.0, 3.0, 4.0, 0};
+  line_t sensor = {2.75, 2.0, 1.5, 2.0, 0};
+  line_t segment = sensor;
+  segment.seg = 1;
   obstacle seg0 = {LINE, .line={6.0, 5.0, 2.0, -2.0, 1}};
   obstacle seg1 = {LINE, .line={5.0, 6.0, 2.0, -2.0, 1}};
   obstacle seg2 = {LINE, .line={2.0, 3.0, 1.0, 2.0, 1}};
@@ -95,6 +97,7 @@ void test_intersects(void) {
   obstacle seg4 = {LINE, .line={2.25, 3.5, 0.5, 1.0, 1}};
   obstacle seg5 = {LINE, .line={2.0, 1.0, 1.5, 2.0, 1}};
   obstacle circ = {CIRCLE, {3.0, 4.0, 2.0}};
+  obstacle bigcirc = {CIRCLE, {5.0, 5.0, 3.0}};
   obstacle rect1 = {RECTANGLE,.rectangle={3.0, 7.0, 4.0, 0.0, 0.5}};
   obstacle rect2 = {RECTANGLE,.rectangle={5.0, 6.0, 3.4841, -2.0, 0.5}};
 
@@ -154,6 +157,19 @@ void test_intersects(void) {
   std::cout << "============\nsensor with circ: " << (int)n << "\n";
   print_intersection(n);
   print("circ", circ);
+
+  n = intersects(segment, circ);
+  std::cout << "============\nsegment with circ: " << (int)n << "\n";
+  print_intersection(n);
+
+  n = intersects(sensor, bigcirc);
+  std::cout << "============\nsensor with bigcirc: " << (int)n << "\n";
+  print_intersection(n);
+  print("bigcirc", bigcirc);
+
+  n = intersects(segment, bigcirc);
+  std::cout << "============\nsegment with bigcirc: " << (int)n << "\n";
+  print_intersection(n);
 
   n = intersects(sensor, rect1);
   std::cout << "============\nsensor with rect1: " << (int)n << "\n";

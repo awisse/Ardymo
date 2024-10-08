@@ -140,21 +140,29 @@ uint8_t intersects_circle(line_t sensor, circle_t circle) {
   float a = vsig.sq();
   // b4ac = (b/2)^2 - ac:
   float b4ac = b2 * b2 - a * (psigc.sq() - circle.r * circle.r);
+  float xi;
+  uint8_t n = 0;
 
   if (b4ac < 0) {
     return 0;
   }
 
   // xi_+ = (-b2 + sqrt(b4ac))/a
-  X[0] = psig + vsig * ((-b2 + sqrt(b4ac)) / a);
+  xi = (-b2 + sqrt(b4ac)) / a;
+  if (!sensor.seg || cmp01(xi)) {
+    X[n++] = psig + vsig * xi;
+  }
 
   // One intersection only?
   if (b4ac < epsilon) {
-    return 1;
+    return n;
   }
 
-  X[1] = psig + vsig * ((-b2 - sqrt(b4ac)) / a);
-  return 2;
+  xi = (-b2 - sqrt(b4ac)) / a;
+  if (!sensor.seg || cmp01(xi)) {
+    X[n++] = psig + vsig * xi;
+  }
+  return n;
 }
 
 uint8_t intersects_rectangle(line_t sensor, rectangle_t rect) {
