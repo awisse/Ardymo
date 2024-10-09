@@ -16,4 +16,5 @@ build
 *.png
 .~*
 intersections.odg
-teststructs
+rotate
+tests

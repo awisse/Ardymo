@@ -8,7 +8,7 @@
 // We need the `point` type because the Arduino compiler doesn't accept the
 // `Vec` class in PROGMEM: "a variable with dynamic initialization
 // cannot be put in program memory area".
-constexpr static float epsilon = 1E-7; // Test for zero with floats
+constexpr static float epsilon = 3E-7; // Test for zero with floats
 
 typedef struct {
   float x, y;

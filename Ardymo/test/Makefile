@@ -1,11 +1,13 @@
-TARGET := structs
-CXXFLAGS = -g
-VPATH = ..
+TARGET := tests
+VPATH := ..
 PKGCONFIG := $(shell which pkg-config)
-ARDYMOSRC := ../objects.cpp ../intersection.cpp
+INCLUDE := $(shell $(PKGCONFIG) --cflags gtest)
+LIBS := $(shell $(PKGCONFIG) --libs gtest_main)
+CXXFLAGS = -g $(INCLUDE)
+ARDYMOSRC := objects.cpp intersection.cpp rotate.cpp
 SOURCES := $(wildcard *.cpp) $(ARDYMOSRC)
 OBJECTS := $(notdir $(SOURCES:%.cpp=%.o))
-ARDYMOINC := ../objects.h ../intersection.h ../structs.h
+ARDYMOINC := objects.h intersection.h structs.h rotate.h
 INCLUDES := $(wildcard *.h) $(ARDYMOINC)
 
 all: $(TARGET)
@@ -14,7 +16,7 @@ all: $(TARGET)
 	$(CXX) $(CXXFLAGS) -c -o $(@F) -iquote .. $<
 
 $(TARGET) : $(OBJECTS)
-	$(CXX) -o $@ $^
+	$(CXX) $(LIBS) -o $@ $^
 
 
 .PHONY: clean
