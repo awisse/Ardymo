@@ -117,10 +117,10 @@ of obstacles) with circles, rectangles and line segments.
 \subsubsection{Unbound}
 \label{sec-line-unbound}
 We develop the representation of a straight line going through
-points $\pb_0=(x_0, y_0)$ and $\pb_1=(x_1, y_1)$. 
+points $\pb_0=(x_0, y_0)$ and $\pb_1=(x_1, y_1)$.
 Let us determine the points $\pb=(x, y)$ on the line.
 
-Let $\vb=\pb_1-\pb_0$ the {\bf direction} of the line. The points $\pb$ on the 
+Let $\vb=\pb_1-\pb_0$ the {\bf direction} of the line. The points $\pb$ on the
 line are given by
 \begin{equation}
     \pb=\pb_0 + \tau \vb,\quad \tau\in\Rb \label{eq-line-general} \\
@@ -136,7 +136,7 @@ The general line is illustrated in \figref{fig-general-line}
 \subsubsection{Line Segment}
 \label{sec-line-segment}
 A line segment is the compact version of a straight line. It is of finite
-length. The points on a {\bf canonical} line segment between $\pb_0$ and 
+length. The points on a {\bf canonical} line segment between $\pb_0$ and
 $\pb_1$ are given by
 \begin{equation}
     \pb=\pb_0 + \tau \vb,\quad \tau\in[0,1] \label{eq-line-canonical}
@@ -155,7 +155,7 @@ where $a<b$. It can easily be transformed into a canonical line segment.
 \subsubsection{Rotation}
 \label{sec-rotation-line}
 
-A line given by $(\pb_0, \vb)$ can easily be rotated clockwise around 
+A line given by $(\pb_0, \vb)$ can easily be rotated clockwise around
 $\pb_0$ by the angle $\alpha$. Define the rotation matrix $\Omega(\alpha)$.
 \begin{equation}
     \Omega(\alpha)=\left(
@@ -171,14 +171,14 @@ The rotated line is given by $(\pb_0, \Omega(\alpha)\vb)$.
 \label{sec-polygons}
 
 We are concerned with a general polygon in the two-dimensional plane. A polygon
-with $n$ sides is well defined by $n$ points $\pb_0,\ldots,\pb_{n-1}$ 
+with $n$ sides is well defined by $n$ points $\pb_0,\ldots,\pb_{n-1}$
 defining $n$ line segments. The $n$ sides are defined by the line segments
 \begin{equation}
     \left\{[\pb_i:\pb_{i+1}], i=0,\ldots,n-2\right\}\\
 \cup\left\{[\pb_{n-1}:\pb_{0}]\right\}
 \end{equation}
-A polygon can be given a direction $\vb$  by using one of its line segments. 
-Without losing generality, define 
+A polygon can be given a direction $\vb$  by using one of its line segments.
+Without losing generality, define
 \begin{equation*}
     \vb=\pb_1-\pb_0.
 \end{equation*}
@@ -190,9 +190,9 @@ A rectangle is a special case of a polygon. In Ardymo, we are using a directed
 rectangle (a rectangle with a direction) as the vehicle. The vehicle has thus a
 front and a back. The vehicle is given by four positon points
 $\pb_i,\,i=0,\ldots,3,$ and four
-direction vectors $\vb_0, \vb_1, \vb_2, \vb_3$, as illustrated in 
-\figref{fig-vehicle-definition}. The direction of the vehicle is given by 
-$\vb_0$.  Nous avons
+direction vectors $\vb_0, \vb_1, \vb_2, \vb_3$, as illustrated in
+\figref{fig-vehicle-definition}. The direction of the vehicle is given by
+$\vb_0$. We have
 \begin{eqnarray}
     \vb_{i+2} &=& -\vb_{i},\: i\in\{0,1\},\label{eq-v-v-rectangle} \\
     \pb_{i} &=& \pb_{i-1} + \vb_{i-1},\:i\in\{1,2,3\}.
@@ -209,13 +209,13 @@ $\vb_0$.  Nous avons
     \caption{Vehicle}\label{fig-vehicle}
 \end{figure}
 
-The vehicle is turning around the midpoint $\pb_c$ of the segment 
-$[\pb_3:\pb_0]$, given by 
+The vehicle is turning around the midpoint $\pb_c$ of the segment
+$[\pb_3:\pb_0]$, given by
 \begin{equation*}
     \pb_c = \pb_3 + \frac{1}{2}\vb_3.
 \end{equation*}
 
-In order to turn the rectangle clockwise by $\alpha$, we find new points 
+In order to turn the rectangle clockwise by $\alpha$, we find new points
 $\pb'_i,i=0,\ldots,3$ and directional vectors $\vb'_i,i=0,\ldots,3$.
 We have
 \begin{eqnarray}
@@ -251,15 +251,15 @@ polygon is just a collection of line segments.
 
 The parameters for a line are $(\pb, \vb, \Sb)$, where $\pb=(p_{x}, p_{y})$ is
 a point on the line and $\vb=(v_{x}, v_{y})$ is the direction of the line. The
-parameter $\Sb$ is a boolean which is \false{} for an unbound line and \true{}
+parameter $\Sb$ is a small integer which is $0$ for an unbound line and $1$
 for a segment. A segment is defined by the points $\pb+t\vb,\,t\in[0,1]$.
 
 \subsection{Rectangle}
 \label{sec-representation-rectangle}
 
-A rectangle is given by the parameters $(\pb, \vb, \mu)$, where 
+A rectangle is given by the parameters $(\pb, \vb, \mu)$, where
 $\pb=(p_{0}, p_{1})$ is the origin of the rectangle and $\vb=(v_{0}, v_{1})$ is
-the direction of the rectangle. The width $w$ of the rectangle is given by
+the direction of the rectangle. The width $w$ of the rectangle is
 the length $\Vert\vb\Vert$ of $\vb$, given by
 \begin{equation}
     w = \Vert\vb\Vert = \sqrt{v_{0}^2 + v_{1}^2}.\label{eq-width-rectangle}
@@ -274,8 +274,8 @@ by
 \begin{equation}
     \vb_1 = \mu\Omega(90^\circ)\vb_0.\label{eq-vb1-rectangle}
 \end{equation}
-The remaining directional parameters, $\vb_2,\,\vb_3$ can be computed with
-\eqref{eq-v-v-rectangle}.   
+The remaining directional parameters, $\vb_2,\,\vb_3$ can be computed according
+to equation~\eqref{eq-v-v-rectangle}.
 
 \subsection{Circle}
 
@@ -290,7 +290,7 @@ radius of the circle.
 In this section, we determine the algoritm that finds the intersection of a
 sensor ray  with an obstacle. If the intersection
 exists, we also compute the distance of the origin $\pbsig$ of the
-sensor ray to the obstacle. In the context of this application, it 
+sensor ray to the obstacle. In the context of this application, it
 corresponds to a point on the vehicle from which the sensor ray emanates.
 
 The general form of the distance $\diota$ between the origin of a sensor ray
@@ -321,9 +321,9 @@ Writing \eqref{eq-intersection-segment} in cartesian coordinates,
 we obtain a system of two linear equations
 \begin{eqnarray*}
     \pxsig + \nu \vxsig &=& \pxl + \tau \vxl \\
-    \pysig + \nu \vysig &=& \pyl + \tau \vyl 
+    \pysig + \nu \vysig &=& \pyl + \tau \vyl
 \end{eqnarray*}
-which can be transformed into the canonical form
+which can be transformed into the matrix notation
 \begin{equation}
     \left(
         \begin{matrix}
@@ -335,10 +335,10 @@ which can be transformed into the canonical form
             \nu \\ \tau
         \end{matrix}
     \right)
-    = 
+    =
     \left(
         \begin{matrix}
-            \pxl - \pxsig \\ \pyl - \pysig 
+            \pxl - \pxsig \\ \pyl - \pysig
         \end{matrix}
     \right).\label{eq-intersection-linear-eq}
 \end{equation}
@@ -353,10 +353,6 @@ determinant $\Dsigl$ of the matrix is nonzero:
     \right)=
     \vysig\vxl - \vxsig\vyl \neq 0.\label{eq-intersection-determinant}
 \end{equation}
-If however the determinant \eqref{eq-intersection-determinant} \textbf{is} 
-zero, there exists a $\mu\in\Rb$ such that $\vbsig=\mu\vbl$ and an 
-intersection exists \textbf{if and only if} there exists an $\eta\in\Rb$ such 
-that $\pbl = \pbsig + \eta\vbl$.
 
 The solution to \eqref{eq-intersection-linear-eq} is an intersection if
 $\tau\in[0,1]$. It is given by
@@ -367,6 +363,11 @@ $\tau\in[0,1]$. It is given by
     \label{eq-intersection-nu}
 \end{eqnarray}
 
+If however the determinant \eqref{eq-intersection-determinant} \textbf{is}
+zero, there exists a $\mu\in\Rb$ such that $\vbsig=\mu\vbl$ and an
+intersection exists \textbf{if and only if} there exists an $\eta\in\Rb$ such
+that $\pbl = \pbsig + \eta\vbl$.
+
 To summarize, these are the steps to find an intersection between the sensor
 ray and the line segment:
 \begin{enumerate}
@@ -374,19 +375,21 @@ ray and the line segment:
     \item If $\Dsigl\neq 0$, compute $\tau$ \eqref{eq-intersection-tau}.
     \item If $\tau\in[0,1]$ the point of intersection is given by
         \eqref{eq-intersection-segment} and we are done.
-    \item If $\Dsigl=0$, an intersection exists if the vectors $\pbl-\pbsig$ 
+    \item If $\Dsigl=0$, an intersection exists if the vectors $\pbl-\pbsig$
         and $\vbl$ are collinear, which means that we must have
         \begin{equation}
             \dsigl=(\pxl-\pxsig)\vyl - (\pyl - \pysig)\vxl=0.
             \label{eq-dsigl-zero}
         \end{equation}
-        If \eqref{eq-dsigl-zero} is satisfied, the two points of intersection 
-        are given by $\pbl+\tau\vbl,\,\tau\in\{0,1\}$. 
+        If \eqref{eq-dsigl-zero} is satisfied, all points
+        $\pbl+\tau\vbl,\,\tau\in[0,1]$ are on the line $(\pbsig,\vbsig)$. We
+        define the two points of intersection as the endpoints of the segment
+        $(\pbl,\vbl)$, which are $\pbl$ and $\pbl + \vbl$.
 \end{enumerate}
 
 \subsubsection*{Distance}
 If the intersection exists and is unique, and $\tau$ is given by
-\eqref{eq-intersection-tau}, the distance $\delta$ between $\pbsig$ and the 
+\eqref{eq-intersection-tau}, the distance $\delta$ between $\pbsig$ and the
 line segment $(\pbl, \vbl)$ is given by
 \begin{equation}
     \delta = \Vert \pbsig - \pbl - \tau\vbl\Vert.
@@ -404,20 +407,21 @@ $\delta$ is given by
 \label{sec-intersection-rectangle}
 
 The intersection of the sensor ray with a rectangle is given by the
-intersection of one or two of the rectangles' line segments.
+intersection with one or two of the rectangles' line segments.
 
 \subsection{Circle}
 \label{sec-intersection-circle}
-Let the circle be given by $(\pbc, r)$, where $\pbc=(\pxc, \pyc)$ is the 
+Let the circle be given by $(\pbc, r)$, where $\pbc=(\pxc, \pyc)$ is the
 center of the circle.
 
+\subsubsection*{Intersection}
 For the general case, the intersection of the sensor ray $(\pbsig, \vbsig)$
 with the circle is given by the solutions $\xi$ of the equation
 \begin{equation}
     \Vert\pbsig + \xi\vbsig - \pbc\Vert^2 = r^2\label{eq-intersection-circle}
 \end{equation}
 
-Let the inner product $\pb_0\cdot\pb_1$ of two points 
+Let the inner product $\pb_0\cdot\pb_1$ of two points
 $\pb_i=(p_{xi},p_{yi}),\,i\in\{0,1\}$ be defined by
 \begin{equation}
     \pb_0\cdot\pb_1 = p_{x0}p_{x1} + p_{y0}p_{y1}
@@ -426,16 +430,16 @@ $\pb_i=(p_{xi},p_{yi}),\,i\in\{0,1\}$ be defined by
 Expanding \eqref{eq-intersection-circle}, and defining
 \begin{eqnarray}
     a &=& \Vert\vbsig\Vert^2 = \vxsig^2+\vysig^2 \\
-    b &=& 2\vbsig\cdot(\pbsig-\pbc) = 
+    b &=& 2\vbsig\cdot(\pbsig-\pbc) =
         2(\vxsig(\pxsig-\pxc)+\vysig(\pysig-\pyc)) \\
-    c &=& \Vert\pbsig-\pbc\Vert^2 - r^2 = 
+    c &=& \Vert\pbsig-\pbc\Vert^2 - r^2 =
         (\pxsig-\pxc)^2 + (\pysig-\pyc)^2 - r^2
 \end{eqnarray}
 we obtain the equation
 \begin{equation}
     \Leftrightarrow\quad a^2\xi^2 + b\xi + c = 0\label{eq-quadratic-equation}
 \end{equation}
-If they exist, one or two solutions to \eqref{eq-quadratic-equation} are 
+If they exist, one or two solutions to \eqref{eq-quadratic-equation} are
 given by
 \begin{equation}
     \xi_+ = \frac{-b+\sqrt{b^2-4ac}}{2a},\:
@@ -449,11 +453,14 @@ condition for the existence of a solution is $b^2-4ac\geq0$ which requires
 \end{equation}
 
 Given the solutions $\xi_-,\xi_+$ to \eqref{eq-quadratic-solutions}, the points
-of intersection  $\pbiotp,\pbiotm$ of the sensor ray with the circle are given 
+of intersection  $\pbiotp,\pbiotm$ of the sensor ray with the circle are given
 by
 \begin{equation}
     \pbiotp=\pbsig + \xi_+\vbsig\qquad\pbiotm=\pbsig + \xi_-\vbsig.
 \end{equation}
+
+\subsubsection*{Distance}
+
 The distance $\diota$ between the origin $\pbsig$ of the sensor ray and the
 circle is given by
 \begin{equation}
@@ -466,10 +473,10 @@ circle is given by
 \label{sec-collision}
 
 A collision between two objects happens if there is an intersection between the
-surface of two objects, including the interior. In this context, we only need 
-to consider a collision between a vehicle (a rectangle) and a line, a circle 
-or a rectangle. This reduces to identifying the intersection of one or more 
-of the four line segments of the rectangle with another object. 
+surface of two objects. In this context, we only need
+to consider a collision between a vehicle (a rectangle) and a line, a circle
+or a rectangle. This reduces to identifying the intersection of one or more
+of the four line segments of the rectangle with another object.
 
 We have computed the intersection of an unbound line with a circle or a
 line segment in section~\ref{sec-intersection-distance}. We generalize this to
@@ -478,24 +485,24 @@ the intersection of a segment by checking for the corresponding constraints.
 \subsection{Line Segment}
 \label{sec-collision-line-segment}
 
-Let $S_s=(\pbs,\vbs)$ and $S_l=(\pbl,\vbl)$ be two line segments. The 
+Let $S_s=(\pbs,\vbs)$ and $S_l=(\pbl,\vbl)$ be two line segments. The
 intersection between $S_s$ and $S_l$ exists if and only if there exist
 $\tau,\nu\in[0,1]$ such that\footnote{See also
 \eqref{eq-intersection-segment}}.
 \begin{eqnarray}
     \pbs + \nu \vbs = \pbl + \tau \vbl. \label{eq-collision-segment}
 \end{eqnarray}
-Hence the intersection exists if the solutions 
+Hence the intersection exists if the solutions
 $\tau$ of \eqref{eq-intersection-tau} and $\nu$ of \eqref{eq-intersection-nu}
 exist and are \textbf{both} between 0 and 1. A necessary condition for the
 solutions to exist is that the determinant of the matrix formed by the vectors
-$(\vbs,\vbl)$ is nonzero (see \eqref{eq-intersection-determinant}). 
+$(\vbs,\vbl)$ is nonzero (see \eqref{eq-intersection-determinant}).
 
 If the determinant of $(\vbs,\vbl)$ is zero, an intersection exists if $\vbl$
 and $\pbs-\pbl$ are collinear, which is true if and only if the
-determinant of the matrix $(\pbs-\pbl,\vbl)$ is zero 
-(see~\eqref{eq-dsigl-zero}). Any solution $\tau_p,\tau_v,\nu_p,\nu_v\in[0,1]$ 
-of the four following equations represents a point of intersection. 
+determinant of the matrix $(\pbs-\pbl,\vbl)$ is zero
+(see~\eqref{eq-dsigl-zero}). Any solution $\tau_p,\tau_v,\nu_p,\nu_v\in[0,1]$
+of the four following equations represents a point of intersection.
 \begin{eqnarray*}
     \tau_p &=& \vecdiv(\pbs - \pbl, \vbl)\\
     \tau_v &=& \vecdiv(\pbs - \pbl + \vbs, \vbl)\\
@@ -510,15 +517,13 @@ where $\vecdiv(\pb,\vb),\,\pb=(p_x,p_y),\,\vb=(v_x, v_y)$ is defined by
     \end{cases}
 \end{equation*}
 
-
-
 \subsection{Circle}
 \label{sec-collision-circle}
 
 Let $S_s=(\pbs,\vbs)$ be a line segment and $C=(\pbc,r)$ a circle. The points
-of intersection $\pbiotp,\pbiotm$ of an unbound line with the circle are 
+of intersection $\pbiotp,\pbiotm$ of an unbound line with the circle are
 given in section~\ref{sec-intersection-circle} as a function of $\xi_+,\xi_-$
-\eqref{eq-quadratic-solutions}. The points $\pbiotp$ and $\pbiotm$ are 
+\eqref{eq-quadratic-solutions}. The points $\pbiotp$ and $\pbiotm$ are
 intersections of $S_s$ with $C$ if $\xi_+\in[0,1]$ and $\xi_-\in[0,1]$,
 respectively.
 
@@ -621,7 +626,7 @@ A top speed of $6\mssq$ forward and $3\mssq$ backward may be defined.
 \label{sec-vehicle-movement}
 
 The vehicle is defined as a rectangle $(\pb, \vb, \mu)$ as described in
-section~\ref{sec-representation-rectangle}. 
+section~\ref{sec-representation-rectangle}.
 
 Turning the vehicle with the left or right button rotates the rectangle
 around the midpoint of the rear of the vehicle, as
