@@ -6,6 +6,13 @@
 #include "objects.h"
 #include "structs.h"
 
+enum side_t {
+  NONE = 0,
+  LEFT,
+  FRONT,
+  RIGHT,
+  REAR
+};
 // Returns number of intersections found
 uint8_t intersects(line_t sensor, obstacle obst);
 // Distance from origin to intersection points computed in intersection.cpp 
@@ -13,3 +20,5 @@ uint8_t intersects(line_t sensor, obstacle obst);
 float distance(Vec origin, uint8_t i); 
 // Point of intersection found (i = {0,1})
 Vec intersect_point(uint8_t i);
+// Collision of rectangle with an object
+side_t collides(rectangle_t rect, obstacle obst);

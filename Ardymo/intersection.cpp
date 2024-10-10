@@ -14,7 +14,7 @@ static Vec X[2]; // Intersection points if they exists
 uint8_t intersects_line(line_t sensor, line_t line);
 uint8_t intersects_circle(line_t sensor, circle_t circle);
 uint8_t intersects_rectangle(line_t sensor, rectangle_t rect);
-line_t to_line(Vec p, Vec v);
+line_t to_segment(Vec p, Vec v);
 
 /* det(v_0, v_1): Determinant of 2-dimensional matrix composed of two column
  * vectors v_0 and v_1.
@@ -81,9 +81,9 @@ uint8_t intersects_line(line_t sensor, line_t line) {
 
   det = -vs.det(vl); // = det(sensor.v, -line.v)
   // Are the lines parallel ?
-  if (abs(det) < epsilon) {
+  if (fabsf(det) < epsilon) {
     // Yes. Are (p_sigma - p_l) and v_l collinear?
-    if (abs(ps_minus_pl.det(vl)) > epsilon) {
+    if (fabsf(ps_minus_pl.det(vl)) > epsilon) {
       // No intersection.
       return 0;
     }
@@ -160,7 +160,7 @@ uint8_t intersects_circle(line_t sensor, circle_t circle) {
   }
 
   // xi_+ = (-b2 + sqrt(b4ac))/a
-  xi = (-b2 + sqrt(b4ac)) / a;
+  xi = (-b2 + sqrtf(b4ac)) / a;
   if (!sensor.seg || cmp01(xi)) {
     X[n++] = psig + vsig * xi;
   }
@@ -170,11 +170,16 @@ uint8_t intersects_circle(line_t sensor, circle_t circle) {
     return n;
   }
 
-  xi = (-b2 - sqrt(b4ac)) / a;
+  xi = (-b2 - sqrtf(b4ac)) / a;
   if (!sensor.seg || cmp01(xi)) {
     X[n++] = psig + vsig * xi;
   }
   return n;
+}
+
+inline line_t to_segment(Vec p, Vec v) {
+  line_t line = {p.as_point(), v.as_point(), 1};
+  return line;
 }
 
 uint8_t intersects_rectangle(line_t sensor, rectangle_t rect) {
@@ -182,7 +187,6 @@ uint8_t intersects_rectangle(line_t sensor, rectangle_t rect) {
   Vec p = Vec(rect.p);
   Vec side;
   uint8_t n_int; // Number of intersections
-  Vec intersection; // Temporary storage
   line_t rect_side = {rect.p, rect.v, 1};
 
   // Left side
@@ -196,7 +200,7 @@ uint8_t intersects_rectangle(line_t sensor, rectangle_t rect) {
   // Front
   side = v.rotate(90) * rect.mu;
   p += v;
-  rect_side = to_line(p, side);
+  rect_side = to_segment(p, side);
   n_int += intersects_line(sensor, rect_side);
   if (n_int == 2) {
     return 2;
@@ -204,7 +208,7 @@ uint8_t intersects_rectangle(line_t sensor, rectangle_t rect) {
 
   // Right side
   p += side;
-  rect_side = to_line(p, -v);
+  rect_side = to_segment(p, -v);
   n_int += intersects_line(sensor, rect_side);
   if (n_int == 2) {
     return 2;
@@ -212,13 +216,43 @@ uint8_t intersects_rectangle(line_t sensor, rectangle_t rect) {
 
   // Back
   p += -v;
-  rect_side = to_line(p, -side);
+  rect_side = to_segment(p, -side);
   n_int += intersects_line(sensor, rect_side);
 
   return n_int;
 }
 
-line_t to_line(Vec p, Vec v) {
-  line_t line = {p.as_point(), v.as_point(), 1};
-  return line;
+side_t collides(rectangle_t rect, obstacle obst) {
+  // Collision of a rectangle with an obstacle
+  // Returns the first side where the collision was detected
+  Vec v = Vec(rect.v);
+  Vec p = Vec(rect.p);
+  Vec front;
+  line_t rect_side;
+
+  // Detect a frontal collision first
+  front = v.rotate(90) * rect.mu;
+  rect_side = to_segment(p + v, front); // p+v = front-left
+  if (intersects(rect_side, obst))
+    return FRONT;
+
+  // Left side. p = rear-left
+  rect_side = {rect.p, rect.v, 1};
+  if (intersects(rect_side, obst))
+    return LEFT;
+
+
+  // Right side
+  p += v + front; // p = front-right
+  rect_side = to_segment(p, -v);
+  if (intersects(rect_side, obst))
+    return RIGHT;
+
+  // Rear
+  p += -v; // p = rear-right
+  rect_side = to_segment(p, -front);
+  if (intersects(rect_side, obst))
+    return REAR;
+
+  return NONE;
 }
