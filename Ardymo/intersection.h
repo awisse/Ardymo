@@ -11,7 +11,8 @@ enum side_t {
   LEFT,
   FRONT,
   RIGHT,
-  REAR
+  REAR,
+  NUM // Number of sides + 1 (for NONE)
 };
 // Returns number of intersections found
 uint8_t intersects(line_t sensor, obstacle obst);

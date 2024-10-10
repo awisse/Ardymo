@@ -1,3 +1,16 @@
 # Description
 
-Unit tests for the Vec class, the rotate function and the intersections.
+Unit tests for 
+
+1. The methods of the Vec class, 
+
+2. the rotate function in rotate.h,
+
+3. the intersections in intersection.h,
+
+4. the distance in intersection.h and
+
+5. the collisions in intersection.h.
+
+The graphical representation of the test cases is in *intersections.odg* and
+*collisions.odg*.

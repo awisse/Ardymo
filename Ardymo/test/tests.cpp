@@ -23,7 +23,7 @@ TEST (OmegaTest, Values) {
 class VecTest : public testing::Test {
   protected:
     void SetUp() override {
-      
+
       // class Vec
       a_ = Vec(39.0, 233.0);
       b_ = Vec(3.0, 4.0);
@@ -162,6 +162,65 @@ TEST_F (TestIntersections, Rectangle) {
   EXPECT_PRED2(eq, intersect_point(0), Vec(6.73856544, 7.31808710));
   EXPECT_PRED2(eq, intersect_point(1), Vec(5.52428246, 5.69904280));
 
+}
+
+// Tests of collision of rectangle with obstacle
+class TestCollisions : public testing::Test {
+  protected:
+
+    void SetUp(void) {
+      vehicle = {3.0, 6.0, 3.46410155, -2.0, 0.5};
+      // Segments
+      segment[NONE] = {LINE, .line={8.8, 3.45, -1.73205078, 1.0, 1}};
+      segment[LEFT] = {LINE, .line={4.0, 4.0, 1.0, 1.0, 1}};
+      segment[FRONT] = {LINE, .line={8.0, 4.1, -2.0, 0.0, 1}};
+      segment[RIGHT] = {LINE, .line={9.0, 7.74, -2.0, -2.0, 1}};
+      segment[REAR] = {LINE, .line={2.0, 8.0, 1.73205078, -1.0, 1}};
+      // Circles
+      circle[NONE] = {CIRCLE, .circle={8.0, 4.0, 1.0}};
+      circle[LEFT] = {CIRCLE, .circle={3.0, 3.9, 2.0}};
+      circle[FRONT] = {CIRCLE, .circle={7.0, 2.25, 2.0}};
+      circle[RIGHT] = {CIRCLE, .circle={7.5, 8.0, 2.0}};
+      circle[REAR] = {CIRCLE, .circle={4.9, 8.1, 1.0}};
+      // Rectangles
+      rectangle[NONE] = {RECTANGLE, .rectangle={2.5, 4.0, 2.0, 0.0, 0.5}};
+      rectangle[LEFT] = {RECTANGLE, .rectangle={3.0, 3.75, 1.0, 1.732, 0.5}};
+      rectangle[FRONT] = {RECTANGLE, .rectangle={9.4, 6.0, -2.0, 0.0, 0.5}};
+      rectangle[RIGHT] = {RECTANGLE, .rectangle={7.2, 8.0, -1.4142, -1.4142, 0.5}};
+      rectangle[REAR] = {RECTANGLE, .rectangle={3.2, 8.5, 0.9899, -0.9899, 0.714285714}};
+    }
+
+    rectangle_t vehicle;
+    obstacle segment[NUM];
+    obstacle circle[NUM];
+    obstacle rectangle[NUM];
+};
+
+TEST_F (TestCollisions, Segment) {
+
+  EXPECT_EQ(collides(vehicle, segment[NONE]), NONE);
+  EXPECT_EQ(collides(vehicle, segment[LEFT]), LEFT);
+  EXPECT_EQ(collides(vehicle, segment[FRONT]), FRONT);
+  EXPECT_EQ(collides(vehicle, segment[RIGHT]), RIGHT);
+  EXPECT_EQ(collides(vehicle, segment[REAR]), REAR);
+}
+
+TEST_F (TestCollisions, Circle) {
+
+  EXPECT_EQ(collides(vehicle, circle[NONE]), NONE);
+  EXPECT_EQ(collides(vehicle, circle[LEFT]), LEFT);
+  EXPECT_EQ(collides(vehicle, circle[FRONT]), FRONT);
+  EXPECT_EQ(collides(vehicle, circle[RIGHT]), RIGHT);
+  EXPECT_EQ(collides(vehicle, circle[REAR]), REAR);
+}
+
+TEST_F (TestCollisions, Rectangle) {
+
+  EXPECT_EQ(collides(vehicle, rectangle[NONE]), NONE);
+  EXPECT_EQ(collides(vehicle, rectangle[LEFT]), LEFT);
+  EXPECT_EQ(collides(vehicle, rectangle[FRONT]), FRONT);
+  EXPECT_EQ(collides(vehicle, rectangle[RIGHT]), RIGHT);
+  EXPECT_EQ(collides(vehicle, rectangle[REAR]), REAR);
 }
 
 // Tests of distance to intersection point

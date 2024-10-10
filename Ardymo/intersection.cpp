@@ -76,14 +76,14 @@ uint8_t intersects_line(line_t sensor, line_t line) {
   Vec ps = Vec(sensor.p);
   Vec vl = Vec(line.v);
   Vec vs = Vec(sensor.v);
-  Vec ps_minus_pl = ps - pl;
+  Vec pl_minus_ps = pl - ps;
   uint8_t n = 0;
 
   det = -vs.det(vl); // = det(sensor.v, -line.v)
   // Are the lines parallel ?
   if (fabsf(det) < epsilon) {
     // Yes. Are (p_sigma - p_l) and v_l collinear?
-    if (fabsf(ps_minus_pl.det(vl)) > epsilon) {
+    if (fabsf(pl_minus_ps.det(vl)) > epsilon) {
       // No intersection.
       return 0;
     }
@@ -98,39 +98,39 @@ uint8_t intersects_line(line_t sensor, line_t line) {
     // Yes, sensor is a segment. Check the four cases for intersections
     // intersection points are the endpoints of one segment which are
     // included in the other segment
-    tau = ps_minus_pl.div(vl);
+    tau = -pl_minus_ps.div(vl);
     if (cmp01(tau)) {
       X[n++] = ps;
     }
-    tau = (ps_minus_pl + vs).div(vl);
+    tau = (vs - pl_minus_ps).div(vl);
     if (cmp01(tau)) {
       X[n++] = ps + vs;
       if (n == 2) return 2;
     }
-    nu = -ps_minus_pl.div(vs);
+    nu = pl_minus_ps.div(vs);
     if (cmp01(nu)) {
       X[n++] = pl;
       if (n == 2) return 2;
     }
-    nu = (vl-ps_minus_pl).div(vs);
+    nu = (vl+pl_minus_ps).div(vs);
     if (cmp01(nu)) {
       X[n++] = pl + vl;
     }
     return n;
   }
 
-  // ps_minus_pl = -(p_l - p_sigma)
-  tau = (sensor.v.y * ps_minus_pl.x - sensor.v.x * ps_minus_pl.y) / det;
+  // pl_minus_ps = (p_l - p_sigma)
+  tau = (sensor.v.x * pl_minus_ps.y - sensor.v.y * pl_minus_ps.x) / det;
 
-  // If this is a segment, the intersection must be within the segment.
+  // If line is a segment, the intersection must be within the segment.
   if (line.seg && ((tau < 0) || (tau > 1))) {
     return 0;
   }
 
   // Is `sensor` a segment?
   if (sensor.seg == 1) {
-    // Compute nu
-    nu = (line.v.y * ps_minus_pl.x - line.v.y * ps_minus_pl.y) / det;
+    // pl_minus_ps = -(p_sigma - p_l)
+    nu = (line.v.x * pl_minus_ps.y - line.v.y * pl_minus_ps.x) / det;
     if ((nu < 0) || (nu > 1)) {
       return 0;
     }
@@ -227,32 +227,28 @@ side_t collides(rectangle_t rect, obstacle obst) {
   // Returns the first side where the collision was detected
   Vec v = Vec(rect.v);
   Vec p = Vec(rect.p);
-  Vec front;
+  Vec front = v.rotate(90) * rect.mu;
   line_t rect_side;
 
   // Detect a frontal collision first
-  front = v.rotate(90) * rect.mu;
   rect_side = to_segment(p + v, front); // p+v = front-left
   if (intersects(rect_side, obst))
     return FRONT;
+
+  // Then a rear collision
+  rect_side = to_segment(p, front); // p+front = rear-right
+  if (intersects(rect_side, obst))
+    return REAR;
 
   // Left side. p = rear-left
   rect_side = {rect.p, rect.v, 1};
   if (intersects(rect_side, obst))
     return LEFT;
 
-
   // Right side
-  p += v + front; // p = front-right
-  rect_side = to_segment(p, -v);
+  rect_side = to_segment(p + front, v);
   if (intersects(rect_side, obst))
     return RIGHT;
-
-  // Rear
-  p += -v; // p = rear-right
-  rect_side = to_segment(p, -front);
-  if (intersects(rect_side, obst))
-    return REAR;
 
   return NONE;
 }
