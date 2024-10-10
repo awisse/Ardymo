@@ -1,4 +1,4 @@
-TARGET := rotate
+TARGET := vecalg
 VPATH := ../..
 CXXFLAGS = -g
 ARDYMOSRC := objects.cpp rotate.cpp

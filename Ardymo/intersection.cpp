@@ -48,8 +48,20 @@ uint8_t intersects(line_t sensor, obstacle obst) {
   }
 }
 
-float distance(Vec origin, uint8_t i) {
-  return sqrt(origin * X[i]);
+// Distance is
+float distance(Vec origin, uint8_t n) {
+
+  float d1 = origin.distance(X[0]), d2;
+
+  if (n == 1) {
+    return  d1;
+  } else if (n > 1) {
+    d2 = origin.distance(X[1]);
+    return d1 < d2 ? d1 : d2;
+  }
+
+  // n = 0: Distance to nothing
+  return NAN;
 }
 
 inline bool cmp01(float x) {

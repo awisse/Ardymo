@@ -35,11 +35,13 @@ class Vec {
     float operator*(const Vec&); // Inner product
     bool operator==(const Vec&);
 
-    point as_point(void); // Transform into simple `point`
     float div(const Vec&); // Division of collinear vectors.
     float det(const Vec&); // Determinant of the matrix (this, other)
     float sq(void);     // ∥v∥^2
+    float distance(const Vec&); // ∥v∥
 
-    Vec rotate(const int16_t alpha);
+    Vec rotate(const int16_t alpha); // Rotate clockwise by alpha
+
+    point as_point(void); // Transform into a struct `point`
 };
 

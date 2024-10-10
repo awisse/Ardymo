@@ -15,6 +15,3 @@ build
 *.synctex.gz
 *.png
 .~*
-intersections.odg
-rotate
-tests

@@ -49,14 +49,18 @@ TEST_F (VecTest, Operators) {
   EXPECT_PRED2(eq, d_, Vec(10.0, 15.001));
   EXPECT_PRED2(eq, a_ + b_ + c_ + d_, Vec(35.0, 259.001));
   EXPECT_PRED2(eq, a_ * 3.0, Vec(126.0, 711.0));
-  EXPECT_EQ(b_ * c_, -48.0);
-  EXPECT_EQ(b_ * a_, 1074.0);
+  EXPECT_FLOAT_EQ(b_ * c_, -48.0);
+  EXPECT_FLOAT_EQ(b_ * a_, 1074.0);
 }
 
 TEST_F (VecTest, Functions) {
   // Test all member functions of the Vec class
-  EXPECT_EQ(c_.sq(), 409.0);
+  EXPECT_FLOAT_EQ(c_.sq(), 409.0);
   EXPECT_PRED2(eq, b_.rotate(130), Vec(-4.99254036, -0.27301693));
+  EXPECT_FLOAT_EQ(b_.det(c_), 89.0); // Determinant
+  EXPECT_TRUE( isnan(a_.div(b_))); // Divison of non collinear vectors
+  EXPECT_FLOAT_EQ(Vec(20.0, 30.0).div(Vec(10.0, 15.0000001)), 2.0);
+  EXPECT_FLOAT_EQ(b_.distance(c_), 23.021728866);
 }
 
 // Test values for intersections
@@ -135,6 +139,10 @@ TEST_F (TestIntersections, Circles) {
   EXPECT_EQ(intersects(segment, circ), 1);
   EXPECT_PRED2(eq, intersect_point(0), Vec(2.76076937, 2.01435924));
 
+  EXPECT_EQ(intersects(sensor, circ), 2);
+  EXPECT_PRED2(eq, intersect_point(1), Vec(2.76076937, 2.01435924));
+  EXPECT_PRED2(eq, intersect_point(0), Vec(4.83923054,4.78564072));
+
   EXPECT_EQ(intersects(sensor, bigcirc), 2);
   EXPECT_PRED2(eq, intersect_point(0), Vec(6.80000019, 7.40000010));
   EXPECT_PRED2(eq, intersect_point(1), Vec(3.20000005, 2.59999990));
@@ -154,5 +162,18 @@ TEST_F (TestIntersections, Rectangle) {
   EXPECT_PRED2(eq, intersect_point(0), Vec(6.73856544, 7.31808710));
   EXPECT_PRED2(eq, intersect_point(1), Vec(5.52428246, 5.69904280));
 
+}
+
+// Tests of distance to intersection point
+TEST_F (TestIntersections, Distance) {
+
+  uint8_t n;
+
+  EXPECT_TRUE(isnan(distance(Vec(1.0, 1.0), 0)));
+
+  n = intersects(sensor, circ);
+  EXPECT_FLOAT_EQ(distance(Vec(sensor.p), n), 0.01794901);
+  n = intersects(sensor, rect2);
+  EXPECT_FLOAT_EQ(distance(Vec(sensor.p), n), 4.62380362);
 }
 

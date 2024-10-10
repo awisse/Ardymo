@@ -60,15 +60,20 @@ float Vec::det(const Vec& p) {
 }
 
 float Vec::div(const Vec& p) {
-  if (abs(det(p)) > epsilon) {
+  if (fabsf(det(p)) > epsilon) {
     // this and p are not collinear. Division doesn't make sense
     return 0.0 / 0.0; // NaN
   }
-  return (abs(x)>abs(y)) ? x / p.x : y / p.y;
+  return (fabsf(x)>fabsf(y)) ? x / p.x : y / p.y;
 }
 
 float Vec::sq(void) {
   return x*x + y*y;
+}
+
+float Vec::distance(const Vec& p) {
+  /* return sqrtf((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y)); */
+  return sqrtf((*this - p).sq());
 }
 
 /*************** Rotation matrix (clockwise)  *******************
