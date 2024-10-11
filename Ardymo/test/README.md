@@ -14,3 +14,5 @@ Unit tests for
 
 The graphical representation of the test cases is in *intersections.odg* and
 *collisions.odg*.
+
+Using Google Test for C++.

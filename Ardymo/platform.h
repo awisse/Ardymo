@@ -1,6 +1,5 @@
 #pragma once
 
-#include <stddef.h>
 #include <stdint.h>
 #include "defines.h"
 
@@ -35,7 +34,7 @@ public:
   static void display(bool clear);
 
   // Timer
-  static unsigned long millis();
+  static uint32_t millis();
 
   // Text Functions
   static void setTextRawMode(bool raw);

@@ -6,14 +6,6 @@
 #include "objects.h"
 #include "structs.h"
 
-enum side_t {
-  NONE = 0,
-  LEFT,
-  FRONT,
-  RIGHT,
-  REAR,
-  NUM // Number of sides + 1 (for NONE)
-};
 // Returns number of intersections found
 uint8_t intersects(line_t sensor, obstacle obst);
 // Distance from origin to intersection points computed in intersection.cpp 

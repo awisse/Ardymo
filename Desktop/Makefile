@@ -7,11 +7,6 @@ SOURCES := $(wildcard $(VPATH)/*.cpp *.cpp)
 OBJECTS := $(SOURCES:%.cpp=%.o)
 INCLUDES := $(wildcard $(VPATH)/*.h *.h)
 
-# show:
-# 	@echo SOURCES $(SOURCES)
-# 	@echo OBJECTS $(OBJECTS)
-# 	@echo INCLUDES $(INCLUDES)
-
 all: $(TARGET)
 
 %.o : %.cpp $(INCLUDES)
@@ -24,4 +19,4 @@ $(TARGET) : $(OBJECTS)
 .PHONY: clean
 clean:
 	$(RM) $(TARGET)
-	$(RM) $(OBJECTS)
+	$(RM) $(OBJECTS) Font5x7.o

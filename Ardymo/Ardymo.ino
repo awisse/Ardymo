@@ -2,13 +2,11 @@
  *
  * Drawing and Rotating an arrow
  *
- *
- *
  */
 
 #include <Arduboy2.h>
 #include <stdint.h>
-#include "model.h"
+#include "game.h"
 #include "defines.h"
 #include "platform.h"
 
@@ -31,8 +29,9 @@ void setup() {
 
 #ifdef _DEBUG
   Serial.println(9600, HEX);
-  Serial.println(3.14159, 10);
 #endif
+
+  InitGame();
 }
 
 void loop() {
@@ -40,10 +39,8 @@ void loop() {
   while (!arduboy.nextFrame()) {
   };
 
-  step_model(arduboy.frameCount);
-
-  Platform::display(false);
-
+  if (StepGame())
+    Platform::display(false);
 }
 
 /******* Begin Platform Class Function Implementations ********/
@@ -104,6 +101,11 @@ static void Platform::clear()
 static void Platform::display(bool clear)
 {
   arduboy.display(clear);
+}
+
+/************* Timer ******************************************************/
+uint32_t Platform::millis() {
+  return millis();
 }
 
 /************* Text Functions *********************************************/

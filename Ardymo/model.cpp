@@ -1,41 +1,48 @@
 // vim: ts=2:sts=2:expandtab
 
 #include "model.h"
-#include "platform.h"
-#include "rotate.h"
 #include "structs.h"
-#include "shapes.h"
-#include "defines.h"
+#include "globals.h"
 
-void initialize() {}
+// For printing to Serial when debugging
+#ifdef DEBUG_
+#include "platform.h"
+#endif
 
-void step_model(uint16_t frame) {
+void CheckFront(void);
+void CheckRear(void);
+void CheckLeft(void);
+void CheckRight(void);
+void CheckTarget(void);
 
-  static uint16_t alpha = 0;
-  Vec start(-30, 0), end(30, 0), offset(64, 32);
-  Vec rotated, start_rotated, end_rotated;
-  int i;
+void MoveVehicle() {
+  // Move vehicle by speed in its direction
+}
 
-  /* Platform::pollButtons(); */
-  if (Platform::pressed(INPUT_RIGHT)) {
-    alpha = alpha ? alpha - 3 : 357;
-  } else if (Platform::pressed(INPUT_LEFT)) {
-    alpha = (alpha + 3) % 360;
-  } else if (rotated.x) { // Run at least once
-    return;
-  }
+/* Code for checking distances to all obstacles goes here. */
+void CheckSensors() {
 
-  Platform::clear();
+  // Populate the sensor_values structure
+  CheckFront();
+  CheckRear();
+  CheckLeft();
+  CheckRight();
+  CheckTarget();
+}
 
-  Platform::setCursor(0, 0);
-  Platform::print("alpha: ");
-  Platform::print(alpha);
 
-  start_rotated = start.rotate(alpha);
-  start_rotated = offset + start_rotated;
-  end_rotated = end.rotate(alpha);
-  end_rotated = offset + end_rotated;
-  Platform::drawLine(start_rotated.x, start_rotated.y,
-      end_rotated.x, end_rotated.y, COLOUR_WHITE);
+void CheckFront() {
+}
+
+void CheckRear() {
+}
+
+void CheckLeft() {
+}
+
+void CheckRight() {
+}
+
+void CheckTarget() {
 }
 

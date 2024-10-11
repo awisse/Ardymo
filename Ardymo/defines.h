@@ -33,7 +33,6 @@ typedef int int_;
 #endif
 
 #define FRAME_DURATION 50
-#define PI 3.141592653589793
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -44,10 +43,6 @@ typedef int int_;
 #define OCT 8
 #define BINARY 2
 
-// Colours
-#define COLOUR_WHITE 1
-#define COLOUR_BLACK 0
-
 // Buttons
 #define INPUT_LEFT 32u
 #define INPUT_RIGHT 64u
@@ -56,3 +51,9 @@ typedef int int_;
 #define INPUT_A 8u
 #define INPUT_B 4u
 
+// Colours
+#define COLOUR_WHITE 1
+#define COLOUR_BLACK 0
+
+// Time
+#define LONG_PRESS 2000

@@ -6,9 +6,8 @@
 #include <iostream>
 #include "EEPROM.h"
 #include "../Ardymo/defines.h"
-#include "../Ardymo/structs.h"
+#include "../Ardymo/game.h"
 #include "../Ardymo/platform.h"
-#include "../Ardymo/model.h"
 #include "Font5x7.h"
 
 #define ZOOM_SCALE 4
@@ -34,8 +33,10 @@ size_t write(const char str[]); // Write a string at the cursor.
 size_t printNumber(uint32_t n, int base);
 size_t printFloat(float x, int decimals);
 void formatFloat(char* strfloat, float x, int decimals);
-point cursor;
 uint8_t previousButtonState, currentButtonState;
+struct {
+  int16_t x, y;
+} cursor;
 
 // Helper
 void SetColour(uint8_t colour) {
@@ -260,10 +261,10 @@ void Platform::display(bool clear_screen) {
   }
 }
 
-// Timer
-unsigned long Platform::millis() {
+/******************** Timer *********************************************/
+uint32_t Platform::millis() {
   struct timespec ts;
-  unsigned long ms;
+  uint32_t ms;
 
   if (clock_gettime(CLOCK_REALTIME, &ts)) {
     std::cerr << "Can't get clock_gettime" << "\n";
@@ -497,21 +498,21 @@ void Initialize() {
     std::cerr << "Can't get clock_gettime" << "\n";
   }
   StartTime = 1000 * ts.tv_sec + ts.tv_nsec / 1000000;
-  // Initialize game
-  initialize();
+  // Initialize Arduboy Game in game.h
+  InitGame();
   // Initialize random number generator.
   srandom(StartTime);
 }
 
 int main(int argc, char* argv[])
 {
-  uint16_t frameCount = 0;
   zoom_scale = ZOOM_SCALE;
   if (argc == 2) {
     zoom_scale = atoi(argv[1]);
     if ((zoom_scale < 1) || (zoom_scale > 8)) {
       zoom_scale = ZOOM_SCALE;
-      std::cerr << "Zoom must be between 1 and 8" << "\n";
+      std::cerr << "Zoom must be between 1 and 8. Using "\
+        << zoom_scale <<"\n";
     }
   }
 
@@ -603,7 +604,7 @@ int main(int argc, char* argv[])
         }
       }
 
-    step_model(frameCount);
+    StepGame();
 
     /* if (!eeprom.isSaved()) { */
     /*   eeprom.save(); */

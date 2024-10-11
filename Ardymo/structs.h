@@ -1,6 +1,6 @@
 /* vim: ft=cpp:ts=2:sts=2:expandtab
  *
- * Struct and classes used in program
+ * Structs and classes used for the intersection algorithm
  */
 #pragma once
 #include <stdint.h>
@@ -17,6 +17,15 @@ enum object_t {
   OBSTACLE,
   TARGET
 } ;
+
+enum side_t {
+  NONE = 0,
+  LEFT,
+  FRONT,
+  RIGHT,
+  REAR,
+  NUM // Number of sides + 1 (for NONE)
+};
 
 // We must define our obstacles as a union of structs instead of a class
 // because the obstacles will be saved in PROGMEM.

@@ -3,7 +3,6 @@
  * Business logic
  */
 #pragma once
-#include <stdint.h>
 
-void initialize();
-void step_model(uint16_t frame);
+void MoveVehicle(void); // Move vehicle by its speed
+void CheckSensors(void);
