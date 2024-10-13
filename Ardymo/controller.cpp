@@ -28,17 +28,24 @@ void Dispatch(Event e) {
 
     case Left:
       TurnLeft();
+      break;
     case Right:
       TurnRight();
+      break;
     case Up:
       AccelerateForward();
+      break;
     case Down:
       AccelerateBackward();
-      break;
+    default:
+#ifdef _DEBUG
+      Platform::DebugPrint("default in Dispatch");
+      Platform::DebugPrintln();
+#endif
   }
 }
 
-bool JustPressed(uint8_t buttons) {
+__attribute__ ((noinline)) bool JustPressed(uint8_t buttons) {
   return ((buttons & currentButtons) && !(buttons & previousButtons));
 }
 
@@ -46,7 +53,7 @@ bool JustReleased(uint8_t buttons) {
   return (!(buttons & currentButtons) && (buttons & previousButtons));
 }
 
-void HandleInput() {
+__attribute__ ((noinline)) void HandleInput() {
 
   static uint32_t startAPress;
   static bool AButtonDown;

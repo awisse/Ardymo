@@ -15,7 +15,7 @@
 SDL_Window* AppWindow = nullptr;
 SDL_Renderer* AppRenderer = nullptr;
 SDL_Surface* AppSurface = nullptr;
-uint8_t sBuffer[SCREEN_WIDTH * SCREEN_HEIGHT / 8];
+uint8_t sBuffer[k_screen_width * k_screen_height / 8];
 EEPROM eeprom;
 unsigned long StartTime;
 int zoom_scale;
@@ -82,10 +82,10 @@ bool Platform::justReleased(uint8_t button) {
 }
 
 // Drawing
-void Platform::drawPixel(uint8_t x, uint8_t y, uint8_t colour) {
+void Platform::drawPixel(int16_t x, int16_t y, uint8_t colour) {
 
   // If outside of screen nothing to do
-  if ((x<0) || (x>=SCREEN_WIDTH) || (y<0) || (y>=SCREEN_HEIGHT)) {
+  if ((x<0) || (x>=k_screen_width) || (y<0) || (y>=k_screen_height)) {
     return;
   }
   SetColour(colour);
@@ -226,11 +226,19 @@ void Platform::fillCircle(int16_t x0, int16_t y0, uint8_t r,
 
 void Platform::fillScreen(uint8_t colour) {
 
+  int i;
+
+  for (i=0; i < (k_screen_width * k_screen_height) >> 3; i++) {
+    sBuffer[i] = (colour == COLOUR_WHITE) ? 0xFF : 0x00;
+  }
+
+  // Set screen buffer to colour, too
   SetColour(colour);
 
   if (SDL_RenderClear(AppRenderer)) {
     std::cout << SDL_GetError() << "\n";
   }
+
 }
 
 void Platform::clear() {
@@ -239,24 +247,19 @@ void Platform::clear() {
 
 // Drawing desktop
 void Platform::display(bool clear_screen) {
-  // Transpose sBuffer to screen. Faster than drawPixel one by one
-  int i, bit;
-  SDL_Rect sq;
+  // Transpose sBuffer to screen.
+  uint16_t i, bit;
+  uint8_t x, y, colour;
 
   if (clear_screen) clear();
 
-  sq.w = sq.h = zoom_scale;
-
-  for (i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT / 8; i++) {
+  for (i = 0; i < k_screen_width * k_screen_height / 8; i++) {
+    x = i % k_screen_width;
     // 1 byte = 8 vertical pixels
     for (bit=0; bit<8; bit++) {
-      if ((sBuffer[i] >> bit) & 0x01) {
-        sq.y = zoom_scale * (i / SCREEN_WIDTH * 8 + 7 - bit);
-        sq.x = zoom_scale * (i % SCREEN_WIDTH);
-        if (SDL_FillRect(AppSurface, &sq, 0xFFFFFFFF)) {
-          std::cerr << SDL_GetError() << "\n";
-        }
-      }
+      y = i / k_screen_width * 8 + 7 - bit;
+      colour = ((sBuffer[i] >> bit) & 0x01) ? COLOUR_WHITE : COLOUR_BLACK;
+      drawPixel(x, y, colour);
     }
   }
 }
@@ -435,10 +438,12 @@ void Platform::DebugPrint(double value, uint8_t decimals) {
 
 void Platform::DebugPrint(const char* text) {
   std::cout << text;
+  std::cout.flush();
 }
 
 void Platform::DebugPrintln(void) {
   std::cout << "\n";
+  std::cout.flush();
 }
 
 #endif
@@ -518,9 +523,9 @@ int main(int argc, char* argv[])
 
   SDL_Init(SDL_INIT_VIDEO);
 
-  SDL_CreateWindowAndRenderer(SCREEN_WIDTH * zoom_scale, SCREEN_HEIGHT * zoom_scale,
+  SDL_CreateWindowAndRenderer(k_screen_width * zoom_scale, k_screen_height * zoom_scale,
       SDL_WINDOW_RESIZABLE, &AppWindow, &AppRenderer);
-  SDL_RenderSetLogicalSize(AppRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+  SDL_RenderSetLogicalSize(AppRenderer, k_screen_width, k_screen_height);
   AppSurface = SDL_GetWindowSurface(AppWindow);
 
   Initialize();
@@ -605,15 +610,15 @@ int main(int argc, char* argv[])
       }
 
     StepGame();
+    SDL_RenderPresent(AppRenderer);
 
     /* if (!eeprom.isSaved()) { */
     /*   eeprom.save(); */
     /* } */
 
-    SDL_RenderPresent(AppRenderer);
 
     // FrameRate
-    SDL_Delay(FRAME_DURATION);
+    SDL_Delay(kFrameDuration);
 
   }
 
@@ -654,7 +659,7 @@ size_t write(const char str[]) { // Write a string at the cursor.
   int char_pos = 0, t = 0;
   char c;
 
-  while ((c=str[char_pos++]) && (cursor.x < SCREEN_WIDTH)) {
+  while ((c=str[char_pos++]) && (cursor.x < k_screen_width)) {
     t += write(c);
     cursor.x += FONT_WIDTH + 1;
   }

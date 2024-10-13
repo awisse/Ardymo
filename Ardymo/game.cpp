@@ -23,22 +23,26 @@ void InitGame() {
 
   state = startup;
   Platform::clear();
+  state = running;
+  modified = true;
+
 }
 
-bool StepGame() {
+void StepGame() {
 
   HandleInput();
   MoveVehicle();
   CheckSensors();
 
+//  Platform::println("StepGame");
+  Platform::DebugPrint("StepGame\n");
   if (modified) {
     if (state == running) {
       DrawScreen();
     } 
     modified = false;
-    return true; // Update Screen
   }
-  return false;
+  Platform::display();
 }
 
 void Restart() {

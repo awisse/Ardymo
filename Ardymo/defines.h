@@ -1,4 +1,4 @@
-/* vim: ts=2:sts=2:expandtab
+/* vim: ts=2:sts=2:expandtab:ft=cpp
 
  * Constants
  *
@@ -32,12 +32,12 @@ typedef long long_;
 typedef int int_;
 #endif
 
-#define FRAME_DURATION 50
+const uint16_t kFrameDuration = 500;
 
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-#define BOARD_WIDTH 16 * SCREEN_WIDTH
-#define BOARD_HEIGHT 16 * SCREEN_HEIGHT
+const int16_t k_screen_width = 128;
+const int16_t k_screen_height = 64;
+const int16_t k_board_width = 16 * k_screen_width;
+const int16_t k_board_height = 16 * k_screen_height;
 #define DEC 10
 #define HEX 16
 #define OCT 8

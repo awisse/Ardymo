@@ -1,7 +1,7 @@
 #pragma once
 
 void InitGame();
-bool StepGame(); // Return true if screen must be updated
+void StepGame(); // Return true if screen must be updated
 void Restart();
 void Terminate();
 void Menu();

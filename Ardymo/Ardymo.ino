@@ -20,41 +20,41 @@ void setup() {
   Serial.begin(9600);
 #endif
 
+  // Wait for button to be pressed before beginning
   while (!arduboy.pressed(A_BUTTON)) {
     arduboy.idle();
   }
 
-  arduboy.clear();
-  arduboy.setFrameDuration(FRAME_DURATION);
-
-#ifdef _DEBUG
-  Serial.println(9600, HEX);
-#endif
-
+  arduboy.setFrameDuration(kFrameDuration);
   InitGame();
 }
 
 void loop() {
 
-  while (!arduboy.nextFrame()) {
-  };
-
-  if (StepGame())
-    Platform::display(false);
+  if (arduboy.nextFrame()) {
+    StepGame();
+  }
 }
 
 /******* Begin Platform Class Function Implementations ********/
 
+// General
+uint8_t* Platform::getBuffer() {
+  return arduboy.getBuffer();
+}
+
 /******* Buttons **********************************************/
 uint8_t Platform::buttonsState() {
-  return arduboy.buttonsState();
+  uint8_t buttons = arduboy.buttonsState();
+  return buttons;
 }
+
 bool Platform::pressed(uint8_t buttons) {
   return arduboy.pressed(buttons);
 }
 
 /******* Drawing **********************************************/
-static void Platform::drawPixel(uint8_t x, uint8_t y, uint8_t colour) {
+static void Platform::drawPixel(int16_t x, int16_t y, uint8_t colour) {
   arduboy.drawPixel(x, y, colour);
 }
 

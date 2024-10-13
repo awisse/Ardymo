@@ -17,7 +17,7 @@ public:
   static bool justReleased(uint8_t button);
 
   // Drawing Arduboy
-  static void drawPixel(uint8_t x, uint8_t y, uint8_t colour=COLOUR_WHITE);
+  static void drawPixel(int16_t x, int16_t y, uint8_t colour=COLOUR_WHITE);
   static void drawBitmap(int16_t x, int16_t y, const uint8_t* bitmap,
     uint8_t w, uint8_t h, uint8_t colour=COLOUR_WHITE);
   static void drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
@@ -31,7 +31,7 @@ public:
     uint8_t colour=COLOUR_WHITE);
   static void fillScreen(uint8_t colour);
   static void clear();
-  static void display(bool clear);
+  static void display(bool clear=false);
 
   // Timer
   static uint32_t millis();
