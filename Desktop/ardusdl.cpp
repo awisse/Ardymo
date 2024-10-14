@@ -265,7 +265,7 @@ void Platform::display(bool clear_screen) {
 }
 
 /******************** Timer *********************************************/
-uint32_t Platform::millis() {
+uint32_t Platform::Millis() {
   struct timespec ts;
   uint32_t ms;
 

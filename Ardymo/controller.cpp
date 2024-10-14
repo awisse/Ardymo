@@ -67,35 +67,35 @@ __attribute__ ((noinline)) void HandleInput() {
 
   if (JustPressed(INPUT_A)) {
     AButtonDown = true;
-    startAPress = Platform::millis();
+    startAPress = Platform::Millis();
     Dispatch(Short_A);
   }
 
   if (JustReleased(INPUT_A)) {
     AButtonDown = false;
-    startAPress = Platform::millis();
+    startAPress = Platform::Millis();
   }
 
-  if (AButtonDown && (Platform::millis() - startAPress) > LONG_PRESS) {
-    startAPress = Platform::millis();
+  if (AButtonDown && (Platform::Millis() - startAPress) > LONG_PRESS) {
+    startAPress = Platform::Millis();
     Dispatch(Long_A);
   }
 
   // These events available for now:
   if (JustPressed(INPUT_B)) {
     BButtonDown = true;
-    startBPress = Platform::millis();
+    startBPress = Platform::Millis();
     Dispatch(Short_B);
   }
 
   if (JustReleased(INPUT_B)) {
     BButtonDown = false;
-    startBPress = Platform::millis();
+    startBPress = Platform::Millis();
     BButtonLongPressCycles = 0;
   }
 
-  if (BButtonDown && (Platform::millis() - startBPress) > LONG_PRESS) {
-    startBPress = Platform::millis();
+  if (BButtonDown && (Platform::Millis() - startBPress) > LONG_PRESS) {
+    startBPress = Platform::Millis();
     BButtonLongPressCycles++;
     Dispatch(Long_B);
   }

@@ -34,7 +34,7 @@ public:
   static void display(bool clear=false);
 
   // Timer
-  static uint32_t millis();
+  static uint32_t Millis();
 
   // Text Functions
   static void setTextRawMode(bool raw);
