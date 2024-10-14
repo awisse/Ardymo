@@ -34,10 +34,10 @@ typedef int int_;
 
 const uint16_t kFrameDuration = 500;
 
-const int16_t k_screen_width = 128;
-const int16_t k_screen_height = 64;
-const int16_t k_board_width = 16 * k_screen_width;
-const int16_t k_board_height = 16 * k_screen_height;
+const int16_t kScreenWidth = 128;
+const int16_t kScreenHeight = 64;
+const int16_t kBoardWidth = 16 * kScreenWidth;
+const int16_t kBoardHeight = 16 * kScreenHeight;
 #define DEC 10
 #define HEX 16
 #define OCT 8

@@ -46,7 +46,7 @@ void Dispatch(Event e) {
   }
 }
 
-__attribute__ ((noinline)) bool JustPressed(uint8_t buttons) {
+bool JustPressed(uint8_t buttons) {
   return ((buttons & currentButtons) && !(buttons & previousButtons));
 }
 
@@ -54,7 +54,7 @@ bool JustReleased(uint8_t buttons) {
   return (!(buttons & currentButtons) && (buttons & previousButtons));
 }
 
-__attribute__ ((noinline)) void HandleInput() {
+void HandleInput() {
 
   static uint32_t startAPress;
   static bool AButtonDown;
@@ -67,35 +67,35 @@ __attribute__ ((noinline)) void HandleInput() {
 
   if (JustPressed(INPUT_A)) {
     AButtonDown = true;
-    startAPress = Platform::Millis();
+    startAPress = Platform::millis();
     Dispatch(Short_A);
   }
 
   if (JustReleased(INPUT_A)) {
     AButtonDown = false;
-    startAPress = Platform::Millis();
+    startAPress = Platform::millis();
   }
 
-  if (AButtonDown && (Platform::Millis() - startAPress) > LONG_PRESS) {
-    startAPress = Platform::Millis();
+  if (AButtonDown && (Platform::millis() - startAPress) > LONG_PRESS) {
+    startAPress = Platform::millis();
     Dispatch(Long_A);
   }
 
   // These events available for now:
   if (JustPressed(INPUT_B)) {
     BButtonDown = true;
-    startBPress = Platform::Millis();
+    startBPress = Platform::millis();
     Dispatch(Short_B);
   }
 
   if (JustReleased(INPUT_B)) {
     BButtonDown = false;
-    startBPress = Platform::Millis();
+    startBPress = Platform::millis();
     BButtonLongPressCycles = 0;
   }
 
-  if (BButtonDown && (Platform::Millis() - startBPress) > LONG_PRESS) {
-    startBPress = Platform::Millis();
+  if (BButtonDown && (Platform::millis() - startBPress) > LONG_PRESS) {
+    startBPress = Platform::millis();
     BButtonLongPressCycles++;
     Dispatch(Long_B);
   }

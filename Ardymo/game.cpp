@@ -31,20 +31,16 @@ void InitGame() {
 void StepGame() {
 
   HandleInput();
-//  MoveVehicle();
-//  CheckSensors();
+  MoveVehicle();
+  CheckSensors();
 
-//  Platform::println("StepGame");
-#ifdef _DEBUG
-  Platform::DebugPrint("StepGame\n");
-#endif
   if (modified) {
     if (state == running) {
       DrawScreen();
     } 
+    Platform::display();
     modified = false;
   }
-  Platform::display();
 }
 
 void Restart() {
@@ -72,14 +68,14 @@ void Menu() {
 
 void GameOver() {
 
-  uint16_t elapsed = (Platform::Millis() - start) / 1000;
+  uint16_t elapsed = (Platform::millis() - start) / 1000;
   state = over;
 }
 
 void Success () {
   // Show result.
   uint8_t stars;
-  uint16_t elapsed = (Platform::Millis() - start) / 1000;
+  uint16_t elapsed = (Platform::millis() - start) / 1000;
 
 }
 

@@ -33,7 +33,6 @@ void loop() {
 
   if (arduboy.nextFrame()) {
     StepGame();
-    Serial.println(millis());
   }
 }
 
@@ -104,9 +103,36 @@ void Platform::display(bool clear)
   arduboy.display(clear);
 }
 
+/************* Drawing Optimized ******************************************/
+
+void Platform::EraseRectRow(uint8_t x, uint8_t y, uint8_t width, uint8_t height) {
+  // There are 8 rows of bytes and 128 columns of bytes on the screen. Write
+  // zeros directly to the screen buffer. 
+  // The y coordinate is translated to the byte row that contains it. The whole
+  // byte row is erased (for speed).
+  // row: Which row {0,...,7} to start with, rows: {1,...8} how many rows
+  // TODO: For possible optimization, transform this into assembler.
+  uint8_t* screen = Platform::getBuffer();
+  uint16_t i; // Index in screen buffer
+  uint16_t row = y >> 3; // Byte row on screen
+  uint16_t last_row = (y + height) >> 3; // Byte row on screen
+
+  // Don't write outside of the buffer. These are uint's. No sign to check.
+  if ((x > 127) || (row > 7))
+    return;
+  width = (width > 128 - x) ? 128 - x : width;
+  last_row = (last_row > 7) ? 7 : last_row;
+
+  for (; row <= last_row; row++) {
+    for (i = (row << 7) | x; i < ((row << 7) | (x + width)); i++) {
+      screen[i] = 0;
+    }
+  }
+}
+
 /************* Timer ******************************************************/
-__attribute__ ((noinline)) unsigned long Platform::Millis() {
-  return millis();
+unsigned long Platform::millis() {
+  return ::millis();
 }
 
 /************* Text Functions *********************************************/

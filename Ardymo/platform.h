@@ -33,8 +33,11 @@ public:
   static void clear();
   static void display(bool clear=false);
 
+  // Drawing optimized
+  static void EraseRectRow(uint8_t x, uint8_t y, uint8_t width, uint8_t height);
+
   // Timer
-  static uint32_t Millis();
+  static uint32_t millis();
 
   // Text Functions
   static void setTextRawMode(bool raw);

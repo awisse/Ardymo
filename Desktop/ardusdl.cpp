@@ -15,10 +15,10 @@
 SDL_Window* AppWindow = nullptr;
 SDL_Renderer* AppRenderer = nullptr;
 SDL_Surface* AppSurface = nullptr;
-uint8_t sBuffer[k_screen_width * k_screen_height / 8];
+uint8_t sBuffer[kScreenWidth * kScreenHeight / 8];
 EEPROM eeprom;
 unsigned long StartTime;
-int zoom_scale;
+int kZoomScale;
 bool textRawMode;
 #ifdef _DEBUG
 int counter;
@@ -84,28 +84,43 @@ bool Platform::justReleased(uint8_t button) {
 // Drawing
 void Platform::drawPixel(int16_t x, int16_t y, uint8_t colour) {
 
+  // Draw to sBuffer
   // If outside of screen nothing to do
-  if ((x<0) || (x>=k_screen_width) || (y<0) || (y>=k_screen_height)) {
+  if ((x<0) || (x>=kScreenWidth) || (y<0) || (y>=kScreenHeight)) {
     return;
   }
   SetColour(colour);
-  SDL_RenderDrawPoint(AppRenderer, x, y);
+  if ((SDL_RenderDrawPoint(AppRenderer, x, y) < 0)) {
+    std::cerr << "drawPixel:RenderDrawPoint" << SDL_GetError() << "\n";
+  }
 }
 
-void Platform::drawBitmap(int16_t x, int16_t y, const uint8_t* data,
+void drawPixel(int16_t x, int16_t y, uint8_t colour) {
+
+  // Draw to renderer
+  // If outside of screen nothing to do
+  if ((x<0) || (x>=kScreenWidth) || (y<0) || (y>=kScreenHeight)) {
+    return;
+  }
+  SetColour(colour);
+  if ((SDL_RenderDrawPoint(AppRenderer, x, y) < 0)) {
+    std::cerr << "drawPixel:RenderDrawPoint" << SDL_GetError() << "\n";
+  }
+}
+
+void Platform::drawBitmap(int16_t x, int16_t y, const uint8_t* bitmap,
     uint8_t w, uint8_t h, uint8_t colour)
 {
   for (int j = 0; j < h; j++)
   {
-    uint8_t mask = 1 << (j % 8);
-    int blockY = j / 8;
-
     for (int i = 0; i < w; i++)
     {
       int blockX = i / 8;
+      int blockY = j / 8;
       int blocksPerWidth = w / 8;
       int blockIndex = blockY * blocksPerWidth + blockX;
-      uint8_t pixels = data[blockIndex * 8 + i % 8];
+      uint8_t pixels = bitmap[blockIndex * 8 + i % 8];
+      uint8_t mask = 1 << (j % 8);
       if (pixels & mask)
       {
         drawPixel(x + i, y + j, colour);
@@ -228,7 +243,7 @@ void Platform::fillScreen(uint8_t colour) {
 
   int i;
 
-  for (i=0; i < (k_screen_width * k_screen_height) >> 3; i++) {
+  for (i=0; i < (kScreenWidth * kScreenHeight) >> 3; i++) {
     sBuffer[i] = (colour == COLOUR_WHITE) ? 0xFF : 0x00;
   }
 
@@ -238,7 +253,6 @@ void Platform::fillScreen(uint8_t colour) {
   if (SDL_RenderClear(AppRenderer)) {
     std::cout << SDL_GetError() << "\n";
   }
-
 }
 
 void Platform::clear() {
@@ -247,25 +261,36 @@ void Platform::clear() {
 
 // Drawing desktop
 void Platform::display(bool clear_screen) {
-  // Transpose sBuffer to screen.
-  uint16_t i, bit;
-  uint8_t x, y, colour;
-
   if (clear_screen) clear();
+  SDL_RenderPresent(AppRenderer);
+}
 
-  for (i = 0; i < k_screen_width * k_screen_height / 8; i++) {
-    x = i % k_screen_width;
-    // 1 byte = 8 vertical pixels
-    for (bit=0; bit<8; bit++) {
-      y = i / k_screen_width * 8 + 7 - bit;
-      colour = ((sBuffer[i] >> bit) & 0x01) ? COLOUR_WHITE : COLOUR_BLACK;
-      drawPixel(x, y, colour);
-    }
-  }
+/************* Drawing Optimized ******************************************/
+
+void Platform::EraseRectRow(uint8_t x, uint8_t y, uint8_t width, uint8_t height) {
+  // This function is "optimized" on the Arduboy. This is a simple replication
+  // of its effects.
+  uint8_t row, rows;
+
+  // Don't write outside of the buffer. These are uint's. No sign to check.
+  if ((x > kScreenWidth - 1) || (y > kScreenHeight - 1 ))
+    return;
+
+  // For the ardusdl version, compute rectangle and draw it
+
+  row = y & 0xF8; 
+  rows = ((y + height) & 0xF8) + 8;
+
+  // Truncate
+  width = (width > kScreenWidth - x) ? kScreenWidth - x : width;
+  rows = (rows > kScreenHeight - y) ? kScreenHeight - x : rows;
+
+  fillRect(x, row, width, rows, COLOUR_BLACK);
+
 }
 
 /******************** Timer *********************************************/
-uint32_t Platform::Millis() {
+uint32_t Platform::millis() {
   struct timespec ts;
   uint32_t ms;
 
@@ -511,21 +536,21 @@ void Initialize() {
 
 int main(int argc, char* argv[])
 {
-  zoom_scale = ZOOM_SCALE;
+  kZoomScale = ZOOM_SCALE;
   if (argc == 2) {
-    zoom_scale = atoi(argv[1]);
-    if ((zoom_scale < 1) || (zoom_scale > 8)) {
-      zoom_scale = ZOOM_SCALE;
+    kZoomScale = atoi(argv[1]);
+    if ((kZoomScale < 1) || (kZoomScale > 8)) {
+      kZoomScale = ZOOM_SCALE;
       std::cerr << "Zoom must be between 1 and 8. Using "\
-        << zoom_scale <<"\n";
+        << kZoomScale <<"\n";
     }
   }
 
   SDL_Init(SDL_INIT_VIDEO);
 
-  SDL_CreateWindowAndRenderer(k_screen_width * zoom_scale, k_screen_height * zoom_scale,
+  SDL_CreateWindowAndRenderer(kScreenWidth * kZoomScale, kScreenHeight * kZoomScale,
       SDL_WINDOW_RESIZABLE, &AppWindow, &AppRenderer);
-  SDL_RenderSetLogicalSize(AppRenderer, k_screen_width, k_screen_height);
+  SDL_RenderSetLogicalSize(AppRenderer, kScreenWidth, kScreenHeight);
   AppSurface = SDL_GetWindowSurface(AppWindow);
 
   Initialize();
@@ -609,8 +634,12 @@ int main(int argc, char* argv[])
         }
       }
 
+    if (SDL_RenderClear(AppRenderer) < 0) {
+      std::cerr << "main:RenderClear " << SDL_GetError() << "\n";
+      break;
+    } 
+
     StepGame();
-    SDL_RenderPresent(AppRenderer);
 
     /* if (!eeprom.isSaved()) { */
     /*   eeprom.save(); */
@@ -659,7 +688,7 @@ size_t write(const char str[]) { // Write a string at the cursor.
   int char_pos = 0, t = 0;
   char c;
 
-  while ((c=str[char_pos++]) && (cursor.x < k_screen_width)) {
+  while ((c=str[char_pos++]) && (cursor.x < kScreenWidth)) {
     t += write(c);
     cursor.x += FONT_WIDTH + 1;
   }
