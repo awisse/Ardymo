@@ -31,11 +31,13 @@ void InitGame() {
 void StepGame() {
 
   HandleInput();
-  MoveVehicle();
-  CheckSensors();
+//  MoveVehicle();
+//  CheckSensors();
 
 //  Platform::println("StepGame");
+#ifdef _DEBUG
   Platform::DebugPrint("StepGame\n");
+#endif
   if (modified) {
     if (state == running) {
       DrawScreen();

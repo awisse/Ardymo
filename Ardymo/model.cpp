@@ -5,7 +5,7 @@
 #include "globals.h"
 
 // For printing to Serial when debugging
-#ifdef DEBUG_
+#ifdef _DEBUG
 #include "platform.h"
 #endif
 

@@ -15,6 +15,7 @@ void eraseRect(uint16_t x, uint16_t y, uint8_t width, uint8_t height) {
 
   // Adapt mask to first row
   mask = 0xFF >> (y % 8);
+#ifdef _DEBUG
   Platform::DebugPrint("y, row * 0x10 + x + width, mask\n");
   Platform::DebugPrint(y);
   Platform::DebugPrintln();
@@ -22,6 +23,7 @@ void eraseRect(uint16_t x, uint16_t y, uint8_t width, uint8_t height) {
   Platform::DebugPrintln();
   Platform::DebugPrint((uint16_t)(mask));
   Platform::DebugPrintln();
+#endif
   for (i=(y >> 3) * 0x10 + x; i<(y >> 3) * 0x10 + x + width; i++) {
     /* Platform::DebugPrint(x); */
     /* Platform::DebugPrint(y); */
