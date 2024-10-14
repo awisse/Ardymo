@@ -38,6 +38,7 @@ void Dispatch(Event e) {
     case Down:
       AccelerateBackward();
     default:
+      ;
 #ifdef _DEBUG
       Platform::DebugPrint("default in Dispatch");
       Platform::DebugPrintln();
