@@ -249,27 +249,36 @@ polygon is just a collection of line segments.
 \subsection{Line}
 \label{sec-representation-line}
 
+\begin{figure}
+    \centering
+    \includegraphics[trim=0 20 0 80]{odg/line-from-angle.pdf}
+    \caption{$v$ from length $l$ and angle $\rho$}\label{fig-line-from-rho}
+\end{figure}
 The parameters for a line are $(\pb, \vb, \Sb)$, where $\pb=(p_{x}, p_{y})$ is
-a point on the line and $\vb=(v_{x}, v_{y})$ is the direction of the line. The
+The parameters for a line are $(\pb, l, \rho, \Sb)$, where $\pb=(p_{x}, p_{y})$ is
+a point on the line, $l$ is the length of the line and $\rho$ is the clockwise rotation
+of the line with respect to the \textsl{North}, that is, with respect to the
+vector $(0, l)$ (see \figref{fig-line-from-rho}). The direction $\vb=(v_{x},
+v_{y})$ of the line is given by $\eqref{eq-direction-from-rho}$. The
 parameter $\Sb$ is a small integer which is $0$ for an unbound line and $1$
 for a segment. A segment is defined by the points $\pb+t\vb,\,t\in[0,1]$.
 
+\begin{equation}
+    v_{x} = l\sin(\rho)\qquad v_{y} = l\cos(\rho) \label{eq-direction-from-rho}
+\end{equation}
 \subsection{Rectangle}
 \label{sec-representation-rectangle}
 
-A rectangle is given by the parameters $(\pb, \vb, \mu)$, where
-$\pb=(p_{0}, p_{1})$ is the origin of the rectangle and $\vb=(v_{0}, v_{1})$ is
-the direction of the rectangle. The width $w$ of the rectangle is
-the length $\Vert\vb\Vert$ of $\vb$, given by
-\begin{equation}
-    w = \Vert\vb\Vert = \sqrt{v_{0}^2 + v_{1}^2}.\label{eq-width-rectangle}
-\end{equation}
+A rectangle is given by the parameters $(\pb, w, \rho, \mu)$, where
+$\pb=(p_{x}, p_{y})$ is the origin of the rectangle, $w$ and $\rho$ define the
+direction $\vb=(v_{x}, v_{y})$ of the rectangle by substituting $w$ for $l$ in
+\eqref{eq-direction-from-rho}. 
 The height $h$ of the rectangle is given by
 \begin{equation}
     h = \mu w.\label{eq-height-rectangle}
 \end{equation}
 
-The second directional parameter $\vb_1$ (section~\ref{sec-rectangle}) is given
+The second directional parameter $\vb_1$ of the rectangle (section~\ref{sec-rectangle}) is given
 by
 \begin{equation}
     \vb_1 = \mu\Omega(90^\circ)\vb_0.\label{eq-vb1-rectangle}
@@ -295,9 +304,13 @@ corresponds to a point on the vehicle from which the sensor ray emanates.
 
 The general form of the distance $\diota$ between the origin of a sensor ray
 $\pbsig$ and the point of intersection $\pbiot$ is given by
-Pythagoras' Theorem (see also \eqref{eq-width-rectangle}).
+Pythagoras' Theorem (see also \eqref{eq-pythagoras}).
 \begin{equation}
     \diota = \Vert\pbsig-\pbiot\Vert
+\end{equation}
+where
+\begin{equation}
+    \Vert\vb\Vert = \sqrt{v_{x}^2 + v_{y}^2}.\label{eq-pythagoras}
 \end{equation}
 
 \subsection{Line Segment}
