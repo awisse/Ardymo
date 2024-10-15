@@ -22,6 +22,10 @@ public:
     uint8_t w, uint8_t h, uint8_t colour=COLOUR_WHITE);
   static void drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
     uint8_t colour=COLOUR_WHITE);
+  static void drawFastVLine(int16_t x0, int16_t y0, uint8_t h,
+      uint8_t colour=COLOUR_WHITE);
+  static void drawFastHLine(int16_t x0, int16_t y0, uint8_t w,
+      uint8_t colour=COLOUR_WHITE);
   static void drawRect(int16_t x, int16_t y, uint8_t w, uint8_t h);
   static void fillRect(int16_t x, int16_t y, uint8_t w, uint8_t h,
     uint8_t colour=COLOUR_WHITE);
@@ -34,7 +38,7 @@ public:
   static void display(bool clear=false);
 
   // Drawing optimized
-  static void EraseRectRow(uint8_t x, uint8_t y, uint8_t width, uint8_t height);
+  static void eraseRectRow(uint8_t x, uint8_t y, uint8_t width, uint8_t height);
 
   // Timer
   static uint32_t millis();
@@ -79,6 +83,7 @@ public:
 
   // Debug
 #ifdef _DEBUG
+  static void DebugPrint(int16_t value, uint8_t base=DEC);
   static void DebugPrint(uint16_t value, uint8_t base=DEC);
   static void DebugPrint(uint32_t value, uint8_t base=DEC);
   static void DebugPrint(float value, uint8_t decimals=2);

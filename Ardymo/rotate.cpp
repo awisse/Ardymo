@@ -1,6 +1,7 @@
-// 
+//
 // Define sin and cos as a function of degrees in 1 degree (positive integer)
 // steps
+#include "platform.h"
 #include "rotate.h"
 
 rotn get_rotn(int16_t alpha) {
@@ -9,9 +10,9 @@ rotn get_rotn(int16_t alpha) {
   rotn rot_vect;
   float x;
 
-  alpha = alpha % 360;
+  alpha %= 360;
   if (alpha < 0) {
-    alpha = 360 + alpha;
+    alpha += 360;
   }
 
   if (alpha <= 45) {

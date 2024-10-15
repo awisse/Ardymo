@@ -68,6 +68,16 @@ void Platform::drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t 
   arduboy.drawLine(x0, y0, x1, y1, colour);
 }
 
+void Platform::drawFastVLine(int16_t x0, int16_t y0, uint8_t h, uint8_t colour)
+{
+  arduboy.drawFastVLine(x0, y0, h, colour);
+}
+
+void Platform::drawFastHLine(int16_t x0, int16_t y0, uint8_t w, uint8_t colour)
+{
+  arduboy.drawFastHLine(x0, y0, w, colour);
+}
+
 void Platform::drawRect(int16_t x, int16_t y, uint8_t w, uint8_t h)
 {
   arduboy.drawRect(x, y, w, h);
@@ -105,9 +115,9 @@ void Platform::display(bool clear)
 
 /************* Drawing Optimized ******************************************/
 
-void Platform::EraseRectRow(uint8_t x, uint8_t y, uint8_t width, uint8_t height) {
+void Platform::eraseRectRow(uint8_t x, uint8_t y, uint8_t width, uint8_t height) {
   // There are 8 rows of bytes and 128 columns of bytes on the screen. Write
-  // zeros directly to the screen buffer. 
+  // zeros directly to the screen buffer.
   // The y coordinate is translated to the byte row that contains it. The whole
   // byte row is erased (for speed).
   // row: Which row {0,...,7} to start with, rows: {1,...8} how many rows
@@ -250,6 +260,10 @@ size_t Platform::println(double x, uint8_t decimals)
 }
 
 #ifdef _DEBUG
+void Platform::DebugPrint(int16_t value, uint8_t base) {
+  Serial.print(value, base);
+}
+
 void Platform::DebugPrint(uint16_t value, uint8_t base) {
   Serial.print(value, base);
 }

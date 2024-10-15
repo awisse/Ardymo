@@ -86,9 +86,6 @@ float Vec::distance(const Vec& p) {
 */
 Vec Vec::rotate(int16_t theta) {
 
-  if ((theta < 0) || (theta > 359)) {
-    return Vec(*this);
-  }
   rotn rot = get_rotn(theta);
 
   // Matrix multiplication

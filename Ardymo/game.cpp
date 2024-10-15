@@ -30,16 +30,25 @@ void InitGame() {
 
 void StepGame() {
 
+  static int16_t alpha = 0;
   HandleInput();
   MoveVehicle();
   CheckSensors();
 
+  alpha += 3;
+#ifdef _DEBUG
+  Platform::DebugPrint("alpha: ");
+  Platform::DebugPrint(alpha);
+  Platform::DebugPrintln();
+#endif
+
   if (modified) {
     if (state == running) {
-      DrawScreen();
-    } 
+      DrawCompass(alpha, alpha + 30);
+      DrawSensors();
+    }
     Platform::display();
-    modified = false;
+    /* modified = false; */
   }
 }
 

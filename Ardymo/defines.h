@@ -34,10 +34,19 @@ typedef int int_;
 
 const uint16_t kFrameDuration = 500;
 
+// Screen and layout
 const int16_t kScreenWidth = 128;
 const int16_t kScreenHeight = 64;
 const int16_t kBoardWidth = 16 * kScreenWidth;
 const int16_t kBoardHeight = 16 * kScreenHeight;
+const int16_t kStatusY = 18;
+const int16_t kStatusX = 40;
+const int16_t kCompassRadius = 24;
+
+// Navigation steps
+const int16_t kDirectionStep = 1;
+
+
 #define DEC 10
 #define HEX 16
 #define OCT 8
