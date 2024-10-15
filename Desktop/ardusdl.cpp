@@ -139,6 +139,14 @@ void Platform::drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
   }
 }
 
+void Platform::drawFastVLine(int16_t x0, int16_t y0, uint8_t h, uint8_t colour) {
+  drawLine(x0, y0, x0, y0 + h, colour);
+}
+
+void Platform::drawFastHLine(int16_t x0, int16_t y0, uint8_t w, uint8_t colour) {
+  drawLine(x0, y0, x0 + w, y0, colour);
+}
+
 void Platform::drawRect(int16_t x, int16_t y, uint8_t w, uint8_t h) {
   SDL_Rect rect;
 
@@ -241,12 +249,6 @@ void Platform::fillCircle(int16_t x0, int16_t y0, uint8_t r,
 
 void Platform::fillScreen(uint8_t colour) {
 
-  int i;
-
-  for (i=0; i < (kScreenWidth * kScreenHeight) >> 3; i++) {
-    sBuffer[i] = (colour == COLOUR_WHITE) ? 0xFF : 0x00;
-  }
-
   // Set screen buffer to colour, too
   SetColour(colour);
 
@@ -267,7 +269,7 @@ void Platform::display(bool clear_screen) {
 
 /************* Drawing Optimized ******************************************/
 
-void Platform::EraseRectRow(uint8_t x, uint8_t y, uint8_t width, uint8_t height) {
+void Platform::eraseRectRow(uint8_t x, uint8_t y, uint8_t width, uint8_t height) {
   // This function is "optimized" on the Arduboy. This is a simple replication
   // of its effects.
   uint8_t row, rows;
@@ -278,8 +280,8 @@ void Platform::EraseRectRow(uint8_t x, uint8_t y, uint8_t width, uint8_t height)
 
   // For the ardusdl version, compute rectangle and draw it
 
-  row = y & 0xF8; 
-  rows = ((y + height) & 0xF8) + 8;
+  row = y & 0xF8;
+  rows = ((y + height - 1) & 0xF8);
 
   // Truncate
   width = (width > kScreenWidth - x) ? kScreenWidth - x : width;
@@ -436,6 +438,12 @@ size_t Platform::println(double x, uint8_t decimals) {
 
 //
 #ifdef _DEBUG
+void Platform::DebugPrint(int16_t value, uint8_t base) {
+
+  std::cout << value;
+  std::cout.flush();
+}
+
 void Platform::DebugPrint(uint16_t value, uint8_t base) {
 
   std::cout << value;
@@ -633,11 +641,6 @@ int main(int argc, char* argv[])
           break;
         }
       }
-
-    if (SDL_RenderClear(AppRenderer) < 0) {
-      std::cerr << "main:RenderClear " << SDL_GetError() << "\n";
-      break;
-    } 
 
     StepGame();
 
