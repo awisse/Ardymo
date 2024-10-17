@@ -8,7 +8,7 @@
 // We need the `point` type because the Arduino compiler doesn't accept the
 // `Vec` class in PROGMEM: "a variable with dynamic initialization
 // cannot be put in program memory area".
-constexpr static float epsilon = 3E-7; // Test for zero with floats
+constexpr static float epsilon = 5E-6; // Test for zero with floats
 
 typedef struct {
   float x, y;
@@ -32,13 +32,15 @@ class Vec {
     Vec operator-(void); // Inverse sign
     Vec operator-(const Vec&);
     Vec operator*(const float a); // Scalar product
+    Vec operator/(const float a); // Division by scalar
     float operator*(const Vec&); // Inner product
     bool operator==(const Vec&);
 
     float div(const Vec&); // Division of collinear vectors.
     float det(const Vec&); // Determinant of the matrix (this, other)
     float sq(void);     // ∥v∥^2
-    float distance(const Vec&); // ∥v∥
+    float length(void); // ∥v∥
+    float distance(const Vec&); // ∥v-other∥
 
     Vec rotate(const int16_t alpha); // Rotate clockwise by alpha
 

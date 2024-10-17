@@ -13,12 +13,6 @@ enum State {
   over     // Game Over
 };
 
-struct Vehicle {
-  rectangle_t shape;  // Shape defining the player
-  float speed;        // Speed in vehicle direction (positive or negative)
-  uint32_t start_collision; // Timestamp when collision started. Zero when no collision.
-};
-
 // Sensor parameters. If distance=0: Collision.
 extern struct {
   float front;  // Distance to closest obstacle ahead.
@@ -27,7 +21,7 @@ extern struct {
   float right;  // Distance to closest obstacle to right
   float heading;// Compass heading of the vehicle
   float target; // Distance to target
-  float target_direction; // Target direction with respect to vehicle axis
+  float target_direction; // Target direction with respect to vehicle axis (angle)
 } sensors;
 
 typedef struct {
@@ -37,6 +31,5 @@ typedef struct {
   uint8_t sdigits; // How many digits in seconds
 } Duration;
 
-extern Vehicle vehicle;
 extern bool modified; // True if screen needs to be redrawn
 // vim:ft=cpp

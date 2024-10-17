@@ -41,6 +41,14 @@ Vec Vec::operator*(float a) {
   return newpt;
 }
 
+Vec Vec::operator/(float a) {
+  // No room for checking zero division. Live with infinity!
+  Vec newpt = *this;
+  newpt.x /= a;
+  newpt.y /= a;
+  return newpt;
+}
+
 float Vec::operator*(const Vec& p) {
   return p.x * x + p.y * y;
 }
@@ -69,6 +77,10 @@ float Vec::div(const Vec& p) {
 
 float Vec::sq(void) {
   return x*x + y*y;
+}
+
+float Vec::length(void) {
+  return sqrtf(this->sq());
 }
 
 float Vec::distance(const Vec& p) {

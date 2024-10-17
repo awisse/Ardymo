@@ -6,9 +6,10 @@
 #include "globals.h"
 #include "defines.h"
 
-void RecomputeRectangle(void) {
-  // Recompute the direction vector of the rectangle as a function of
+static Vehicle vehicle;
 
+void InitVehicle(rectangle_t rect) {
+  vehicle = Vehicle(rect);
 }
 
 void TurnRight(void) {
@@ -27,4 +28,16 @@ void AccelerateForward(void) {
 void AccelerateBackward(void) {
 }
 
-// vim:ft=cpp
+void Vehicle::rotate(float alpha) {
+  heading += alpha;
+  // Avoid incremental rotations. Will be off due to float precision
+  // Practical to precompute. Will be certainly used each frame
+  v = Vec(0, length).rotate(heading);
+  front = v.rotate(90) * ratio;
+}
+
+void Vehicle::move(void) {
+  // Move by one unit of speed
+  float vlen = p.length();
+  p = p + v / vlen * speed;
+}

@@ -160,8 +160,8 @@ $\pb_0$ by the angle $\alpha$. Define the rotation matrix $\Omega(\alpha)$.
 \begin{equation}
     \Omega(\alpha)=\left(
     \begin{matrix}
-        \cos(\alpha) & \sin(\alpha) \\
-        -\sin(\alpha) & \cos(\alpha)
+        \cos(\alpha) & -\sin(\alpha) \\
+        \sin(\alpha) & \cos(\alpha)
     \end{matrix}
     \right)\label{eq-rotation-matrix-Omega}
 \end{equation}
@@ -246,6 +246,16 @@ In this section we describe how circles, sensor rays and line segments will be
 represented in code. There is no particular polygon object given that a
 polygon is just a collection of line segments.
 
+\begin{figure}
+    \centering
+    \includegraphics{odg/coordinates.pdf}
+    \caption{Coordinate system. Vector $\vb$}\label{fig-coordinates}
+\end{figure}
+The coordinate system is adapted to the Arduboy screen coordinates. That is,
+positive values on the x-axis are right of the origin and positive values on
+the y-axis are \textsl{below} the origin. Hence, the vector $\vb=(1, 2)$ points
+\textsl{downward} as illustrated in \figref{fig-coordinates}.
+
 \subsection{Line}
 \label{sec-representation-line}
 
@@ -255,9 +265,9 @@ polygon is just a collection of line segments.
     \caption{$v$ from length $l$ and angle $\rho$}\label{fig-line-from-rho}
 \end{figure}
 The parameters for a line are $(\pb, \vb, \Sb)$, where $\pb=(p_{x}, p_{y})$ is
-The parameters for a line are $(\pb, l, \rho, \Sb)$, where $\pb=(p_{x}, p_{y})$ is
-a point on the line, $l$ is the length of the line and $\rho$ is the clockwise rotation
-of the line with respect to the \textsl{North}, that is, with respect to the
+The parameters for a line are $(\pb, l, \rho, \Sb)$, where $\pb=(p_{x}, 
+p_{y})$ is a point on the line, $l$ is the length of the line and $\rho$ is the clockwise rotation
+of the line with respect to the \textsl{South}, that is, with respect to the
 vector $(0, l)$ (see \figref{fig-line-from-rho}). The direction $\vb=(v_{x},
 v_{y})$ of the line is given by $\eqref{eq-direction-from-rho}$. The
 parameter $\Sb$ is a small integer which is $0$ for an unbound line and $1$
@@ -649,6 +659,8 @@ The vehicles' forward movement is in the direction of the front of the vehicle
 parallel to the sides of the vehicle.
 The vehicles' backward movement is in the direction of the rear of the vehicle
 parallel to the sides of the vehicle.
+While the vehicle is not accelerated, it moves with constant speed, determined
+by the last acceleration (forward or backward).
 
 \subsection{Target and Obstacles}
 \label{sec-obstacles}
@@ -656,8 +668,8 @@ parallel to the sides of the vehicle.
 The obstacles are line segments and circles. The target is a circle. The
 vehicle is a rectangle. The limits of the game map are obstacles.
 
-\section{Scanning}
-\label{sec-scanning}
+\subsection{Scanning}
+\label{sec-game-scanning}
 In each frame, the vehicle scans for obstacles in the following way.
 
 The straight lines prolonging the sides of the vehicle are checked for
@@ -675,6 +687,47 @@ The distance to the closest obstacle is displayed on the user interface
     \caption{Scanning and Distance}\label{fig-scanning}
 \end{figure}
 
+\subsection{Vehicle Structure}
+\label{sec-game-vehicle-structure}
+
+Given the actions of the vehicle,
+\begin{itemize}
+    \item Moving forward and backward at constant speed $V\in\Rb$ if not accelerated
+        (section~\ref{sec-vehicle-movement}).
+    \item Rotating around the midpoint of the rear segment
+        \figref{fig-vehicle-rotation}.
+    \item "Emitting" sensor rays forward, backwards and sideways along the
+        four segment defining the vehicle \figref{fig-scanning}.
+    \item Colliding with obstacles or other vehicles
+        (section~\ref{sec-collision}).
+\end{itemize}
+the vehicle is defined as a directed rectangle with the
+structure~\ref{code-vehicle-data-structure}
+\begin{figure}
+\begin{verbatim}
+class Vehicle {
+
+    public:
+        Vehicle();
+        Vehicle(rectangle_t rect) p(rect.p), length(rect.l),
+            heading(rect.rho), width(rect.l/rect.mu) {}
+        void rotate(float alpha); // Rotate around center of rear
+        void move(void); // Move in direction by present speed.
+        float scan(void); // TBD: Scanning functions. 
+        bool collided(obstacle obst); // Collision with obstacles
+        rectangle_t as_rectangle(void);
+
+    private:
+        Vec p; // Origin of rectangle
+        float length, width; // Length, width of vehicle
+        float heading;
+
+        float speed; // Forward (positive) or backward (negative)
+        float front, left, right, rear; // Distance to obstacles
+};
+\end{verbatim}
+\caption{Vehicle data structure}\label{code-vehicle-data-structure}
+\end{figure}
 \appendix
 \section{Rotation Matrix}
 \label{appendix-rotation-matrix}
