@@ -1,7 +1,7 @@
 TARGET := ardusdl
 VPATH := ../Ardymo
 PKGCONFIG := $(shell which pkg-config)
-CXXFLAGS := -g $(shell $(PKGCONFIG) --cflags sdl2)
+CXXFLAGS := -g $(shell $(PKGCONFIG) --cflags sdl2) -pedantic-errors
 LDLIBS := $(shell $(PKGCONFIG) --libs sdl2)
 SOURCES := $(wildcard $(VPATH)/*.cpp *.cpp)
 OBJECTS := $(SOURCES:%.cpp=%.o)

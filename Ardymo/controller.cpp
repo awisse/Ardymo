@@ -37,6 +37,7 @@ void Dispatch(Event e) {
       break;
     case Down:
       AccelerateBackward();
+      break;
     default:
       ;
 #ifdef _DEBUG
@@ -100,11 +101,10 @@ void HandleInput() {
     Dispatch(Long_B);
   }
 
-  uint8_t buttons = DebouncedButtons();
-  if (buttons & INPUT_UP) Dispatch(Up);
-  else if (buttons & INPUT_DOWN) Dispatch(Down);
-  else if (buttons & INPUT_LEFT) Dispatch(Left);
-  else if (buttons & INPUT_RIGHT) Dispatch(Right);
+  if (currentButtons & INPUT_UP) Dispatch(Up);
+  else if (currentButtons & INPUT_DOWN) Dispatch(Down);
+  else if (currentButtons & INPUT_LEFT) Dispatch(Left);
+  else if (currentButtons & INPUT_RIGHT) Dispatch(Right);
 
 }
 

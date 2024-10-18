@@ -32,16 +32,31 @@ typedef long long_;
 typedef int int_;
 #endif
 
-const uint16_t kFrameDuration = 500;
+const uint16_t kFrameDuration = 100;
 
 // Screen and layout
 const int16_t kScreenWidth = 128;
 const int16_t kScreenHeight = 64;
 const int16_t kBoardWidth = 16 * kScreenWidth;
 const int16_t kBoardHeight = 16 * kScreenHeight;
+// Status value rectangle top left
 const int16_t kStatusY = 18;
-const int16_t kStatusX = 40;
+const int16_t kStatusX = 35;
 const int16_t kCompassRadius = 24;
+// Distance coordinates
+
+typedef struct coords {
+  int16_t x, y;
+} coords_t;
+
+const coords_t screenCentre = {(kScreenWidth >> 1) - 1,
+  (kScreenHeight >> 1) - 1};
+const coords_t left = {5, (int16_t)(screenCentre.y - 3)};
+const coords_t top = {(int16_t)(screenCentre.x + 3), 1};
+const coords_t bottom = {(int16_t)(screenCentre.x + 3),
+                         (int16_t)(kScreenHeight - 7)};
+const coords_t right = {(int16_t)(kScreenWidth - 8),
+                        (int16_t)(screenCentre.y - 3)};
 
 // Navigation steps
 const int16_t kDirectionStep = 1;

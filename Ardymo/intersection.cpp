@@ -25,15 +25,15 @@ uint8_t intersects(LineVector sensor, obstacle obst) {
   switch (obst.type) {
 
     case LINE:
-      return intersects_line(sensor, obst.line);
+      return intersects_line(sensor, obst.item.line);
       break;
 
     case CIRCLE:
-      return intersects_circle(sensor, obst.circle);
+      return intersects_circle(sensor, obst.item.circle);
       break;
 
     case RECTANGLE:
-      return intersects_rectangle(sensor, obst.rectangle);
+      return intersects_rectangle(sensor, obst.item.rectangle);
       break;
 
     default:

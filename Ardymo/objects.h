@@ -8,7 +8,7 @@
 // We need the `point` type because the Arduino compiler doesn't accept the
 // `Vec` class in PROGMEM: "a variable with dynamic initialization
 // cannot be put in program memory area".
-constexpr static float epsilon = 5E-6; // Test for zero with floats
+constexpr float epsilon = 5E-6; // Test for zero with floats
 
 typedef struct {
   float x, y;
@@ -41,7 +41,9 @@ class Vec {
     float sq(void);     // ∥v∥^2
     float length(void); // ∥v∥
     float distance(const Vec&); // ∥v-other∥
+    Vec normalized(void); // Vector normalized to ∥v∥=1
 
+    void flipX(void); // Flip along x-axis in place
     Vec rotate(const int16_t alpha); // Rotate clockwise by alpha
 
     point as_point(void); // Transform into a struct `point`

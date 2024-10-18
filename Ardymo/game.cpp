@@ -2,17 +2,19 @@
 Helper functions to unclutter main .ino file
  */
 #include "game.h"
-#include "model.h"
 #include "draw.h"
 #include "controller.h"
+#include "structs.h"
 #include "globals.h"
+#include "vehicle.h"
+#include "target.h"
 #include "platform.h"
 
 // Global variable
 State state;   // startup, running, menu, success, over
 // Local to game.cpp
-bool modified; // True if screen needs to be redrawn
 uint32_t start; // Milliseconds at start of game
+static Target target;
 
 // Functions
 void DoMenu();
@@ -24,32 +26,41 @@ void InitGame() {
   state = startup;
   Platform::clear();
   state = running;
-  modified = true;
-
+  InitVehicle();
+  // Init target
+  target = InitTarget();
+  DrawBackground();
 }
 
 void StepGame() {
 
   static int16_t alpha = 0;
-  HandleInput();
-  MoveVehicle();
-  CheckSensors();
+  SensorValues sensors;
+  Vec tgt_heading;
+  float tgt_distance;
+  uint32_t start;
 
-  alpha += 3;
+  start = Platform::millis();
+
+  HandleInput(); // User input: Button presses
+  MoveVehicle(); // Move according to heading and speed
+  // Check for collisions and distance to obstacles and target:
+  CheckSensors(&sensors);
+  tgt_heading = target.Heading(sensors.position);
+  tgt_distance = target.p.distance(sensors.position);
+
+  if (state == running) {
+    DrawCompass(sensors.heading, sensors.alpha, tgt_heading);
+    DrawScore(sensors.speed, tgt_distance);
+    DrawDistances(&sensors.distances);
+  }
+  Platform::display();
+
 #ifdef _DEBUG
-  Platform::DebugPrint("alpha: ");
-  Platform::DebugPrint(alpha);
+  // How much time for one frame?
+  Platform::DebugPrint(Platform::millis() - start);
   Platform::DebugPrintln();
 #endif
-
-  if (modified) {
-    if (state == running) {
-      DrawCompass(alpha, alpha + 30);
-      DrawSensors();
-    }
-    Platform::display();
-    /* modified = false; */
-  }
 }
 
 void Restart() {

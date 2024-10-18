@@ -24,7 +24,7 @@ Vec Vec::operator+(const point p) {
   return newpt;
 }
 
-Vec Vec::operator-() {
+Vec Vec::operator-(void) {
   Vec newpt = Vec(-x, -y);
   return newpt;
 }
@@ -86,6 +86,15 @@ float Vec::length(void) {
 float Vec::distance(const Vec& p) {
   /* return sqrtf((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y)); */
   return sqrtf((*this - p).sq());
+}
+
+Vec Vec::normalized(void) {
+  float l = this->length();
+  return this->operator/(l);
+}
+
+void Vec::flipX(void) {
+  this->x = -this->x;
 }
 
 /*************** Rotation matrix (clockwise)  *******************
