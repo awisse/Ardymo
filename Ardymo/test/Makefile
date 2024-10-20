@@ -7,7 +7,7 @@ CXXFLAGS = -g $(INCLUDE)
 ARDYMOSRC := objects.cpp intersection.cpp rotate.cpp vehicle.cpp
 SOURCES := $(wildcard *.cpp) $(ARDYMOSRC)
 OBJECTS := $(notdir $(SOURCES:%.cpp=%.o))
-ARDYMOINC := objects.h intersection.h structs.h rotate.h
+ARDYMOINC := objects.h intersection.h structs.h rotate.h vehicle.h
 INCLUDES := $(wildcard *.h) $(ARDYMOINC)
 
 all: $(TARGET)

@@ -10,15 +10,23 @@
 
 static Vehicle vehicle;
 
+// Helper functions
+
 float GetDistance(LineVector sensor) {
   // Compute distance to all obstacles.
-  // Return the closest.
+  // Return the closest
+  obstacle_t obst;
   float d, closest = 1.0 / 0.0;
-  size_t obstacle_count = sizeof(obstacles) / sizeof(obstacle);
+  size_t obstacle_count = sizeof(obstacles) / sizeof(obstacle_t);
   int16_t i, j, intersection_count;
 
   for (i=0; i<obstacle_count; i++) {
-    intersection_count = intersects(sensor, obstacles[i]);
+    memcpy_P(&obst, obstacles + i, sizeof(obstacle_t));
+#ifndef ARDUINO
+    // Byte alignment on Arduino different from 64-bit intel.
+    memcpy((uint8_t*)&obst.item + 0xE, (uint8_t*)&obst.item + 0x10, 2);
+#endif
+    intersection_count = intersects(sensor, obst);
     for (j=0; j<intersection_count; j++) {
       d = distance(sensor.p, j);
       if (d < closest)
@@ -57,26 +65,32 @@ void CheckSensors(SensorValues* sensors) {
   // emanating from the vehicle, two from each corner parallel
   // to the sides of the vehicle (see Figure 7 in ardymo.pdf).
   LineVector sensor;
+  float distance;
 
   // Front Left-Forward
-  sensor = LineVector(vehicle.p + vehicle.v, vehicle.v, vehicle.length);
+  sensor = LineVector(vehicle.p + vehicle.v, vehicle.v, vehicle.length, 0);
+  distance = GetDistance(sensor);
+  sensors->distances.front = distance;
   // Front Left-Left
   sensor = LineVector(vehicle.p + vehicle.v, -vehicle.front, 
-      vehicle.width);
+      vehicle.width, 0);
+  sensors->distances.left = 0.0; 
   // Front Right-Forward
   sensor = LineVector(vehicle.p + vehicle.v + vehicle.front, vehicle.v, 
-      vehicle.length);
+      vehicle.length, 0);
   // Front Right-Right
   sensor = LineVector(vehicle.p + vehicle.v + vehicle.front, vehicle.front, 
-      vehicle.width);
+      vehicle.width, 0);
+  sensors->distances.right = 0.0;
   // Rear Left-Rearward
-  sensor = LineVector(vehicle.p, -vehicle.v, vehicle.length);
+  sensor = LineVector(vehicle.p, -vehicle.v, vehicle.length, 0);
+  sensors->distances.rear = 0.0;
   // Rear Left-Left
-  sensor = LineVector(vehicle.p , -vehicle.front, vehicle.width);
+  sensor = LineVector(vehicle.p , -vehicle.front, vehicle.width, 0);
   // Rear Right-Rearward
-  sensor = LineVector(vehicle.p + vehicle.front, -vehicle.v, vehicle.length);
+  sensor = LineVector(vehicle.p + vehicle.front, -vehicle.v, vehicle.length, 0);
   // Rear Right-Right
-  sensor = LineVector(vehicle.p + vehicle.front, vehicle.front, vehicle.width);
+  sensor = LineVector(vehicle.p + vehicle.front, vehicle.front, vehicle.width, 0);
 
   sensors->heading = vehicle.v.normalized().as_point();
   sensors->position = vehicle.p + vehicle.v + vehicle.front / 2.0;
@@ -86,7 +100,12 @@ void CheckSensors(SensorValues* sensors) {
 
 void Vehicle::turn(float alpha) {
   // Avoid incremental rotations. Will be off due to float precision
-  heading = (heading + (int16_t)alpha) % 360;
+  heading += alpha;
+  if (heading > 180) {
+    heading -= 360;
+  } else if (heading < -180) {
+    heading += 360;
+  }
   v = Vec(0, length).rotate(heading);
   // Turning around the center of the rear of the vehicle, which is
   Vec rear_center = p + front / 2.0;
@@ -108,3 +127,4 @@ void Vehicle::accelerate_backwards(void) {
   // Max backward speed = half max speed
   speed = speed <= -MaxSpeed / 2.0 ? - MaxSpeed / 2.0 : speed - SpeedStep;
 }
+

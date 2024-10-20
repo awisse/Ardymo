@@ -1,10 +1,13 @@
 #pragma once
+#include "defines.h"
 #include "objects.h"
 #include "structs.h"
 
-constexpr float SpeedStep = 0.1;
+// Max speed: 20.0/second; kFrameDuration: Milliseconds / Frame
+constexpr float MaxSpeed = 0.02 * kFrameDuration;
+// Twenty speed steps.
+constexpr float SpeedStep = MaxSpeed / 20.0;
 constexpr int16_t AngleStep = 2;
-constexpr float MaxSpeed = 2.0;
 
 void InitVehicle(void);
 void TurnRight(void);
@@ -22,8 +25,8 @@ class Vehicle {
     Vehicle() : Vehicle(Vec(0,0), 1.0, 0, 0.5) {}
 
     Vehicle(Vec p, float l, int16_t h, float mu) :
-      p(p), length(l), heading(h), ratio(mu), width(l * mu),
-      speed(0.0f) {turn(0);}
+      p(p), v(Vec(0, l).rotate(h)), length(l), heading(h), ratio(mu), 
+      width(l * mu), front(v.rotate(90) * mu), speed(0.0f) {}
 
     Vehicle(float x, float y, float l, int16_t h, float mu) :
       Vehicle(Vec(x, y), l, h, mu) {} // Constructor delegation
@@ -34,7 +37,7 @@ class Vehicle {
     // Methods
     void turn(float alpha); // Rotate around center of rear
     void move(void); // Move in direction by present speed.
-    bool collided(obstacle obst); // Collision with obstacles
+    bool collided(obstacle_t obst); // Collision with obstacles
     rectangle_t as_rectangle(void);
     void accelerate_forward(void);
     void accelerate_backwards(void);

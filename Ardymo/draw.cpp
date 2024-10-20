@@ -12,14 +12,15 @@ static Vec centre = {(float)screenCentre.x, (float)screenCentre.y};
 
 // Helper functions
 
-
 // Draw elapsed time and distance to target in top left corner
-void DrawScore(float speed, float distance) {
+void DrawStatus(float speed, float distance) {
   Platform::eraseRectRow(0, 0, kStatusX - 1, 16);
   Platform::setCursor(1, 1);
   Platform::print(speed, 1);
+  Platform::print("/s");
   Platform::setCursor(1, 9);
   Platform::print(distance, 0);
+  Platform::print('m');
 }
 
 // Redraw compass arrow with new coordinates
@@ -45,6 +46,7 @@ void DrawCompass(Vec vehicle_direction, int16_t alpha,
   // 4. Display degrees in centre
   //
 #if 0
+/* #ifdef _DEBUG */
   Platform::DebugPrint(alpha);
   Platform::DebugPrintln();
 #endif
@@ -55,10 +57,10 @@ void DrawCompass(Vec vehicle_direction, int16_t alpha,
     c = 'W';
     true_heading = 180 - alpha;
   }
-  voffset = (alpha < 90) && (alpha > -90) ? -8 : 2;
-  if (alpha < 10) {
+  voffset = (true_heading < 90) ? 2 : -8;
+  if (true_heading < 10) {
     hoffset = -2;
-  } else if (alpha < 100) {
+  } else if (true_heading< 100) {
     hoffset = -5;
   } else {
     hoffset = -8;
@@ -69,6 +71,11 @@ void DrawCompass(Vec vehicle_direction, int16_t alpha,
 }
 
 void DrawDistances(Distances* distances) {
+  // Front
+  Platform::eraseRectRow(centre.x + 5, 0, 48, 8);
+  Platform::setCursor(centre.x + 5, 0);
+  Platform::print(distances->front);
+  Platform::print('m');
 
 }
 
@@ -86,4 +93,6 @@ void DrawBackground() {
       &arrows[RIGHT_ARROW], 5, 8);
 
 }
+
 // vim:fdm=syntax
+

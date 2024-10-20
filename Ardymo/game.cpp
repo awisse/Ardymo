@@ -51,12 +51,13 @@ void StepGame() {
 
   if (state == running) {
     DrawCompass(sensors.heading, sensors.alpha, tgt_heading);
-    DrawScore(sensors.speed, tgt_distance);
+    DrawStatus(sensors.speed, tgt_distance);
     DrawDistances(&sensors.distances);
   }
   Platform::display();
 
-#ifdef _DEBUG
+/* #ifdef _DEBUG */
+#if 0
   // How much time for one frame?
   Platform::DebugPrint(Platform::millis() - start);
   Platform::DebugPrintln();

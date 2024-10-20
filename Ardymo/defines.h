@@ -21,17 +21,19 @@
 #define pgm_read_float(x) (*((float*)x))
 #define pgm_read_ptr(x) (*((uintptr_t*)x))
 #define strlen_P(x) strlen(x)
+#define memcpy_P(dest, src, size) memcpy(dest, src, size)
 // If you absolutely must use `long` and `int`,
 // use these instead: `long_` and `int_`.
 typedef int long_;
 typedef short int_;
 #else
-//#define pgm_read_...:
+//#define pgm_read_..., memcpy_p, ...
 #include <avr/pgmspace.h>
 typedef long long_;
 typedef int int_;
 #endif
 
+// Milliseconds / Frame
 const uint16_t kFrameDuration = 100;
 
 // Screen and layout
@@ -41,9 +43,10 @@ const int16_t kBoardWidth = 16 * kScreenWidth;
 const int16_t kBoardHeight = 16 * kScreenHeight;
 // Status value rectangle top left
 const int16_t kStatusY = 18;
-const int16_t kStatusX = 35;
+const int16_t kStatusX = 37;
+// Compass circle
 const int16_t kCompassRadius = 24;
-// Distance coordinates
+// Distance screen coordinates
 
 typedef struct coords {
   int16_t x, y;

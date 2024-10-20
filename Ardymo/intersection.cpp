@@ -9,18 +9,18 @@
 #include "math.h"
 #include "intersection.h"
 
-static Vec X[2]; // Intersection points if they exists
+static intersection_t X[2]; // Intersection points if they exists
 
 uint8_t intersects_line(LineVector sensor, line_t line);
 uint8_t intersects_line_vector(LineVector sensor, LineVector line);
 uint8_t intersects_circle(LineVector sensor, circle_t circle);
 uint8_t intersects_rectangle(LineVector sensor, rectangle_t rect);
 
-Vec intersect_point(uint8_t i) {
+intersection_t intersect_point(uint8_t i) {
   return X[i];
 }
 
-uint8_t intersects(LineVector sensor, obstacle obst) {
+uint8_t intersects(LineVector sensor, obstacle_t obst) {
 
   switch (obst.type) {
 
@@ -44,17 +44,13 @@ uint8_t intersects(LineVector sensor, obstacle obst) {
 // Distance is
 float distance(Vec origin, uint8_t n) {
 
-  float d1 = origin.distance(X[0]), d2;
+  float d1 = origin.distance(X[0].p), d2;
 
-  if (n == 1) {
+  if (n == 0) {
     return  d1;
-  } else if (n > 1) {
-    d2 = origin.distance(X[1]);
-    return d1 < d2 ? d1 : d2;
-  }
-
-  // n = 0: Distance to nothing
-  return NAN;
+  } 
+  d2 = origin.distance(X[1].p);
+  return d1 < d2 ? d1 : d2;
 }
 
 inline bool cmp01(float x) {
@@ -84,8 +80,8 @@ uint8_t intersects_line_vector(LineVector sensor, LineVector line) {
     if (!sensor.seg) {
       // No. sensor is unbound. The endpoints of the `line` segment
       // are on sensor.
-      X[0] = line.p;
-      X[1] = line.p + line.v;
+      X[0] = {line.p, 0.0};
+      X[1] = {line.p + line.v, 1.0};
       return 2;
     }
     // Yes, sensor is a segment. Check the four cases for intersections
@@ -93,21 +89,21 @@ uint8_t intersects_line_vector(LineVector sensor, LineVector line) {
     // included in the other segment
     tau = -pl_minus_ps.div(line.v);
     if (cmp01(tau)) {
-      X[n++] = sensor.p;
+      X[n++] = {sensor.p, 0.0};
     }
     tau = (sensor.v - pl_minus_ps).div(line.v);
     if (cmp01(tau)) {
-      X[n++] = sensor.p + sensor.v;
+      X[n++] = {sensor.p + sensor.v, 1.0};
       if (n == 2) return 2;
     }
     nu = pl_minus_ps.div(sensor.v);
     if (cmp01(nu)) {
-      X[n++] = line.p;
+      X[n++] = {line.p, nu};
       if (n == 2) return 2;
     }
     nu = (line.v+pl_minus_ps).div(sensor.v);
     if (cmp01(nu)) {
-      X[n++] = line.p + line.v;
+      X[n++] = {line.p + line.v, nu};
     }
     return n;
   }
@@ -120,17 +116,18 @@ uint8_t intersects_line_vector(LineVector sensor, LineVector line) {
     return 0;
   }
 
+  nu = (line.v.x * pl_minus_ps.y - line.v.y * pl_minus_ps.x) / det;
+
   // Is `sensor` a segment?
   if (sensor.seg == 1) {
     // pl_minus_ps = -(p_sigma - p_l)
-    nu = (line.v.x * pl_minus_ps.y - line.v.y * pl_minus_ps.x) / det;
     if ((nu < 0) || (nu > 1)) {
       return 0;
     }
   }
 
   // Compute intersection point
-  X[0] = line.v * tau + line.p ;
+  X[0] = {line.v * tau + line.p, nu};
 
   return 1;
 }
@@ -155,7 +152,7 @@ uint8_t intersects_circle(LineVector sensor, circle_t circle) {
   // xi_+ = (-b2 + sqrt(b4ac))/a
   xi = (-b2 + sqrtf(b4ac)) / a;
   if (!sensor.seg || cmp01(xi)) {
-    X[n++] = psig + vsig * xi;
+    X[n++] = {psig + vsig * xi, xi};
   }
 
   // One intersection only?
@@ -165,7 +162,7 @@ uint8_t intersects_circle(LineVector sensor, circle_t circle) {
 
   xi = (-b2 - sqrtf(b4ac)) / a;
   if (!sensor.seg || cmp01(xi)) {
-    X[n++] = psig + vsig * xi;
+    X[n++] = {psig + vsig * xi, xi};
   }
   return n;
 }
@@ -176,7 +173,7 @@ uint8_t intersects_rectangle(LineVector sensor, rectangle_t rect) {
   Vec v;
 
   // Left side
-  rect_side = LineVector({rect.p, rect.w, rect.rho, true});
+  rect_side = LineVector(Vec(rect.p), rect.w, rect.rho, 1);
   v = rect_side.v; // Make a copy
   n_int = intersects_line_vector(sensor, rect_side);
   if (n_int) {
@@ -209,14 +206,14 @@ uint8_t intersects_rectangle(LineVector sensor, rectangle_t rect) {
   return n_int;
 }
 
-side_t collides(Vehicle veh, obstacle obst) {
+side_t collides(Vehicle veh, obstacle_t obst) {
   // Collision of a vehicle with an obstacle
   // Returns the first side where the collision was detected
   LineVector rect_side;
 
   // Detect a frontal collision first
   rect_side = LineVector(veh.p + veh.v, // p + v = front-left
-                         veh.front);
+                         veh.front, 1);
   if (intersects(rect_side, obst))
     return FRONT;
 
@@ -227,7 +224,7 @@ side_t collides(Vehicle veh, obstacle obst) {
     return REAR;
 
   // Left side. p = rear-left
-  rect_side = LineVector(veh.p, veh.v);
+  rect_side = LineVector(veh.p, veh.v, 1);
   if (intersects(rect_side, obst))
     return LEFT;
 
