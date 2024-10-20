@@ -25,5 +25,6 @@ const obstacle_t PROGMEM obstacles[] = {
   {LINE, kBoardWidth, 0.0, kBoardHeight, 0, 0x01},  // East
   // TODO: Obstacles
   {CIRCLE, 100.0, 200.0, 20.0},
-  {RECTANGLE, 200.0, 300.0, 50.0, 45, 0x3e99999a} // Approximately 0.3
+  {RECTANGLE, 400.0, 400.0, 50.0, 45, 0x3e99999a}, // Approximately 0.3
+  {CIRCLE, 1600.0, 400.0, 40.0},
 };

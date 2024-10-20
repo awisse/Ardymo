@@ -66,6 +66,7 @@ void StepGame() {
 
 void Restart() {
   if ((state == success) || (state == running) || (state == over)) {
+    InitGame();
   }
 }
 

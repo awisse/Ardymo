@@ -3,6 +3,7 @@
 // Emulates "registring listeners"
 #include "controller.h"
 #include "vehicle.h"
+#include "game.h"
 #include "defines.h"
 #include "platform.h"
 
@@ -18,6 +19,7 @@ void Dispatch(Event e) {
       break;
 
     case Long_A:
+      Restart();
       break;
 
     case Short_B:

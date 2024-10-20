@@ -281,7 +281,7 @@ void Platform::eraseRectRow(uint8_t x, uint8_t y, uint8_t width, uint8_t height)
   // For the ardusdl version, compute rectangle and draw it
 
   row = y & 0xF8;
-  rows = ((y + height + 7) & 0xF8);
+  rows = ((y + height + 7) & 0xF8) - row;
 
   // Truncate
   width = (width > kScreenWidth - x) ? kScreenWidth - x : width;

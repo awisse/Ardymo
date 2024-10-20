@@ -54,6 +54,5 @@ class Vehicle {
 
   private:
     float speed; // Forward (positive) or backward (negative)
-    float forward, left, right, rearward; // Distance to obstacles
 };
 // vim: ft=cpp:ts=2:sts=2:expandtab

@@ -2,6 +2,12 @@
 //
 // Vehicle manouvering
 //
+#ifdef ARDUINO
+#include "math.h"
+#else
+#include <limits>
+#define INFINITY std::numeric_limits<float>::infinity()
+#endif
 #include "vehicle.h"
 #include "intersection.h"
 #include "globals.h"
@@ -10,16 +16,25 @@
 
 static Vehicle vehicle;
 
+// Directions to check for distance
+enum direction_t {
+  FORWARD = 0,
+  BACKWARD = 1
+};
+
 // Helper functions
 
-float GetDistance(LineVector sensor) {
+void GetDistances(LineVector sensor, float* distances) {
   // Compute distance to all obstacles.
   // Return the closest
   obstacle_t obst;
-  float d, closest = 1.0 / 0.0;
+  intersection_t x; // Point of intersection
+  float d;
   size_t obstacle_count = sizeof(obstacles) / sizeof(obstacle_t);
   int16_t i, j, intersection_count;
 
+  // Set Distances to infinity
+  distances[0] = distances[1] = INFINITY;
   for (i=0; i<obstacle_count; i++) {
     memcpy_P(&obst, obstacles + i, sizeof(obstacle_t));
 #ifndef ARDUINO
@@ -28,12 +43,15 @@ float GetDistance(LineVector sensor) {
 #endif
     intersection_count = intersects(sensor, obst);
     for (j=0; j<intersection_count; j++) {
+      x = intersect_point(j);
       d = distance(sensor.p, j);
-      if (d < closest)
-        closest = d;
+      if ((x.tau > 0) && (d < distances[FORWARD])) {
+        distances[FORWARD] = d;
+      } else if (d < distances[BACKWARD]) {
+        distances[BACKWARD] = d;
+      }
     }
   }
-  return closest;
 }
 
 void InitVehicle() {
@@ -65,34 +83,53 @@ void CheckSensors(SensorValues* sensors) {
   // emanating from the vehicle, two from each corner parallel
   // to the sides of the vehicle (see Figure 7 in ardymo.pdf).
   LineVector sensor;
-  float distance;
+  float d; // Temporary distance variable
+  float distances[2];
 
-  // Front Left-Forward
-  sensor = LineVector(vehicle.p + vehicle.v, vehicle.v, vehicle.length, 0);
-  distance = GetDistance(sensor);
-  sensors->distances.front = distance;
-  // Front Left-Left
-  sensor = LineVector(vehicle.p + vehicle.v, -vehicle.front, 
-      vehicle.width, 0);
-  sensors->distances.left = 0.0; 
-  // Front Right-Forward
-  sensor = LineVector(vehicle.p + vehicle.v + vehicle.front, vehicle.v, 
+  // Left
+  sensor = LineVector(vehicle.p, vehicle.v, vehicle.length, 0);
+  // FORWARD
+  GetDistances(sensor, distances);
+  sensors->distances.front = distances[FORWARD] - vehicle.length;
+  // REARWARD
+  sensors->distances.rear = distances[BACKWARD];
+
+  // Right
+  sensor = LineVector(vehicle.p + vehicle.front, vehicle.v, 
       vehicle.length, 0);
-  // Front Right-Right
-  sensor = LineVector(vehicle.p + vehicle.v + vehicle.front, vehicle.front, 
+  GetDistances(sensor, distances);
+  // FORWARD
+  if (distances[FORWARD] < (sensors->distances.right - vehicle.width)) {
+    sensors->distances.right = distances[FORWARD] - vehicle.width;
+  }
+  // REARWARD
+  if (distances[BACKWARD] < sensors->distances.left) {
+    sensors->distances.left = distances[BACKWARD];
+  }
+  
+  // Front
+  sensor = LineVector(vehicle.p + vehicle.v, vehicle.front, 
       vehicle.width, 0);
-  sensors->distances.right = 0.0;
-  // Rear Left-Rearward
-  sensor = LineVector(vehicle.p, -vehicle.v, vehicle.length, 0);
-  sensors->distances.rear = 0.0;
-  // Rear Left-Left
-  sensor = LineVector(vehicle.p , -vehicle.front, vehicle.width, 0);
-  // Rear Right-Rearward
-  sensor = LineVector(vehicle.p + vehicle.front, -vehicle.v, vehicle.length, 0);
-  // Rear Right-Right
-  sensor = LineVector(vehicle.p + vehicle.front, vehicle.front, vehicle.width, 0);
+  GetDistances(sensor, distances);
+  // Right
+  sensors->distances.right = distances[FORWARD] - vehicle.width;
+  // Left
+  sensors->distances.left = distances[BACKWARD];
+
+  // Rear
+  sensor = LineVector(vehicle.p, vehicle.front, vehicle.width, 0);
+  GetDistances(sensor, distances);
+  // Right
+  if (distances[FORWARD] < (sensors->distances.right - vehicle.width)) {
+    sensors->distances.right = distances[FORWARD] - vehicle.width;
+  }
+  // Left
+  if (distances[BACKWARD] < sensors->distances.left) {
+    sensors->distances.left = distances[BACKWARD];
+  }
 
   sensors->heading = vehicle.v.normalized().as_point();
+  // Position: Center of front
   sensors->position = vehicle.p + vehicle.v + vehicle.front / 2.0;
   sensors->alpha = vehicle.heading;
   sensors->speed = vehicle.get_speed();

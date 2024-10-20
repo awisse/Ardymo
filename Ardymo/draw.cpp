@@ -14,7 +14,7 @@ static Vec centre = {(float)screenCentre.x, (float)screenCentre.y};
 
 // Draw elapsed time and distance to target in top left corner
 void DrawStatus(float speed, float distance) {
-  Platform::eraseRectRow(0, 0, kStatusX - 1, 16);
+  Platform::eraseRectRow(0, 0, kStatusX - 1, 15);
   Platform::setCursor(1, 1);
   Platform::print(speed, 1);
   Platform::print("/s");
@@ -33,7 +33,7 @@ void DrawCompass(Vec vehicle_direction, int16_t alpha,
 
   // Erase first
   Platform::eraseRectRow((kScreenWidth >> 1) - 2 - kCompassRadius, 8,
-      kCompassRadius << 1, kCompassRadius << 1);
+      kCompassRadius << 1, (kCompassRadius << 1)  - 1);
   // 1. Circle in the centre
   Platform::drawCircle(centre.x, centre.y, kCompassRadius);
   // 2. Arrow
@@ -71,10 +71,35 @@ void DrawCompass(Vec vehicle_direction, int16_t alpha,
 }
 
 void DrawDistances(Distances* distances) {
+  int16_t hoffset; // For right distance
   // Front
-  Platform::eraseRectRow(centre.x + 5, 0, 48, 8);
-  Platform::setCursor(centre.x + 5, 0);
-  Platform::print(distances->front);
+  Platform::eraseRectRow(centre.x + 6, 0, 48, 1);
+  Platform::setCursor(centre.x + 6, 0);
+  Platform::print(distances->front, 0);
+  Platform::print('m');
+  // Rear
+  Platform::eraseRectRow(centre.x + 6, kScreenHeight - 7, 30, 1);
+  Platform::setCursor(centre.x + 6, kScreenHeight - 7);
+  Platform::print(distances->rear, 0);
+  Platform::print('m');
+  // Left
+  Platform::eraseRectRow(6, centre.y - 4, 30, 8);
+  Platform::setCursor(6, centre.y - 4);
+  Platform::print(distances->left, 0);
+  Platform::print('m');
+  // Right
+  Platform::eraseRectRow(kScreenWidth - 39, centre.y - 4, 34, 8);
+  // Fix alignment depending on number
+  if (distances->right < 9.5) 
+    hoffset = 39 - 3 * 6;
+  else if (distances->right < 99.5)
+    hoffset = 39 - 2 * 6;
+  else if (distances->right < 999.5)
+    hoffset = 39 - 6;
+  else 
+    hoffset = 39;
+  Platform::setCursor(kScreenWidth - hoffset, centre.y - 4);
+  Platform::print(distances->right, 0);
   Platform::print('m');
 
 }
@@ -83,7 +108,7 @@ void DrawBackground() {
   // Draw main features of background:
   // 1. rectangle in upper left corner.
   Platform::drawFastHLine(0, kStatusY, kStatusX);
-  Platform::drawFastVLine(kStatusX, 0, kStatusY);
+  Platform::drawFastVLine(kStatusX, 0, kStatusY  + 1);
   // 2. Triangles for directions
   Platform::drawBitmap(centre.x - 2, 0, &arrows[UP_ARROW], 5, 8);
   Platform::drawBitmap(centre.x - 2, kScreenHeight - 5,
