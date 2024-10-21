@@ -8,7 +8,8 @@
 #include "sprites.h"
 
 // Center of screen
-static Vec centre = {(float)screenCentre.x, (float)screenCentre.y};
+static Vec centre = {(float)((kScreenWidth>>1)-1), 
+                     (float)((kScreenHeight>>1)-1)};
 
 // Helper functions
 
@@ -119,5 +120,19 @@ void DrawBackground() {
 
 }
 
-// vim:fdm=syntax
+void DrawSuccess(uint16_t elapsed) {
+  Platform::clear();
+  Platform::setCursor(centre.x - 21, centre.y - 8);
+  Platform::print("SUCCESS");
+  Platform::setCursor(centre.x - 21, centre.y);
+  Platform::print(elapsed);
+}
 
+void DrawGameOver(uint16_t elapsed) {
+  Platform::clear();
+  Platform::setCursor(centre.x - 21, centre.y - 8);
+  Platform::print("Game Over");
+  Platform::setCursor(centre.x - 21, centre.y);
+  Platform::print(elapsed);
+}
+// vim:fdm=syntax

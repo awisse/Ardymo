@@ -27,4 +27,8 @@ const obstacle_t PROGMEM obstacles[] = {
   {CIRCLE, 100.0, 200.0, 20.0},
   {RECTANGLE, 400.0, 400.0, 50.0, 45, 0x3e99999a}, // Approximately 0.3
   {CIRCLE, 1600.0, 400.0, 40.0},
+  // Test obstacles
+  // Close to vehicle
+  {RECTANGLE, kBoardWidth - 200, kBoardHeight - 50, 50.0, 90, 0x3dcccccd},//0.1
+  {CIRCLE, kBoardWidth - 300.0, kBoardHeight - 200.0, 50.0},
 };

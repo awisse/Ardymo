@@ -19,5 +19,4 @@ typedef struct {
   uint8_t sdigits; // How many digits in seconds
 } Duration;
 
-extern bool modified; // True if screen needs to be redrawn
 // vim:ft=cpp

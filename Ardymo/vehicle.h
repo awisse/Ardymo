@@ -3,12 +3,6 @@
 #include "objects.h"
 #include "structs.h"
 
-// Max speed: 20.0/second; kFrameDuration: Milliseconds / Frame
-constexpr float MaxSpeed = 0.02 * kFrameDuration;
-// Twenty speed steps.
-constexpr float SpeedStep = MaxSpeed / 20.0;
-constexpr int16_t AngleStep = 2;
-
 void InitVehicle(void);
 void TurnRight(void);
 void TurnLeft(void);
@@ -53,6 +47,7 @@ class Vehicle {
     int16_t heading;
 
   private:
-    float speed; // Forward (positive) or backward (negative)
+    float speed; // Units (m) per second
+    float step; // Move quantity per frame
 };
 // vim: ft=cpp:ts=2:sts=2:expandtab

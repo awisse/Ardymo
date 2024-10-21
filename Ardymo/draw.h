@@ -13,3 +13,5 @@ void DrawCompass(Vec vehicle_direction, int16_t heading,
 // Draw sensor values
 void DrawDistances(Distances*);
 // vim: tabstop=2:softtabstop=2:shiftwidth=2:expandtab:filetype=cpp
+void DrawSuccess(uint16_t elapsed);
+void DrawGameOver(uint16_t elapsed);

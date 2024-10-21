@@ -182,7 +182,7 @@ TEST_F (TestIntersections, Rectangle) {
 
 }
 
-// Tests of collision of rectangle with obstacle
+// Tests of collision of Vehicle with obstacle
 class TestCollisions : public testing::Test {
   protected:
 

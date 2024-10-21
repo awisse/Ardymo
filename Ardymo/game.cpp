@@ -46,8 +46,14 @@ void StepGame() {
   MoveVehicle(); // Move according to heading and speed
   // Check for collisions and distance to obstacles and target:
   CheckSensors(&sensors);
+
   tgt_heading = target.Heading(sensors.position);
   tgt_distance = target.p.distance(sensors.position);
+
+  if ((tgt_distance < 2.0) && (sensors.speed == 0)) {
+    Success();
+    return;
+  }
 
   if (state == running) {
     DrawCompass(sensors.heading, sensors.alpha, tgt_heading);
@@ -91,14 +97,15 @@ void Menu() {
 void GameOver() {
 
   uint16_t elapsed = (Platform::millis() - start) / 1000;
+  DrawGameOver(elapsed);
   state = over;
 }
 
 void Success () {
   // Show result.
-  uint8_t stars;
   uint16_t elapsed = (Platform::millis() - start) / 1000;
-
+  DrawSuccess(elapsed);
+  state = success;
 }
 
 // vim:fdm=syntax:tabstop=2:softtabstop=2:shiftwidth=2:expandtab

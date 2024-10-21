@@ -153,15 +153,16 @@ void Vehicle::turn(float alpha) {
 
 void Vehicle::move(void) {
   // Move by one unit of speed
-  p += v * speed;
+  p += v * step;
 }
 
 void Vehicle::accelerate_forward(void) {
   speed = speed >= MaxSpeed ? MaxSpeed : speed + SpeedStep;
+  step = speed / 1000.0 * kFrameDuration / length;
 }
 
 void Vehicle::accelerate_backwards(void) {
   // Max backward speed = half max speed
   speed = speed <= -MaxSpeed / 2.0 ? - MaxSpeed / 2.0 : speed - SpeedStep;
+  step = speed / 1000.0 * kFrameDuration / length;
 }
-
