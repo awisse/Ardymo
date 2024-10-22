@@ -105,11 +105,25 @@ void DrawDistances(Distances* distances) {
 
 }
 
+void DrawPosition(Vec vehicle_position) {
+
+  Platform::eraseRectRow(0, kScreenHeight - 16, kStatusX - 1, 15);
+  Platform::setCursor(1, kScreenHeight - kStatusY + 1);
+  Platform::print("x ");
+  Platform::print((int16_t)vehicle_position.x);
+  Platform::setCursor(1, kScreenHeight - kStatusY + 9);
+  Platform::print("y ");
+  Platform::print((int16_t)vehicle_position.y);
+}
+
 void DrawBackground() {
   // Draw main features of background:
-  // 1. rectangle in upper left corner.
+  // 1a. rectangle in upper left corner.
   Platform::drawFastHLine(0, kStatusY, kStatusX);
   Platform::drawFastVLine(kStatusX, 0, kStatusY  + 1);
+  // 1b. rectangle in lower left corner.
+  Platform::drawFastHLine(0, kScreenHeight-kStatusY-1, kStatusX);
+  Platform::drawFastVLine(kStatusX, kScreenHeight-kStatusY-1, kStatusY);
   // 2. Triangles for directions
   Platform::drawBitmap(centre.x - 2, 0, &arrows[UP_ARROW], 5, 8);
   Platform::drawBitmap(centre.x - 2, kScreenHeight - 5,

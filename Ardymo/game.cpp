@@ -47,7 +47,7 @@ void StepGame() {
   // Check for collisions and distance to obstacles and target:
   CheckSensors(&sensors);
 
-  tgt_heading = target.Heading(sensors.position);
+  tgt_heading = target.Heading(&sensors);
   tgt_distance = target.p.distance(sensors.position);
 
   if ((tgt_distance < 2.0) && (sensors.speed == 0)) {
@@ -59,6 +59,7 @@ void StepGame() {
     DrawCompass(sensors.heading, sensors.alpha, tgt_heading);
     DrawStatus(sensors.speed, tgt_distance);
     DrawDistances(&sensors.distances);
+    DrawPosition(sensors.position);
   }
   Platform::display();
 
