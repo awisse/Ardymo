@@ -3,12 +3,16 @@
 #include "objects.h"
 #include "structs.h"
 
+class Vehicle;
+
 void InitVehicle(void);
 void TurnRight(void);
 void TurnLeft(void);
 void AccelerateForward(void);
 void AccelerateBackward(void);
 void MoveVehicle(void);
+// Collision of rectangle with an object
+side_t collides(Vehicle, obstacle_t);
 
 void CheckSensors(SensorValues* sensors);
 

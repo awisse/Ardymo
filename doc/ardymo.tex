@@ -3,8 +3,6 @@
 % Mini Jam project du on October 31st, 2024.
 % The game is called "Ardymo", a combination of "Arduino" and "Waymo"
 %
-% Compute the intersections of a straight line with an ellipse and
-% a rectangle.
 %
 \documentclass[11pt]{article}
 %
@@ -37,14 +35,18 @@
 \newcommand{\diota}{d_\iota}
 \newcommand{\Dsigl}{D_{\sigma l}}
 \newcommand{\dsigl}{d_{\sigma l}}
+\newcommand{\Hhat}{\widehat{H}}
 \newcommand{\pb}{\mathbf{p}}
+\newcommand{\pbhat}{\hat{\mathbf{p}}}
 \newcommand{\pbc}{\mathbf{p}_c}
+\newcommand{\pbchat}{\hat{\mathbf{p}}_c}
 \newcommand{\pbl}{\mathbf{p}_l}
 \newcommand{\pbs}{\mathbf{p}_s}
 \newcommand{\pbiot}{\mathbf{p}_\iota}
 \newcommand{\pbiotp}{\mathbf{p}_{\iota+}}
 \newcommand{\pbiotm}{\mathbf{p}_{\iota-}}
 \newcommand{\pbsig}{\mathbf{p}_\sigma}
+\newcommand{\phat}{\hat{p}}
 \newcommand{\pxc}{p_{xc}}
 \newcommand{\pyc}{p_{yc}}
 \newcommand{\pxl}{p_{xl}}
@@ -52,7 +54,9 @@
 \newcommand{\pxsig}{p_{x\sigma}}
 \newcommand{\pysig}{p_{y\sigma}}
 \newcommand{\Rb}{\mathbf{R}}
+\newcommand{\rhat}{\hat{r}}
 \newcommand{\Sb}{\mathbf{S}}
+\newcommand{\Vb}{\mathbf{V}}
 \newcommand{\vb}{\mathbf{v}}
 \newcommand{\vbl}{\mathbf{v}_l}
 \newcommand{\vbs}{\mathbf{v}_s}
@@ -62,12 +66,13 @@
 \newcommand{\vbiot}{\mathbf{v}_\iota}
 \newcommand{\vxsig}{v_{x\sigma}}
 \newcommand{\vysig}{v_{y\sigma}}
+\newcommand{\What}{\widehat{W}}
 \newcommand{\xb}{\mathbf{x}}
 \newcommand{\Xhat}{\hat{X}}
+\newcommand{\Xsig}{X_\sigma}
 \newcommand{\xhat}{{\hat{x}}}
 \newcommand{\xiota}{x_\iota}
 \newcommand{\xsig}{x_\sigma}
-\newcommand{\Xsig}{X_\sigma}
 \newcommand{\yb}{\mathbf{y}}
 \newcommand{\yhat}{{\hat{y}}}
 \newcommand{\yiota}{y_\iota}
@@ -83,6 +88,7 @@
 \newcommand{\true}{\textsf{true}}
 \newcommand{\false}{\textsf{false}}
 \newcommand{\mssq}{\frac{m}{s^2}}
+\newcommand{\Map}{\textsl{Map}}
 % For graphics alignment, not used in production
 \newcommand{\HR}{\rule{1em}{0.4pt}}
 \newcommand{\bluefbox}[1]{\textcolor{blue}{%
@@ -91,7 +97,7 @@
 \begin{document}
 %
 %
-\title{Planar Geometry}
+\title{Ardymo}
 \author{Aurel Wisse}
 \maketitle
 %
@@ -300,7 +306,8 @@ to equation~\eqref{eq-v-v-rectangle}.
 
 A circle in the 2-dimensional plane is fully defined by two parameters
 $\pb, r$, where $\pb$ is the center of the circle and $r>0$ is the
-radius of the circle.
+radius of the circle. We shall impose the constraint $r\leq 255$ (section
+\ref{sec-map-drawing-circles}).
 
 
 \section{Intersection and Distance}
@@ -728,6 +735,164 @@ class Vehicle {
 \end{verbatim}
 \caption{Vehicle data structure}\label{code-vehicle-data-structure}
 \end{figure}
+
+\section{Map Application}
+\label{sec-map-application}
+
+The \Map{} application displays the game map. In the context of I2C
+communication, the map is displayed on the connected Arduboy. It allows a
+viewer to follow the objects of the game on the screen. In addition, \Map{}
+can contribute in the computation of intersections and collisions and transmit
+the results to the Ardymo application.
+
+\subsection{Specifications}
+\label{sec-map-specifications}
+
+\begin{itemize}
+    \item The arrows move the viewport on the map in the direction of the
+        arrow.
+    \item A short press on the A button zooms in.
+    \item A short press on the B button zooms out.
+    \item A long  press on the A button centers the viewing window on the
+        vehicle.
+\end{itemize}
+
+\subsection{Implementation}
+\label{sec-map-implementation}
+
+The viewport is represented by its top left coordinates $\Vb=(V_{x}, V_{y})$ 
+on the map. Moving the viewport corresponds to changing the values of these
+coordinates.
+
+The viewing scale is represented by a floating point number. The highest
+resolution is a scaling factor of $\lambda=1.0$, when one point on the map 
+translates directly to one point on the screen. The lowest resolution is the
+entire map represented on the screeen. For huge maps, for instance 
+2048x1024, this is highly unlikely to be readable on a 128x64 screen.
+
+\subsubsection{High Level Workflow}
+\label{sec-map-implementation-workflow}
+    
+\begin{itemize}
+    \item Loop through all obstacles, plus the vehicle and the target.
+    \item Check whether a part of the obstacle is in the viewport.
+    \item If part of the obstacle is in the viewport. Draw that part.
+\end{itemize}
+
+\subsubsection{Viewport}
+\label{sec-map-implementation-viewport}
+
+The viewport is a rectangle representing part or all of the map. The contents
+of the viewport is displayed on the screen. The contents of the viewport is
+scaled by $\lambda$ for display on the screen. 
+
+Let $\What$ and $\Hhat$ be the width and height of the map. Let $W$ and $H$ 
+be the width and height of the screen. For simplicity we assume 
+\begin{equation}
+    \What = 2^n W \qquad \Hhat = 2^n H\label{eq-map-coordinates}
+\end{equation}
+where $n$ is a positive integer. The viewport rectangle $r_{V}$ 
+is given by 
+\begin{equation}
+    r_{V}=\left(\Vb, \frac{W}{\lambda}, 0, \frac{H}{W}\right)
+\end{equation}
+
+\subsubsection{Object in viewport}
+\label{sec-map-implementation-obstacle-in-viewport}
+ 
+
+There are three cases:
+\begin{itemize}
+    \item The object is entirely within the viewport.
+    \item The object is partly contained within the viewport.
+    \item The object is entirely outside the viewport.
+\end{itemize}
+
+In order to check whether the obstacle is entirely within the viewport, proceed
+as follows.
+\begin{enumerate}
+    \item If the obstacle is a line or a rectangle, test the endpoints.
+    \item If the obstacle is a circle $(\pxc,\pyc,r)$, the circle is 
+        contained within the viewport rectangle $(V_{x}, V_{y}, l, 0, \mu)$ 
+        if
+        \begin{eqnarray*}
+            \pxc + r &<& V_{x} + l\\
+            \pxc - r &\geq& V_{x}\\
+            \pyc + r &<& V_{y} + \mu l\\
+            \pyc - r &\geq& V_{y}
+        \end{eqnarray*}
+\end{enumerate}
+
+The object is partly contained within the viewport if it intersects the
+viewport.
+
+If the object is neither entirely nor partly contained within the viewport, it
+is outside the viewport.
+
+\subsection{Drawing}
+\label{sec-map-drawing}
+
+To draw a point in the viewport, its coordinates have to be
+translated from map coordinates to screen coordinates. We denote screen
+coordinates with "hats". For a map point $\pbhat=(\phat_{x}, \phat_{y})$, the 
+corresponding screen point is $\pb=(p_{x}, p_{y})$.
+
+While the map coordinates are represented as floats, the screen coordintes are
+represented as integers.
+
+\subsubsection{Map to Screeen}
+\label{sec-map-drawing-to-screen}
+In this section we present the transformation from map coordinates to screen
+coordinates.
+
+
+Let $\lambda$ be the scale factor of the viewport. 
+The scale factor $\lambda$ translates distances on the map to
+distances in the viewport. If $d$ is a distance on the map, $\lambda d$ is the
+corresponding distance in the viewport. For example, when the viewport
+represents the entire map, we have $\lambda = \frac{1}{2^{n}}$ (see 
+\eqref{eq-map-coordinates}).
+
+\paragraph{Transformation.}
+Let $\pbhat=(\phat_{x}, \phat_{y})$ be a point on the map and 
+$\Vb=(V_{x}, V_{y})$ be the position of the viewport. The corresponding point 
+$\pb=(p_{x}, p_{y})$ on the screen is given by
+\begin{equation} 
+    \pb = (p_{x}, p_{y})  = \lambda(\phat_{x} - V_{x}, \phat_{y} - V_{y})
+    \label{eq-map-to-screen}
+\end{equation} 
+If $\pbhat$ is in the viewport, $\pb$ is on the screen.
+
+\subsubsection{Lines}
+\label{sec-map-drawing-lines}
+If the line is entirely contained within the viewport, draw the line between 
+its endpoints transformed according to \eqref{eq-map-to-screen}.
+
+If the line is partially included in the viewport, proceed as follows.
+\begin{enumerate}
+    \item If there is one point of intersection with the viewport, determine
+        the endpoint of the line that is inside the viewport. Draw the line
+        between the point of intersection and the endpoint of the line within
+        the viewport.
+    \item If there are two points of intersection with the viewport, draw the
+        line between the points of intersection.
+\end{enumerate}
+
+\subsubsection{Circles}
+\label{sec-map-drawing-circles}
+The radius of the \texttt{Arduboy::drawCircle} function is a \texttt{uint8\_t}
+and hence limited to maximum of 255. In order to avoid writing our own circle
+drawing function, we will therefore limit the radii $\rhat$ of our circles on 
+the map to $\rhat\leq 255$.
+
+For now, just draw the entire circle $(\pbchat, \rhat)$ with $\pbchat$ 
+transformed according to \eqref{eq-map-to-screen} into $\pbc$. 
+The corresponding circle on the screen is given by $(\pbc, \lambda\rhat)$,
+clipped to the screen.
+The \texttt{Arduboy::drawCircle} function clips the circle to the screen
+automatically. 
+If this causes a problem later, we will write our own circle drawing function.
+ 
 \appendix
 \section{Rotation Matrix}
 \label{appendix-rotation-matrix}

@@ -205,34 +205,3 @@ uint8_t intersects_rectangle(LineVector sensor, rectangle_t rect) {
 
   return n_int;
 }
-
-side_t collides(Vehicle veh, obstacle_t obst) {
-  // Collision of a vehicle with an obstacle
-  // Returns the first side where the collision was detected
-  LineVector rect_side;
-
-  // Detect a frontal collision first
-  rect_side = LineVector(veh.p + veh.v, // p + v = front-left
-                         veh.front, 1);
-  if (intersects(rect_side, obst))
-    return FRONT;
-
-  // Then a rear collision
-  rect_side.p = veh.p + veh.front; // p+front = rear-right
-  rect_side.v = -veh.front;
-  if (intersects(rect_side, obst))
-    return REAR;
-
-  // Left side. p = rear-left
-  rect_side = LineVector(veh.p, veh.v, 1);
-  if (intersects(rect_side, obst))
-    return LEFT;
-
-  // Right side
-  rect_side.p += veh.v + veh.front;
-  rect_side.v = -rect_side.v;
-  if (intersects(rect_side, obst))
-    return RIGHT;
-
-  return NONE;
-}

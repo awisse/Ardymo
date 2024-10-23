@@ -5,7 +5,6 @@
 #pragma once
 #include "objects.h"
 #include "structs.h"
-#include "vehicle.h"
 
 struct intersection_t {
   Vec p;
@@ -19,5 +18,3 @@ uint8_t intersects(LineVector sensor, obstacle_t obst);
 float distance(Vec origin, uint8_t i);
 // Point of intersection found (i = {0,1})
 intersection_t intersect_point(uint8_t i);
-// Collision of rectangle with an object
-side_t collides(Vehicle, obstacle_t);
