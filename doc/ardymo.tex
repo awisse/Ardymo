@@ -271,7 +271,7 @@ the y-axis are \textsl{below} the origin. Hence, the vector $\vb=(1, 2)$ points
     \caption{$v$ from length $l$ and angle $\rho$}\label{fig-line-from-rho}
 \end{figure}
 The parameters for a line are $(\pb, \vb, \Sb)$, where $\pb=(p_{x}, p_{y})$ is
-The parameters for a line are $(\pb, l, \rho, \Sb)$, where $\pb=(p_{x}, 
+The parameters for a line are $(\pb, l, \rho, \Sb)$, where $\pb=(p_{x},
 p_{y})$ is a point on the line, $l$ is the length of the line and $\rho$ is the clockwise rotation
 of the line with respect to the \textsl{South}, that is, with respect to the
 vector $(0, l)$ (see \figref{fig-line-from-rho}). The direction $\vb=(v_{x},
@@ -285,19 +285,18 @@ for a segment. A segment is defined by the points $\pb+t\vb,\,t\in[0,1]$.
 \subsection{Rectangle}
 \label{sec-representation-rectangle}
 
-A rectangle is given by the parameters $(\pb, w, \rho, \mu)$, where
-$\pb=(p_{x}, p_{y})$ is the origin of the rectangle, $w$ and $\rho$ define the
-direction $\vb=(v_{x}, v_{y})$ of the rectangle by substituting $w$ for $l$ in
-\eqref{eq-direction-from-rho}. 
-The height $h$ of the rectangle is given by
-\begin{equation}
-    h = \mu w.\label{eq-height-rectangle}
-\end{equation}
+A rectangle is given by the parameters $(\pb, l, \rho, w)$, where
+$\pb=(p_{x}, p_{y})$ is the origin of the rectangle, $l$, the length of the
+rectangle and $\rho$ define the
+direction $\vb=(v_{x}, v_{y})$ of the rectangle by substituting for $l$ in
+\eqref{eq-direction-from-rho} and $w$ is the width of the rectangle, the
+dimension perpendicular to the direction of the rectangle.
 
-The second directional parameter $\vb_1$ of the rectangle (section~\ref{sec-rectangle}) is given
-by
+The second directional parameter $\vb_1$ of the rectangle
+(section~\ref{sec-rectangle}) is given by
 \begin{equation}
-    \vb_1 = \mu\Omega(90^\circ)\vb_0.\label{eq-vb1-rectangle}
+    \vb_1 = \frac{w}{l}\Omega(90^\circ)\vb_0,
+    \label{eq-vb1-rectangle}
 \end{equation}
 The remaining directional parameters, $\vb_2,\,\vb_3$ can be computed according
 to equation~\eqref{eq-v-v-rectangle}.
@@ -649,13 +648,12 @@ Forward acceleration is $1\mssq$ when the speed is zero or positive,
 $3\mssq$ when the vehicle is moving backward (breaking).
 Backward acceleration is $-1\mssq$ when the speed is zero or negative,
 $-3\mssq$ when the vehicle is moving forward (breaking).
-
-A top speed of $6\mssq$ forward and $3\mssq$ backward may be defined.
+These values may be adjusted if necessary.
 
 \subsection{Vehicle Movement}
 \label{sec-vehicle-movement}
 
-The vehicle is defined as a rectangle $(\pb, \vb, \mu)$ as described in
+The vehicle is defined as a rectangle $(\pb, l, \rho, w)$ as described in
 section~\ref{sec-representation-rectangle}.
 
 Turning the vehicle with the left or right button rotates the rectangle
@@ -713,24 +711,41 @@ structure~\ref{code-vehicle-data-structure}
 \begin{figure}
 \begin{verbatim}
 class Vehicle {
-
     public:
-        Vehicle();
-        Vehicle(rectangle_t rect) p(rect.p), length(rect.l),
-            heading(rect.rho), width(rect.l/rect.mu) {}
-        void rotate(float alpha); // Rotate around center of rear
+        // Constructors
+        Vehicle() = default;
+
+        Vehicle(Vec p, float l, int16_t rho, float w) :
+          p(p), v(Vec(0, l).rotate(rho)), length(l), heading(rho),
+          width(w), front(Vec(0, w).rotate(rho + 90)), speed(0.0f) {}
+
+        Vehicle(float x, float y, float l, int16_t h, float w) :
+          Vehicle(Vec(x, y), l, h, w) {} // Constructor delegation
+
+        Vehicle(rectangle_t rect) :
+          Vehicle(Vec(rect.p), rect.w, rect.rho, rect.w) {}
+
+        // Methods
+        void turn(float alpha); // Rotate around center of rear
         void move(void); // Move in direction by present speed.
-        float scan(void); // TBD: Scanning functions. 
-        bool collided(obstacle obst); // Collision with obstacles
+        bool collided(obstacle_t obst); // Collision with obstacles
         rectangle_t as_rectangle(void);
+        void accelerate_forward(void);
+        void accelerate_backwards(void);
+
+        // Getters
+        float get_speed(void) {return speed;}
+
+        // Public variables (no messing with getters, setters)
+        Vec p; // Origin of rectangle
+        Vec v; // Direction of rectangle
+        Vec front; // Vector defining the front of the vehicle
+        float length, width; // Length, width of vehicle
+        int16_t heading;
 
     private:
-        Vec p; // Origin of rectangle
-        float length, width; // Length, width of vehicle
-        float heading;
-
-        float speed; // Forward (positive) or backward (negative)
-        float front, left, right, rear; // Distance to obstacles
+        float speed; // Units (m) per second
+        float step; // Move quantity per frame
 };
 \end{verbatim}
 \caption{Vehicle data structure}\label{code-vehicle-data-structure}
@@ -760,19 +775,19 @@ the results to the Ardymo application.
 \subsection{Implementation}
 \label{sec-map-implementation}
 
-The viewport is represented by its top left coordinates $\Vb=(V_{x}, V_{y})$ 
+The viewport is represented by its top left coordinates $\Vb=(V_{x}, V_{y})$
 on the map. Moving the viewport corresponds to changing the values of these
 coordinates.
 
 The viewing scale is represented by a floating point number. The highest
-resolution is a scaling factor of $\lambda=1.0$, when one point on the map 
+resolution is a scaling factor of $\lambda=1.0$, when one point on the map
 translates directly to one point on the screen. The lowest resolution is the
-entire map represented on the screeen. For huge maps, for instance 
+entire map represented on the screeen. For huge maps, for instance
 2048x1024, this is highly unlikely to be readable on a 128x64 screen.
 
 \subsubsection{High Level Workflow}
 \label{sec-map-implementation-workflow}
-    
+
 \begin{itemize}
     \item Loop through all obstacles, plus the vehicle and the target.
     \item Check whether a part of the obstacle is in the viewport.
@@ -784,22 +799,22 @@ entire map represented on the screeen. For huge maps, for instance
 
 The viewport is a rectangle representing part or all of the map. The contents
 of the viewport is displayed on the screen. The contents of the viewport is
-scaled by $\lambda$ for display on the screen. 
+scaled by $\lambda$ for display on the screen.
 
-Let $\What$ and $\Hhat$ be the width and height of the map. Let $W$ and $H$ 
-be the width and height of the screen. For simplicity we assume 
+Let $\What$ and $\Hhat$ be the width and height of the map. Let $W$ and $H$
+be the width and height of the screen. For simplicity we assume
 \begin{equation}
     \What = 2^n W \qquad \Hhat = 2^n H\label{eq-map-coordinates}
 \end{equation}
-where $n$ is a positive integer. The viewport rectangle $r_{V}$ 
-is given by 
+where $n$ is a positive integer. The viewport rectangle $r_{V}$
+is given by
 \begin{equation}
-    r_{V}=\left(\Vb, \frac{W}{\lambda}, 0, \frac{H}{W}\right)
+    r_{V}=\left(\Vb, \frac{W}{\lambda}, 0, \frac{H}{\lambda}\right)
 \end{equation}
 
 \subsubsection{Object in viewport}
 \label{sec-map-implementation-obstacle-in-viewport}
- 
+
 
 There are three cases:
 \begin{itemize}
@@ -812,13 +827,13 @@ In order to check whether the obstacle is entirely within the viewport, proceed
 as follows.
 \begin{enumerate}
     \item If the obstacle is a line or a rectangle, test the endpoints.
-    \item If the obstacle is a circle $(\pxc,\pyc,r)$, the circle is 
-        contained within the viewport rectangle $(V_{x}, V_{y}, l, 0, \mu)$ 
+    \item If the obstacle is a circle $(\pxc,\pyc,r)$, the circle is
+        contained within the viewport rectangle $(V_{x}, V_{y}, w, 0, h)$
         if
         \begin{eqnarray*}
-            \pxc + r &<& V_{x} + l\\
+            \pxc + r &<& V_{x} + w\\
             \pxc - r &\geq& V_{x}\\
-            \pyc + r &<& V_{y} + \mu l\\
+            \pyc + r &<& V_{y} + h\\
             \pyc - r &\geq& V_{y}
         \end{eqnarray*}
 \end{enumerate}
@@ -834,7 +849,7 @@ is outside the viewport.
 
 To draw a point in the viewport, its coordinates have to be
 translated from map coordinates to screen coordinates. We denote screen
-coordinates with "hats". For a map point $\pbhat=(\phat_{x}, \phat_{y})$, the 
+coordinates with "hats". For a map point $\pbhat=(\phat_{x}, \phat_{y})$, the
 corresponding screen point is $\pb=(p_{x}, p_{y})$.
 
 While the map coordinates are represented as floats, the screen coordintes are
@@ -846,26 +861,26 @@ In this section we present the transformation from map coordinates to screen
 coordinates.
 
 
-Let $\lambda$ be the scale factor of the viewport. 
+Let $\lambda$ be the scale factor of the viewport.
 The scale factor $\lambda$ translates distances on the map to
 distances in the viewport. If $d$ is a distance on the map, $\lambda d$ is the
 corresponding distance in the viewport. For example, when the viewport
-represents the entire map, we have $\lambda = \frac{1}{2^{n}}$ (see 
+represents the entire map, we have $\lambda = \frac{1}{2^{n}}$ (see
 \eqref{eq-map-coordinates}).
 
 \paragraph{Transformation.}
-Let $\pbhat=(\phat_{x}, \phat_{y})$ be a point on the map and 
-$\Vb=(V_{x}, V_{y})$ be the position of the viewport. The corresponding point 
+Let $\pbhat=(\phat_{x}, \phat_{y})$ be a point on the map and
+$\Vb=(V_{x}, V_{y})$ be the position of the viewport. The corresponding point
 $\pb=(p_{x}, p_{y})$ on the screen is given by
-\begin{equation} 
+\begin{equation}
     \pb = (p_{x}, p_{y})  = \lambda(\phat_{x} - V_{x}, \phat_{y} - V_{y})
     \label{eq-map-to-screen}
-\end{equation} 
+\end{equation}
 If $\pbhat$ is in the viewport, $\pb$ is on the screen.
 
 \subsubsection{Lines}
 \label{sec-map-drawing-lines}
-If the line is entirely contained within the viewport, draw the line between 
+If the line is entirely contained within the viewport, draw the line between
 its endpoints transformed according to \eqref{eq-map-to-screen}.
 
 If the line is partially included in the viewport, proceed as follows.
@@ -882,17 +897,17 @@ If the line is partially included in the viewport, proceed as follows.
 \label{sec-map-drawing-circles}
 The radius of the \texttt{Arduboy::drawCircle} function is a \texttt{uint8\_t}
 and hence limited to maximum of 255. In order to avoid writing our own circle
-drawing function, we will therefore limit the radii $\rhat$ of our circles on 
+drawing function, we will therefore limit the radii $\rhat$ of our circles on
 the map to $\rhat\leq 255$.
 
-For now, just draw the entire circle $(\pbchat, \rhat)$ with $\pbchat$ 
-transformed according to \eqref{eq-map-to-screen} into $\pbc$. 
+For now, just draw the entire circle $(\pbchat, \rhat)$ with $\pbchat$
+transformed according to \eqref{eq-map-to-screen} into $\pbc$.
 The corresponding circle on the screen is given by $(\pbc, \lambda\rhat)$,
 clipped to the screen.
 The \texttt{Arduboy::drawCircle} function clips the circle to the screen
-automatically. 
+automatically.
 If this causes a problem later, we will write our own circle drawing function.
- 
+
 \appendix
 \section{Rotation Matrix}
 \label{appendix-rotation-matrix}
