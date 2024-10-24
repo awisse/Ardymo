@@ -45,9 +45,9 @@ struct circle_t {
 
 struct rectangle_t {
   point p; // Origin of rectangle
-  float w; // Width of rectangle (length of vehicle)
-  int16_t rho; // Rotation of rectangle with respect to the north (0,1).
-  float mu; // height = mu * w (height = width of vehicle)
+  float l; // Length of rectangle (in the direction determined by rho)
+  int16_t rho; // Direction of the rectangle with respect to the north (0,1).
+  float w; // Width of rectangle (perpendicular to the direction)
 };
 
 struct obstacle_t {

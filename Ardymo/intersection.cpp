@@ -170,10 +170,10 @@ uint8_t intersects_circle(LineVector sensor, circle_t circle) {
 uint8_t intersects_rectangle(LineVector sensor, rectangle_t rect) {
   uint8_t n_int; // Number of intersections
   LineVector rect_side; // Not initialized !!
-  Vec v;
+  Vec v, front;
 
   // Left side
-  rect_side = LineVector(Vec(rect.p), rect.w, rect.rho, 1);
+  rect_side = LineVector(Vec(rect.p), rect.l, rect.rho, 1);
   v = rect_side.v; // Make a copy
   n_int = intersects_line_vector(sensor, rect_side);
   if (n_int) {
@@ -182,25 +182,27 @@ uint8_t intersects_rectangle(LineVector sensor, rectangle_t rect) {
     X[1] = X[0];
   }
 
+  front = Vec(0, rect.w).rotate(rect.rho + 90);
+
   // Front
   rect_side.p += v;
-  rect_side.v = v.rotate(90) * rect.mu;
+  rect_side.v = front;
   n_int += intersects_line_vector(sensor, rect_side);
   if (n_int == 2) {
     return 2;
   }
 
   // Right side
-  rect_side.p += rect_side.v;
+  rect_side.p += front;
   rect_side.v = -v;
   n_int += intersects_line_vector(sensor, rect_side);
   if (n_int == 2) {
     return 2;
   }
 
-  // Back
+  // Rear
   rect_side.p += rect_side.v;
-  rect_side.v = v.rotate(-90) * rect.mu;
+  rect_side.v = -front;
   n_int += intersects_line_vector(sensor, rect_side);
 
   return n_int;

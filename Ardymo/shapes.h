@@ -7,7 +7,7 @@
 #include "structs.h"
 
 const rectangle_t kVehicle = {
-  {kBoardWidth - 10.0, kBoardHeight - 10.0}, 10.0, 90, 0.5};
+  {kBoardWidth - 10.0, kBoardHeight - 10.0}, 10.0, 90, 5.0};
 
 const circle_t kTarget = {{202.5, 202.5}, 5.0};
 
@@ -25,7 +25,7 @@ const obstacle_t PROGMEM obstacles[] = {
   {LINE, kBoardWidth, 0.0, kBoardHeight, 0, 0x01},  // East
   // TODO: Obstacles
   {CIRCLE, 410.0, 220.0, 150.0}, // 1
-  {RECTANGLE, 594.0, 586.0, 150.0, 30, 0x3f000000}, // 2
+  {RECTANGLE, 594.0, 586.0, 300.0, 30, 0x43160000}, // 2 (w=150.0)
   {LINE, 860, 75, 400, 50, 0x01},  // 3
   {LINE, 590, 350, 300, -30, 0x01},  // 4
   {LINE, 720, 830, 300, 300, 0x01},  // 5
@@ -35,7 +35,7 @@ const obstacle_t PROGMEM obstacles[] = {
   {LINE, 965, 504, 720, 225, 0x01},  // 8
   {LINE, 997, 557, 140, -4, 0x01},  // 9
   {LINE, 997, 557, 140, 245, 0x01},  // 10
-  {RECTANGLE, 1040.0, 830.0, 100.0, -60, 0x3f400000}, // 11
+  {RECTANGLE, 1040.0, 830.0, 100.0, -60, 0x42960000}, // 11 (w=75.0)
   {CIRCLE, 1220.0, 730.0, 100.0}, // 12
   {LINE, 1075, 1024, 140, 210, 0x01},  // 13
   {CIRCLE, 1118.0, 792.0, 50.0}, // 14
@@ -46,7 +46,7 @@ const obstacle_t PROGMEM obstacles[] = {
   {LINE, 1530, 1000, 337, 162, 0x01},  // 19
   {LINE, 1506.8, 435, 347.5, -45, 0x01},  // 20
   {LINE, 1512.4, 462.4, 308, -45, 0x01},  // 21
-  {RECTANGLE, 1530.0, 700.0, 300.0, -90, 0x3f800000}, // 22
+  {RECTANGLE, 1530.0, 700.0, 300.0, -90, 0x43960000}, // 22 (w=700.0)
   {LINE, 1425.8, 680, 304, 90, 0x01},  // 23
   {LINE, 1752.5, 680, 295.5, -90, 0x01},  // 24
   {LINE, 1850, 700, 300, 0, 0x01},  // 25

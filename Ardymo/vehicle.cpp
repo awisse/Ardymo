@@ -147,7 +147,7 @@ void Vehicle::turn(float alpha) {
   // Turning around the center of the rear of the vehicle, which is
   Vec rear_center = p + front / 2.0;
   // Now turn front and use it to recompute p
-  front = v.rotate(90) * ratio;
+  front = Vec(0, width).rotate(heading + 90);
   p = rear_center - front / 2.0;
 }
 

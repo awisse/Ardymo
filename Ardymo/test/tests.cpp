@@ -102,8 +102,8 @@ class TestIntersections : public testing::Test {
       seg6 = mkObst(LINE, {2.8, 1.73205081, 2, -30, 0x01});
       circ = mkObst(CIRCLE, {3.0, 4.0, 2.0});
       bigcirc = mkObst(CIRCLE, {5.0, 5.0, 3.0});
-      rect1 = mkObst(RECTANGLE,{2.5, 7.0, 4.0, 270, 0x3F000000});
-      rect2 = mkObst(RECTANGLE,{5.0, 6.0, 4.0, 240, 0x3F000000});
+      rect1 = mkObst(RECTANGLE,{2.5, 7.0, 4.0, 270, 0x40000000});
+      rect2 = mkObst(RECTANGLE,{5.0, 6.0, 4.0, 240, 0x40000000});
     }
 
     LineVector sensor;
@@ -187,7 +187,7 @@ class TestCollisions : public testing::Test {
   protected:
 
     void SetUp(void) {
-      vehicle = Vehicle(3.0, 6.0, 4.0, 240, 0.5);
+      vehicle = Vehicle(3.0, 6.0, 4.0, 240, 2.0);
       // Segments
       segment[NONE] = mkObst(LINE, {8.8, 3.45, 2.0, 60, 1});
       segment[LEFT] = mkObst(LINE, {4.0, 4.0, 1.4, -45, 1});
@@ -201,11 +201,11 @@ class TestCollisions : public testing::Test {
       circle[RIGHT] = mkObst(CIRCLE, {7.5, 8.0, 2.0});
       circle[REAR] = mkObst(CIRCLE, {4.9, 8.1, 1.0});
       // Rectangles
-      rectangle[NONE] = mkObst(RECTANGLE, {2.5, 4.0, 2.0, 0, 0x3F000000});
-      rectangle[LEFT] = mkObst(RECTANGLE, {3.0, 3.75, 2.0, -30, 0x3F000000});
-      rectangle[FRONT] = mkObst(RECTANGLE, {9.4, 6.0, 2.0, 90, 0x3F000000});
-      rectangle[RIGHT] = mkObst(RECTANGLE, {7.2, 8.0, 2.0, 135, 0x3F000000});
-      rectangle[REAR] = mkObst(RECTANGLE, {3.2, 8.5, 1.4, 225, 0x3F36DB6E});
+      rectangle[NONE] = mkObst(RECTANGLE, {2.5, 4.0, 2.0, 0, 0x3F800000});
+      rectangle[LEFT] = mkObst(RECTANGLE, {3.0, 3.75, 2.0, -30, 0x3F800000});
+      rectangle[FRONT] = mkObst(RECTANGLE, {9.4, 6.0, 2.0, 90, 0x3F800000});
+      rectangle[RIGHT] = mkObst(RECTANGLE, {7.2, 8.0, 2.0, 135, 0x3F800000});
+      rectangle[REAR] = mkObst(RECTANGLE, {3.2, 8.5, 1.4, 225, 0x3F800000});
     }
 
     Vehicle vehicle;
