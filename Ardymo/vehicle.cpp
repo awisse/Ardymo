@@ -87,20 +87,20 @@ void CheckSensors(SensorValues* sensors) {
   float distances[2];
 
   // Left
-  sensor = LineVector(vehicle.p, vehicle.v, vehicle.length, 0);
+  sensor = LineVector(vehicle.p(), vehicle.v(), vehicle.length(), 0);
   // FORWARD
   GetDistances(sensor, distances);
-  sensors->distances.front = distances[FORWARD] - vehicle.length;
+  sensors->distances.front = distances[FORWARD] - vehicle.length();
   // REARWARD
   sensors->distances.rear = distances[BACKWARD];
 
   // Right
-  sensor = LineVector(vehicle.p + vehicle.front, vehicle.v, 
-      vehicle.length, 0);
+  sensor = LineVector(vehicle.p() + vehicle.front(), vehicle.v(), 
+      vehicle.length(), 0);
   GetDistances(sensor, distances);
   // FORWARD
-  if (distances[FORWARD] < (sensors->distances.right - vehicle.width)) {
-    sensors->distances.right = distances[FORWARD] - vehicle.width;
+  if (distances[FORWARD] < (sensors->distances.right - vehicle.width())) {
+    sensors->distances.right = distances[FORWARD] - vehicle.width();
   }
   // REARWARD
   if (distances[BACKWARD] < sensors->distances.left) {
@@ -108,63 +108,63 @@ void CheckSensors(SensorValues* sensors) {
   }
   
   // Front
-  sensor = LineVector(vehicle.p + vehicle.v, vehicle.front, 
-      vehicle.width, 0);
+  sensor = LineVector(vehicle.p() + vehicle.v(), vehicle.front(), 
+      vehicle.width(), 0);
   GetDistances(sensor, distances);
   // Right
-  sensors->distances.right = distances[FORWARD] - vehicle.width;
+  sensors->distances.right = distances[FORWARD] - vehicle.width();
   // Left
   sensors->distances.left = distances[BACKWARD];
 
   // Rear
-  sensor = LineVector(vehicle.p, vehicle.front, vehicle.width, 0);
+  sensor = LineVector(vehicle.p(), vehicle.front(), vehicle.width(), 0);
   GetDistances(sensor, distances);
   // Right
-  if (distances[FORWARD] < (sensors->distances.right - vehicle.width)) {
-    sensors->distances.right = distances[FORWARD] - vehicle.width;
+  if (distances[FORWARD] < (sensors->distances.right - vehicle.width())) {
+    sensors->distances.right = distances[FORWARD] - vehicle.width();
   }
   // Left
   if (distances[BACKWARD] < sensors->distances.left) {
     sensors->distances.left = distances[BACKWARD];
   }
 
-  sensors->heading = vehicle.v.normalized().as_point();
+  sensors->heading = vehicle.v().normalized().as_point();
   // Position: Center of front
-  sensors->position = vehicle.p + vehicle.v + vehicle.front / 2.0;
-  sensors->alpha = vehicle.heading;
+  sensors->position = vehicle.p() + vehicle.v() + vehicle.front() / 2.0;
+  sensors->alpha = vehicle.rho();
   sensors->speed = vehicle.get_speed();
 }
 
 void Vehicle::turn(float alpha) {
   // Avoid incremental rotations. Will be off due to float precision
-  heading += alpha;
-  if (heading > 180) {
-    heading -= 360;
-  } else if (heading < -180) {
-    heading += 360;
+  rect.rho += alpha;
+  if (rect.rho > 180) {
+    rect.rho -= 360;
+  } else if (rect.rho < -180) {
+    rect.rho += 360;
   }
-  v = Vec(0, length).rotate(heading);
+  rect.v = Vec(0, rect.l).rotate(rect.rho);
   // Turning around the center of the rear of the vehicle, which is
-  Vec rear_center = p + front / 2.0;
+  Vec rear_center = rect.p + rect.front / 2.0;
   // Now turn front and use it to recompute p
-  front = Vec(0, width).rotate(heading + 90);
-  p = rear_center - front / 2.0;
+  rect.front = Vec(0, rect.w).rotate(rect.rho + 90);
+  rect.p = rear_center - rect.front / 2.0;
 }
 
 void Vehicle::move(void) {
   // Move by one unit of speed
-  p += v * step;
+  rect.p += rect.v * step;
 }
 
 void Vehicle::accelerate_forward(void) {
   speed = speed >= MaxSpeed ? MaxSpeed : speed + SpeedStep;
-  step = speed / 1000.0 * kFrameDuration / length;
+  step = speed / 1000.0 * kFrameDuration / rect.l;
 }
 
 void Vehicle::accelerate_backwards(void) {
   // Max backward speed = half max speed
   speed = speed <= -MaxSpeed / 2.0 ? - MaxSpeed / 2.0 : speed - SpeedStep;
-  step = speed / 1000.0 * kFrameDuration / length;
+  step = speed / 1000.0 * kFrameDuration / rect.l;
 }
 
 side_t collides(Vehicle veh, obstacle_t obst) {
@@ -173,24 +173,24 @@ side_t collides(Vehicle veh, obstacle_t obst) {
   LineVector rect_side;
 
   // Detect a frontal collision first
-  rect_side = LineVector(veh.p + veh.v, // p + v = front-left
-                         veh.front, 1);
+  rect_side = LineVector(veh.p() + veh.v(), // p + v = front-left
+                         veh.front(), 1);
   if (intersects(rect_side, obst))
     return FRONT;
 
   // Then a rear collision
-  rect_side.p = veh.p + veh.front; // p+front = rear-right
-  rect_side.v = -veh.front;
+  rect_side.p = veh.p() + veh.front(); // p+front = rear-right
+  rect_side.v = -veh.front();
   if (intersects(rect_side, obst))
     return REAR;
 
   // Left side. p = rear-left
-  rect_side = LineVector(veh.p, veh.v, 1);
+  rect_side = LineVector(veh.p(), veh.v(), 1);
   if (intersects(rect_side, obst))
     return LEFT;
 
   // Right side
-  rect_side.p += veh.v + veh.front;
+  rect_side.p += veh.v() + veh.front();
   rect_side.v = -rect_side.v;
   if (intersects(rect_side, obst))
     return RIGHT;

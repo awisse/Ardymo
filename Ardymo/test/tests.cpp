@@ -187,7 +187,7 @@ class TestCollisions : public testing::Test {
   protected:
 
     void SetUp(void) {
-      vehicle = Vehicle(3.0, 6.0, 4.0, 240, 2.0);
+      vehicle = Vehicle({3.0, 6.0, 4.0, 240, 2.0});
       // Segments
       segment[NONE] = mkObst(LINE, {8.8, 3.45, 2.0, 60, 1});
       segment[LEFT] = mkObst(LINE, {4.0, 4.0, 1.4, -45, 1});

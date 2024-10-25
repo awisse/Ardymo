@@ -22,16 +22,8 @@ class Vehicle {
     // Constructors
     Vehicle() = default;
 
-    Vehicle(Vec p, float l, int16_t rho, float w) :
-      p(p), v(Vec(0, l).rotate(rho)), length(l), heading(rho),
-      width(w), front(Vec(0, w).rotate(rho + 90)), speed(0.0f),
+    Vehicle(rectangle_t rect) : rect(RectVector(rect)), speed(0.0),
       step(0.0) {}
-
-    Vehicle(float x, float y, float l, int16_t h, float w) :
-      Vehicle(Vec(x, y), l, h, w) {} // Constructor delegation
-
-    Vehicle(rectangle_t rect) :
-      Vehicle(Vec(rect.p), rect.l, rect.rho, rect.w) {}
 
     // Methods
     void turn(float alpha); // Rotate around center of rear
@@ -42,16 +34,16 @@ class Vehicle {
     void accelerate_backwards(void);
 
     // Getters
-    float get_speed(void) {return speed;}
-
-    // Public variables (no messing with getters, setters)
-    Vec p; // Origin of rectangle
-    Vec v; // Direction of rectangle
-    Vec front; // Vector defining the front of the vehicle
-    float length, width; // Length, width of vehicle
-    int16_t heading;
+    float get_speed(void) const {return speed;}
+    Vec p(void) const {return rect.p;}
+    Vec v(void) const {return rect.v;}
+    Vec front(void) const {return rect.front;}
+    float length(void) const {return rect.l;}
+    float width(void) const {return rect.w;}
+    int16_t rho(void) const {return rect.rho;}
 
   private:
+    RectVector rect;
     float speed; // Units (m) per second
     float step; // Move quantity per frame
 };

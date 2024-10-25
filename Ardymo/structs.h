@@ -46,7 +46,7 @@ struct circle_t {
 struct rectangle_t {
   point p; // Origin of rectangle
   float l; // Length of rectangle (in the direction determined by rho)
-  int16_t rho; // Direction of the rectangle with respect to the north (0,1).
+  int16_t rho; // Direction of the rectangle with respect to the south (0,1).
   float w; // Width of rectangle (perpendicular to the direction)
 };
 
@@ -65,9 +65,9 @@ struct LineVector { // for sensor rays
 
   LineVector() : LineVector(Vec(), 0.0, 0, 0) {}
   LineVector(Vec p, Vec v, float l, uint8_t s) : p(p), v(v), l(l), seg(s) {}
-  LineVector(Vec p, Vec v, uint8_t s) : 
+  LineVector(Vec p, Vec v, uint8_t s) :
     p(p), v(v), l(v.length()), seg(s) {}
-  LineVector(Vec p, float l, int16_t rho, uint8_t s) : 
+  LineVector(Vec p, float l, int16_t rho, uint8_t s) :
     p(p), v(Vec(0, l).rotate(rho)), l(l), seg(s) {}
   LineVector(line_t line) :
     LineVector(Vec(line.p), line.l, line.rho, line.seg) {}
@@ -77,6 +77,21 @@ struct LineVector { // for sensor rays
   float l; // Length of direction vector
   uint8_t seg; // In case we want to use this for a segment
 };
+
+struct RectVector { // A rectangle in vector format
+  Vec p; // Origin of rectangle, like in rectangle_t
+  Vec v; // "Left" side of the rectangle and direction
+  Vec front; // Side perpendicular to v,
+  float l; // Length of the rectangle (length of v)
+  int16_t rho; // Same as rectangle_t
+  float w; // Width of the rectangle (length of front)
+  RectVector() = default;
+  RectVector(rectangle_t rect) :
+    p(Vec(rect.p)), v(Vec(0, rect.l).rotate(rect.rho)),
+    front(Vec(0, rect.w).rotate(90 +rect.rho)), l(rect.l),
+    rho(rect.rho), w(rect.w) {}
+};
+
 
 // Distances to obstacles and target
 struct Distances {
