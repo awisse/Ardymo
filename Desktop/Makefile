@@ -1,22 +1,29 @@
-TARGET := ardusdl
-VPATH := ../Ardymo
 PKGCONFIG := $(shell which pkg-config)
 CXXFLAGS := -g $(shell $(PKGCONFIG) --cflags sdl2) -pedantic-errors
 LDLIBS := $(shell $(PKGCONFIG) --libs sdl2)
-SOURCES := $(wildcard $(VPATH)/*.cpp *.cpp)
-OBJECTS := $(SOURCES:%.cpp=%.o)
-INCLUDES := $(wildcard $(VPATH)/*.h *.h)
 
-all: $(TARGET)
+ardymodir := ../Ardymo
+ardymosources = $(wildcard $(ardymodir)/*.cpp *.cpp)
+ardymoobjects = $(ardymosources:%.cpp=%.o)
+
+mapdir := ../Map
+mapsources = $(wildcard $(mapdir)/*.cpp *.cpp)
+mapobjects = $(mapsources:%.cpp=%.o)
+
+INCLUDES = $(wildcard $(mapdir)/*.h $(ardymodir)/*.h *.h)
+
+all: ardymo map
 
 %.o : %.cpp $(INCLUDES)
-	$(CXX) -c -o $@ $(CXXFLAGS) $<
+	$(CXX) -c -o $(@F) $(CXXFLAGS) $<
 
-$(TARGET) : $(OBJECTS)
-	$(CXX) -o $@ $^ $(LDLIBS)
+ardymo : $(ardymoobjects)
+	$(CXX) -o $@ $(^F) $(LDLIBS)
 
+map : $(mapobjects)
+	$(CXX) -o $@ $(^F) $(LDLIBS)
 
 .PHONY: clean
 clean:
-	$(RM) $(TARGET)
-	$(RM) $(OBJECTS) Font5x7.o
+	$(RM) map ardymo
+	$(RM) *.o

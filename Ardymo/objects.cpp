@@ -58,7 +58,7 @@ bool Vec::operator==(const Vec& p) {
 
 }
 
-point Vec::as_point(void) {
+point Vec::as_point(void) const {
   point p = {this->x, this->y};
   return p;
 }

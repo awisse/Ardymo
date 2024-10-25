@@ -6,10 +6,10 @@
 #include "defines.h"
 #include "structs.h"
 
-const rectangle_t kVehicle = {
+constexpr rectangle_t kVehicle = {
   {kBoardWidth - 10.0, kBoardHeight - 10.0}, 10.0, 90, 5.0};
 
-const circle_t kTarget = {{202.5, 202.5}, 5.0};
+constexpr circle_t kTarget = {{202.5, 202.5}, 5.0};
 
 // Enter the obstacles here. The format used for the `.item` part of 
 // `obstacle_t` is {float, float, float, int16_t, uint32_t}. The last entry

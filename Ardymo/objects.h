@@ -46,6 +46,6 @@ class Vec {
     void flipX(void); // Flip along x-axis in place
     Vec rotate(const int16_t alpha); // Rotate clockwise by alpha
 
-    point as_point(void); // Transform into a struct `point`
+    point as_point(void) const; // Transform into a struct `point`
 };
 

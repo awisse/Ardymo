@@ -24,13 +24,14 @@ class Vehicle {
 
     Vehicle(Vec p, float l, int16_t rho, float w) :
       p(p), v(Vec(0, l).rotate(rho)), length(l), heading(rho),
-      width(w), front(Vec(0, w).rotate(rho + 90)), speed(0.0f) {}
+      width(w), front(Vec(0, w).rotate(rho + 90)), speed(0.0f),
+      step(0.0) {}
 
     Vehicle(float x, float y, float l, int16_t h, float w) :
       Vehicle(Vec(x, y), l, h, w) {} // Constructor delegation
 
     Vehicle(rectangle_t rect) :
-      Vehicle(Vec(rect.p), rect.w, rect.rho, rect.w) {}
+      Vehicle(Vec(rect.p), rect.l, rect.rho, rect.w) {}
 
     // Methods
     void turn(float alpha); // Rotate around center of rear
