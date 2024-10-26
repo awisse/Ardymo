@@ -3,7 +3,7 @@
 // Emulates "registring listeners"
 #include "controller.h"
 #include "viewport.h"
-#include "vehicle.h"
+#include "vrect.h"
 #include "game.h"
 #include "defines.h"
 #include "platform.h"

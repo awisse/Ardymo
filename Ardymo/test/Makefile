@@ -1,22 +1,20 @@
 TARGET := tests
 VPATH := ..
 PKGCONFIG := $(shell which pkg-config)
-INCLUDE := $(shell $(PKGCONFIG) --cflags gtest)
+INCLUDE := $(shell $(PKGCONFIG) --cflags gtest) $(wildcard $(srcpath)/*.h *.h)
 LIBS := $(shell $(PKGCONFIG) --libs gtest_main)
 CXXFLAGS = -g $(INCLUDE)
-ARDYMOSRC := objects.cpp intersection.cpp rotate.cpp vehicle.cpp
-SOURCES := $(wildcard *.cpp) $(ARDYMOSRC)
-OBJECTS := $(notdir $(SOURCES:%.cpp=%.o))
-ARDYMOINC := objects.h intersection.h structs.h rotate.h vehicle.h
-INCLUDES := $(wildcard *.h) $(ARDYMOINC)
+SOURCES := objects.cpp vehicle.cpp rotate.cpp intersection.cpp tests.cpp
+OBJECTS := $(SOURCES:%.cpp=%.o)
+INCLUDES := $(wildcard $(srcdir)/*.h *.h)
 
 all: $(TARGET)
 
-%.o : %.cpp $(SOURCES) $(INCLUDES)
-	$(CXX) $(CXXFLAGS) -c -o $(@F) -iquote .. $<
+%.o : %.cpp $(INCLUDES)
+	$(CXX) -c -o $(@F) $(CXXFLAGS) $<
 
 $(TARGET) : $(OBJECTS)
-	$(CXX) $(LIBS) -o $@ $^
+	$(CXX) $(LIBS) -o $@ $(^F)
 
 
 .PHONY: clean

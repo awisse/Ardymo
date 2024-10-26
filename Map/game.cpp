@@ -5,7 +5,7 @@ Helper functions to unclutter main .ino file
 #include "draw.h"
 #include "controller.h"
 #include "viewport.h"
-#include "vehicle.h"
+#include "vrect.h"
 #include "structs.h"
 #include "globals.h"
 #include "platform.h"
@@ -24,6 +24,8 @@ void InitGame() {
   state = startup;
   Platform::clear();
   InitViewport();
+  InitVehicle();
+  ReCenter(); // Start with the viewport centered on the vehicle
   state = running;
 }
 

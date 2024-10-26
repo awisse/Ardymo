@@ -46,7 +46,10 @@ struct circle_t {
 struct rectangle_t {
   point p; // Origin of rectangle
   float l; // Length of rectangle (in the direction determined by rho)
-  int16_t rho; // Direction of the rectangle with respect to the south (0,1).
+  // Direction of the rectangle with respect to the south (0,1).
+  // This convention is chosen in order for the vehicle pointing south
+  // corresponding to an angle of zero.
+  int16_t rho; 
   float w; // Width of rectangle (perpendicular to the direction)
 };
 
@@ -90,6 +93,7 @@ struct RectVector { // A rectangle in vector format
     p(Vec(rect.p)), v(Vec(0, rect.l).rotate(rect.rho)),
     front(Vec(0, rect.w).rotate(90 +rect.rho)), l(rect.l),
     rho(rect.rho), w(rect.w) {}
+  rectangle_t as_rectangle(void) {return {p.as_point(), l, rho, w};}
 };
 
 

@@ -1,5 +1,5 @@
 PKGCONFIG := $(shell which pkg-config)
-CXXFLAGS := -g $(shell $(PKGCONFIG) --cflags sdl2) -pedantic-errors
+CXXFLAGS := -g -O0 $(shell $(PKGCONFIG) --cflags sdl2) -pedantic-errors
 LDLIBS := $(shell $(PKGCONFIG) --libs sdl2)
 
 ardymodir := ../Ardymo

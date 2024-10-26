@@ -63,11 +63,11 @@ point Vec::as_point(void) const {
   return p;
 }
 
-float Vec::det(const Vec& p) {
+float Vec::det(const Vec& p) const {
   return x * p.y - y * p.x;
 }
 
-float Vec::div(const Vec& p) {
+float Vec::div(const Vec& p) const {
   if (fabsf(det(p)) > epsilon) {
     // this and p are not collinear. Division doesn't make sense
     return 0.0 / 0.0; // NaN
@@ -75,22 +75,24 @@ float Vec::div(const Vec& p) {
   return (fabsf(x)>fabsf(y)) ? x / p.x : y / p.y;
 }
 
-float Vec::sq(void) {
+float Vec::sq(void) const {
   return x*x + y*y;
 }
 
-float Vec::length(void) {
+float Vec::length(void) const {
   return sqrtf(this->sq());
 }
 
-float Vec::distance(const Vec& p) {
+float Vec::distance(const Vec& p) const {
   /* return sqrtf((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y)); */
-  return sqrtf((*this - p).sq());
+  Vec p0 = *this; // needed for const
+  return sqrtf((p0 - p).sq());
 }
 
-Vec Vec::normalized(void) {
+Vec Vec::normalized(void) const {
   float l = this->length();
-  return this->operator/(l);
+  Vec p0 = *this; // needed for const
+  return p0 / l;
 }
 
 void Vec::flipX(void) {

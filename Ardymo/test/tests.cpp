@@ -16,7 +16,7 @@ obstacle_t mkObst(geometry type, progmem_t data) {
   obstacle_t obstacle;
   obstacle.type = type;
   memcpy(&obstacle.item, &data, sizeof(obstacle.item));
-  // Fix alignment problem for line_t
+  // Fix alignment problem on x86_64 for line_t
   memcpy(&obstacle.item.line.seg, &(data.bytes), 
       sizeof(obstacle.item.line.seg));
 

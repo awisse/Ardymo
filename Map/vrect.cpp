@@ -1,22 +1,22 @@
 #include "shapes.h"
 #include "viewport.h"
-#include "vehicle.h"
+#include "vrect.h"
 
-rectangle_t vehicle;
+RectVector vehicle;
 
 void InitVehicle(void) {
-  vehicle = kVehicle;
+  vehicle = RectVector(kVehicle);
 }
 
 void GetVehicle(rectangle_t* rect) {
-  *rect = vehicle;
+  *rect = vehicle.as_rectangle();
 }
 
 void SetVehicle(rectangle_t* rect) {
-  vehicle = *rect;
+  vehicle = RectVector(*rect);
 }
 
 void ReCenter(void) {
-  ReCenter(vehicle.p);  
+  ReCenter(vehicle.p.as_point());
 }
 // vim: tabstop=2:softtabstop=2:shiftwidth=2:expandtab:filetype=cpp

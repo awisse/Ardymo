@@ -36,12 +36,12 @@ class Vec {
     float operator*(const Vec&); // Inner product
     bool operator==(const Vec&);
 
-    float div(const Vec&); // Division of collinear vectors.
-    float det(const Vec&); // Determinant of the matrix (this, other)
-    float sq(void);     // ∥v∥^2
-    float length(void); // ∥v∥
-    float distance(const Vec&); // ∥v-other∥
-    Vec normalized(void); // Vector normalized to ∥v∥=1
+    float div(const Vec&) const; // Division of collinear vectors.
+    float det(const Vec&) const; // Determinant of the matrix (this, other)
+    float sq(void) const;     // ∥v∥^2
+    float length(void) const; // ∥v∥
+    float distance(const Vec&) const; // ∥v-other∥
+    Vec normalized(void) const; // Vector normalized to ∥v∥=1
 
     void flipX(void); // Flip along x-axis in place
     Vec rotate(const int16_t alpha); // Rotate clockwise by alpha
