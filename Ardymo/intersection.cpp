@@ -168,8 +168,9 @@ uint8_t intersects_circle(LineVector sensor, circle_t circle) {
 }
 
 uint8_t intersects_rectangle(LineVector sensor, rectangle_t rect) {
-  uint8_t n_int; // Number of intersections
+  uint8_t n_int, found; // Number of intersections
   LineVector rect_side; // Not initialized !!
+  intersection_t store_ix; // Store first intersection point found
   Vec v, front;
 
   // Left side
@@ -179,7 +180,7 @@ uint8_t intersects_rectangle(LineVector sensor, rectangle_t rect) {
   if (n_int) {
     // Make a copy of X[0] which will be overwritten
     // if there is a second intersection
-    X[1] = X[0];
+    store_ix = X[0];
   }
 
   front = Vec(0, rect.w).rotate(rect.rho + 90);
@@ -188,18 +189,28 @@ uint8_t intersects_rectangle(LineVector sensor, rectangle_t rect) {
   rect_side.p += v;
   rect_side.v = front;
   rect_side.l = rect.w;
-  n_int += intersects_line_vector(sensor, rect_side);
+  found = intersects_line_vector(sensor, rect_side);
+  n_int += found;
   if (n_int == 2) {
+    X[1] = store_ix;
     return 2;
+  }
+  if (found) {
+    store_ix = X[0];
   }
 
   // Right side
   rect_side.p += front;
   rect_side.v = -v;
   rect_side.l = rect.l;
-  n_int += intersects_line_vector(sensor, rect_side);
+  found = intersects_line_vector(sensor, rect_side);
+  n_int += found;
   if (n_int == 2) {
+    X[1] = store_ix;
     return 2;
+  }
+  if (found) {
+    store_ix = X[0];
   }
 
   // Rear
@@ -207,6 +218,9 @@ uint8_t intersects_rectangle(LineVector sensor, rectangle_t rect) {
   rect_side.v = -front;
   rect_side.l = rect.w;
   n_int += intersects_line_vector(sensor, rect_side);
+  if (n_int == 2) {
+    X[1] = store_ix;
+  }
 
   return n_int;
 }

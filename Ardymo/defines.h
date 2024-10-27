@@ -8,6 +8,7 @@
  */
 #pragma once
 
+#define DRAWTEST
 // #define DEBUG_
 // Platform dependant definitions
 #ifndef ARDUINO

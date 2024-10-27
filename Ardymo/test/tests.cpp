@@ -95,6 +95,8 @@ class TestIntersections : public testing::Test {
       seg2 = mkObst(LINE, {2.0, 3.0, 3.0, 330, 0x01});
       seg3 = mkObst(LINE, {5.0, 4.0, 2.0, 330, 0x01});
       seg4 = mkObst(LINE, {2.375, 3.64951905, 1.5, 330, 0x01});
+      // Special case: seg7 intersects v1 and v3 of the rectangle
+      seg7 = mkObst(LINE, {0.0, 8.0, 9.0, -90, 0x01});
       // seg5 must be on the sensor ray
       temp = segment.p + segment.v * 2.0;
       seg5 = mkObst(LINE, {temp.x, temp.y, 1.0, -30, 0x01});
@@ -113,6 +115,7 @@ class TestIntersections : public testing::Test {
     obstacle_t seg2;
     obstacle_t seg3;
     obstacle_t seg4;
+    obstacle_t seg7;
     obstacle_t seg5;
     obstacle_t seg6;
     obstacle_t circ;
@@ -180,6 +183,9 @@ TEST_F (TestIntersections, Rectangle) {
   EXPECT_PRED2(eq, intersect_point(0).p, Vec(6.19807621, 7.61769146));
   EXPECT_PRED2(eq, intersect_point(1).p, Vec(5.19807621, 5.88564065));
 
+  EXPECT_EQ(intersects(seg7.item.line, rect1), 2);
+  EXPECT_PRED2(eq, intersect_point(0).p, Vec(2.5, 8.0));
+  EXPECT_PRED2(eq, intersect_point(1).p, Vec(6.5, 8.0));
 }
 
 // Tests of collision of Vehicle with obstacle
