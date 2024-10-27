@@ -43,6 +43,10 @@ bool Changed(void) {
   return viewport.is_moved();
 }
 
+void MoveDone(void) {
+  viewport.not_moved();
+}
+
 void GetViewportPosition(point* pos) {
   *pos = viewport.get_rectangle().p;
 }
@@ -157,6 +161,10 @@ ScreenPt ViewPort::Map2Screen(const point p) const {
 
 void ViewPort::set_scale(float s) {
   scale = bound(s, MinZoom, 1.0);
+}
+
+inline void ViewPort::not_moved(void) {
+  moved = false;
 }
 
 uint8_t GetLine(const line_t* line, LinePoints* s_line) {

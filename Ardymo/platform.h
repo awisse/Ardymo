@@ -82,7 +82,7 @@ public:
   // EEPROM
 
   // Debug
-#ifdef _DEBUG
+#ifdef DEBUG_
   static void DebugPrint(int16_t value, uint8_t base=DEC);
   static void DebugPrint(uint16_t value, uint8_t base=DEC);
   static void DebugPrint(uint32_t value, uint8_t base=DEC);

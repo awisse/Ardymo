@@ -16,7 +16,7 @@ void setup() {
   // put your setup code here, to run once:
 
   arduboy.begin();
-#ifdef _DEBUG
+#ifdef DEBUG_
   Serial.begin(9600);
 #endif
 
@@ -259,7 +259,7 @@ size_t Platform::println(double x, uint8_t decimals)
   arduboy.print(x, decimals);
 }
 
-#ifdef _DEBUG
+#ifdef DEBUG_
 void Platform::DebugPrint(int16_t value, uint8_t base) {
   Serial.print(value, base);
 }

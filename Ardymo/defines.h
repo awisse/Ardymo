@@ -8,7 +8,7 @@
  */
 #pragma once
 
-// #define _DEBUG
+// #define DEBUG_
 // Platform dependant definitions
 #ifndef ARDUINO
 #include <stdint.h>

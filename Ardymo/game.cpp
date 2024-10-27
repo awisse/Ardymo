@@ -63,7 +63,7 @@ void StepGame() {
   }
   Platform::display();
 
-#ifdef _DEBUG
+#ifdef DEBUG_
 /* #if 0 */
   // How much time for one frame?
   Platform::DebugPrint(Platform::millis() - start);

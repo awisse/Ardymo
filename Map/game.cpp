@@ -47,10 +47,11 @@ void StepGame() {
     Draw(&vehicle); // Move according to heading and speed
     GetViewportPosition(&viewport_pos);
     DrawPosition(&viewport_pos);
+    Platform::display();
+    MoveDone();
   }
-  Platform::display();
 
-#ifdef _DEBUG
+#ifdef DEBUG_
 /* #if 0 */
   // How much time for one frame?
   Platform::DebugPrint(Platform::millis() - start);

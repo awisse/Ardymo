@@ -51,6 +51,7 @@ void ZoomIn(void);
 void ZoomOut(void);
 void ReCenter(const point p); // Re-center on point p
 bool Changed(void); // True if something in the viewport has changed
+void MoveDone(void);
 void GetViewportPosition(point*);
 
 class ViewPort;
@@ -100,6 +101,7 @@ class ViewPort {
 
     // Setters
     void set_scale(float s);
+    void not_moved(void);
 
   private:
     rectangle_t map; // The rectangle defining the map.

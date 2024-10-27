@@ -48,7 +48,7 @@ void Dispatch(Event e) {
       break;
     default:
       ;
-#ifdef _DEBUG
+#ifdef DEBUG_
       Platform::DebugPrint("default in Dispatch");
       Platform::DebugPrintln();
 #endif

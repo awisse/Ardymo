@@ -20,7 +20,7 @@ EEPROM eeprom;
 unsigned long StartTime;
 int kZoomScale;
 bool textRawMode;
-#ifdef _DEBUG
+#ifdef DEBUG_
 int counter;
 #endif
 
@@ -437,7 +437,7 @@ size_t Platform::println(double x, uint8_t decimals) {
 }
 
 //
-#ifdef _DEBUG
+#ifdef DEBUG_
 void Platform::DebugPrint(int16_t value, uint8_t base) {
 
   std::cout << value;

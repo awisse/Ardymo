@@ -47,7 +47,7 @@ void DrawCompass(Vec vehicle_direction, int16_t alpha,
   // 4. Display degrees in centre
   //
 #if 0
-/* #ifdef _DEBUG */
+/* #ifdef DEBUG_ */
   Platform::DebugPrint(alpha);
   Platform::DebugPrintln();
 #endif
