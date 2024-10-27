@@ -29,6 +29,7 @@ void Dispatch(Event e) {
       break;
 
     case Long_B:
+      Menu();
       break;
 
     case Left:

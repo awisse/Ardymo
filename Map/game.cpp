@@ -15,6 +15,8 @@ State state;   // startup, running, menu, success, over
 
 // Local to game.cpp
 uint32_t start; // Milliseconds at start of game
+bool show_viewport_coordinates;
+bool coordinates_changed;
 
 // Functions
 void DoMenu();
@@ -27,6 +29,8 @@ void InitGame() {
   InitVehicle();
   ReCenter(); // Start with the viewport centered on the vehicle
   state = running;
+  show_viewport_coordinates = false;
+  coordinates_changed = false;
 }
 
 void StepGame() {
@@ -41,12 +45,15 @@ void StepGame() {
 
   HandleInput(); // User input: Button presses
 
-  if ((state == running) && Changed()) {
+  if ((state == running) && (Changed() || coordinates_changed)) {
     Platform::clear();
     GetVehicle(&vehicle);
     Draw(&vehicle); // Move according to heading and speed
-    GetViewportPosition(&viewport_pos);
-    DrawPosition(&viewport_pos);
+    if (show_viewport_coordinates) {
+      GetViewportPosition(&viewport_pos);
+      DrawPosition(&viewport_pos);
+      coordinates_changed = false;
+    }
     Platform::display();
     MoveDone();
   }
@@ -77,10 +84,12 @@ void DoMenu() {
 }
 
 void Menu() {
-  // Display the menu at GameState.level
-  if ((state == success) || (state == over)) {
-    DoMenu();
-  }
+  // For now: Just toggle show_coordinates
+  /* if ((state == success) || (state == over)) { */
+  /*   DoMenu(); */
+  /* } */
+  show_viewport_coordinates = !show_viewport_coordinates;
+  coordinates_changed = true;
 }
 
 void GameOver() {
