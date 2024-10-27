@@ -231,7 +231,8 @@ uint8_t GetCircle(const circle_t* circle, ScreenCircle* s_circle) {
 // Transform a rectangle from shapes. Return the number of segments
 // in the viewport. Return the endpoints of the segments in `lines`.
 uint8_t GetRectangle(const rectangle_t* rect, LinePoints* lines) {
-  uint8_t n, i;
+  uint8_t n=0; // Maybe no intersection at all. Must initialize to zero.
+  uint8_t i;
   RectVector rv = RectVector(*rect);
   LinePoints line;
   // We have up to 4 segments if the rectangle intersects
