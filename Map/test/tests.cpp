@@ -11,7 +11,7 @@ bool eqv(Vec v, Vec w) {
 
 // Equality of two rectangle_t
 bool eqr(rectangle_t r0, rectangle_t r) {
-  return (r0.p.x == r.p.x) && (r0.p.y == r.p.y) && (r0.l == r.l) 
+  return (r0.p.x == r.p.x) && (r0.p.y == r.p.y) && (r0.l == r.l)
     && (r0.rho == r.rho) && (r0.w == r.w);
 }
 
@@ -21,12 +21,21 @@ bool eqsp(ScreenPt p0, ScreenPt p) {
 }
 
 // Equality of two lines given by LinePoints
-bool eqlp(LinePoints lp0, LinePoints lp1) {
+bool eqlp(const LinePoints lp[], LinePoints lp1, uint8_t n) {
+  // Check whether one of the LinePoints in the array lp
+  // is equal to lp1. There are n elements in lp.
+  uint8_t i;
+  bool equal;
 
-  bool equal = (eqsp(lp0.l0, lp1.l0) && eqsp(lp1.l1, lp1.l1))
-    || (eqsp(lp0.l1, lp1.l0) || eqsp(lp0.l0, lp1.l1));
+  for (i=0; i<n; i++) {
+    equal = (eqsp(lp[i].l0, lp1.l0) && eqsp(lp1.l1, lp1.l1))
+      || (eqsp(lp[i].l1, lp1.l0) || eqsp(lp[i].l0, lp1.l1));
+    if (equal) {
+      return true;
+    }
+  }
 
-  return equal;
+  return false;
 }
 
 obstacle_t mkObst(geometry type, progmem_t data) {
@@ -35,7 +44,7 @@ obstacle_t mkObst(geometry type, progmem_t data) {
   obstacle.type = type;
   memcpy(&obstacle.item, &data, sizeof(obstacle.item));
   // Fix alignment problem on x86_64 for line_t
-  memcpy(&obstacle.item.line.seg, &(data.bytes), 
+  memcpy(&obstacle.item.line.seg, &(data.bytes),
       sizeof(obstacle.item.line.seg));
 
   return obstacle;
@@ -44,7 +53,7 @@ obstacle_t mkObst(geometry type, progmem_t data) {
 ScreenPt to_screen(const point p, const ViewPort* v) {
   ScreenPt sp;
   const rectangle_t r = v->get_rectangle();
-  sp = ScreenPt((p.x - r.p.x) * v->get_scale(), 
+  sp = ScreenPt((p.x - r.p.x) * v->get_scale(),
      (p.y - r.p.y) * v->get_scale());
 
   return sp;
@@ -56,13 +65,13 @@ class ViewportTest : public testing::Test {
     void SetUp() override {
 
       // Middle
-      rect_middle = {kBoardWidth / 2.0, kBoardHeight / 2.0, 
+      rect_middle = {kBoardWidth / 2.0, kBoardHeight / 2.0,
         kScreenWidth, -90, kScreenHeight};
       // Bottom-Left
-      rect_bl = {0.0, kBoardHeight - kScreenHeight, 
+      rect_bl = {0.0, kBoardHeight - kScreenHeight,
         kScreenWidth, -90, kScreenHeight};
       // Top-Right
-      rect_tr = {kBoardWidth - kScreenWidth, 0.0, 
+      rect_tr = {kBoardWidth - kScreenWidth, 0.0,
         kScreenWidth, -90, kScreenHeight};
       // Bottom-Right
       rect_br = {kBoardWidth - kScreenWidth, kBoardHeight - kScreenHeight,
@@ -167,7 +176,7 @@ TEST_F (ViewportTest, Scaling) {
   r.l *= 2;
   r.w *= 2;
   EXPECT_PRED2(eqr, v.get_rectangle(), r);
-  
+
   r = rect_bl;
   v = ViewPort(default_map, r);
   v.zoom_out();
@@ -201,12 +210,12 @@ TEST_F (ViewportTest, Map2Screen) {
   ScreenPt sp;
   ViewPort v;
 
-  // Test whether map points are correctly translated into 
+  // Test whether map points are correctly translated into
   // Screen Points (can be outside of screen)
   // 1. Reduce rect_middle by a factor of four.
   v = ViewPort(default_map, rect_middle);
-  
-  // Define four points in the center, four quadrants and corners of 
+
+  // Define four points in the center, four quadrants and corners of
   // rect_middle for a total of 9 points.
   // Corners
   // Top Left
@@ -285,26 +294,44 @@ class GetFigure : public testing::Test {
 
   protected:
     void SetUp() override {
+
+      p0 = {kBoardWidth / 2, kBoardHeight / 2};
+
+      InitViewport();
+      MoveTo(p0);
+      GetViewport(&viewport);
+    }
+
+    point p0; // Origin of test viewport
+    ViewPort viewport;
+};
+
+class GetFigureLine : public GetFigure {
+
+  protected:
+    void SetUp() override {
+
+      // Run setup of superclass
+      GetFigure::SetUp();
+
       // Based on inherited rect_middle
       l0 = {300.0, 300.0, 300.0, -30, 1};
       l1 = {kBoardWidth / 2 + 16, 412.0, 150.0, 0, 1};
       l2 = {kBoardWidth / 2 + 64, kBoardHeight / 2 - 32, 150.0, 45, 1};
-      lc = {kBoardWidth / 2 - 32, kBoardHeight / 2 - 32, 80.0, -45, 1}; 
-      p0 = {kBoardWidth / 2, kBoardHeight / 2};
+      lc = {kBoardWidth / 2 - 32, kBoardHeight / 2 - 32, 80.0, -45, 1};
+      l_inner = {kBoardWidth/2 + 16, kBoardHeight / 2 + 16,
+        31.9253325, -70, 1};
+
     }
 
     line_t l0, l1, l2, lc, l_inner;
     circle_t c0, c1, c2, c_inner;
-    point p0; // Origin of test viewport
 };
 
-TEST_F (GetFigure, GetLine) {
-  ViewPort viewport;
-  InitViewport(&p0);
-  GetViewport(&viewport);
+TEST_F (GetFigureLine, GetLine) {
   LinePoints lp0, lp1;
   intersection_t ix[2];
-  ScreenPt s_ix[2]; // 
+  ScreenPt s_ix[2]; //
   uint8_t n;
 
   n = GetLine(&l0, &lp0);
@@ -316,8 +343,8 @@ TEST_F (GetFigure, GetLine) {
   ix[0] = intersect_point(0);
   s_ix[0] = to_screen(ix[0].p.as_point(), &viewport);
   lp1 = LinePoints(s_ix[0], to_screen({l1.p.x, l1.p.y + l1.l}, &viewport));
-  EXPECT_PRED2(eqlp, lp0, lp1);
-  
+  EXPECT_PRED3(eqlp, &lp0, lp1, 1);
+
   // Two Intersections
   n = GetLine(&l2, &lp0);
   EXPECT_EQ(n, 1);
@@ -328,7 +355,7 @@ TEST_F (GetFigure, GetLine) {
   /* s_ix[0] = to_screen(ix[0].p.as_point(), &viewport); */
   /* s_ix[1] = to_screen(ix[1].p.as_point(), &viewport); */
   lp1 = LinePoints(s_ix[0], s_ix[1]);
-  EXPECT_PRED2(eqlp, lp0, lp1);
+  EXPECT_PRED3(eqlp, &lp0, lp1, 1);
 
   // Two intersections, one corner
   n = GetLine(&lc, &lp0);
@@ -337,5 +364,191 @@ TEST_F (GetFigure, GetLine) {
   s_ix[1] = ScreenPt(32, 32);
   /* s_ix[0] = to_screen(ix[0].p.as_point(), &viewport); */
   lp1 = LinePoints(s_ix[0], s_ix[1]);
-  EXPECT_PRED2(eqlp, lp0, lp1);
+  EXPECT_PRED3(eqlp, &lp0, lp1, 1);
+
+  // Completely inside
+  n = GetLine(&l_inner, &lp0);
+  EXPECT_EQ(n, 1);
+  s_ix[0] = ScreenPt(16, 16);
+  s_ix[1] = ScreenPt(46, 27);
+  lp1 = LinePoints(s_ix[0], s_ix[1]);
+  EXPECT_PRED3(eqlp, &lp0, lp1, 1);
 }
+
+class GetFigureCircle : public GetFigure {
+
+  protected:
+    void SetUp() override {
+
+      // Run setup of superclass
+      GetFigure::SetUp();
+
+      c0 = {kBoardWidth / 2 + 64, kBoardHeight / 2 + 32, 128};
+      c2 = {kBoardWidth / 2, kBoardHeight / 2 + 32, 64};
+      c4 = {kBoardWidth / 2 + 64, kBoardHeight / 2 + 32, 48};
+      c_inner = {kBoardWidth / 2 + 64, kBoardHeight / 2 + 32, 16};
+    }
+    circle_t c0; // Completely outside
+    circle_t c2; // Two intersections
+    circle_t c4; // Four intersections
+    circle_t c_inner; // Completely inside
+};
+
+TEST_F (GetFigureCircle, GetCircle) {
+  ScreenCircle sc;
+  uint8_t n;
+
+  n = GetCircle(&c0, &sc);
+  EXPECT_EQ(n, 0);
+
+  n = GetCircle(&c2, &sc);
+  EXPECT_EQ(n, 1);
+  EXPECT_EQ(sc.p.x, 0);
+  EXPECT_EQ(sc.p.y, 32);
+  EXPECT_EQ(sc.r, 64);
+
+  n = GetCircle(&c4, &sc);
+  EXPECT_EQ(n, 1);
+  EXPECT_EQ(sc.p.x, 64);
+  EXPECT_EQ(sc.p.y, 32);
+  EXPECT_EQ(sc.r, 48);
+
+  n = GetCircle(&c_inner, &sc);
+  EXPECT_EQ(n, 1);
+  EXPECT_EQ(sc.p.x, 64);
+  EXPECT_EQ(sc.p.y, 32);
+  EXPECT_EQ(sc.r, 16);
+
+  ZoomOut();
+
+  n = GetCircle(&c4, &sc);
+  EXPECT_EQ(n, 1);
+  EXPECT_EQ(sc.p.x, 32);
+  EXPECT_EQ(sc.p.y, 16);
+  EXPECT_EQ(sc.r, 24);
+
+  n = GetCircle(&c2, &sc);
+  EXPECT_EQ(n, 1);
+  EXPECT_EQ(sc.p.x, 0);
+  EXPECT_EQ(sc.p.y, 16);
+  EXPECT_EQ(sc.r, 32);
+
+}
+
+class GetFigureRectangle : public GetFigure {
+
+  protected:
+    void SetUp() override {
+
+      // Run setup of superclass
+      GetFigure::SetUp();
+
+      r0 = {kBoardWidth / 2 + 64, 360, 256, -45, 256};
+      r1 = {kBoardWidth / 2, 460, 256, -45, 256};
+      r2 = {kBoardWidth / 2 + 64, 512 + 32, 128, 240, 256};
+      r3 = {kBoardWidth / 2 + 96, 512-16, 64, 0, 64};
+      r4 = {kBoardWidth / 2 + 64, 498.75, 64, 315, 64};
+      r_inner = {1123, 542, 64, 60, 32};
+    }
+    rectangle_t r0; // Completely outside
+    rectangle_t r1; // One segment
+    rectangle_t r2; // Two segments
+    rectangle_t r3; // Three segments
+    rectangle_t r4; // Four segments
+    rectangle_t r_inner; // Completely inside (Four segments)
+};
+
+TEST_F (GetFigureRectangle, GetRectangle) {
+  LinePoints lp[4], lp0;
+  ScreenPt sp0, sp1;
+  uint8_t n;
+
+  n = GetRectangle(&r0, lp);
+  EXPECT_EQ(n, 0);
+
+  n = GetRectangle(&r1, lp);
+  EXPECT_EQ(n, 1);
+  // Check line segment
+  sp0 = ScreenPt(512 - 460, 0);
+  sp1 = ScreenPt(512 + 64 - 460, 64);
+  lp0 = LinePoints(sp0, sp1);
+  EXPECT_PRED3(eqlp, lp, lp0, 1);
+
+
+  n = GetRectangle(&r2, lp);
+  EXPECT_EQ(n, 2);
+  // Check line segment0
+  sp0 = ScreenPt(82, 64);
+  sp1 = ScreenPt(64, 32);
+  lp0 = LinePoints(sp0, sp1);
+  EXPECT_PRED3(eqlp, lp, lp0, 2);
+  // Check line segment1
+  sp0 = ScreenPt(119, 0);
+  sp1 = ScreenPt(64, 32);
+  lp0 = LinePoints(sp0, sp1);
+  EXPECT_PRED3(eqlp, lp, lp0, 2);
+
+  n = GetRectangle(&r3, lp);
+  EXPECT_EQ(n, 3);
+  // Check line segment0
+  sp0 = ScreenPt(32, 0);
+  sp1 = ScreenPt(32, 48);
+  lp0 = LinePoints(sp0, sp1);
+  EXPECT_PRED3(eqlp, lp, lp0, 3);
+  // Check line segment1
+  sp0 = ScreenPt(96, 0);
+  sp1 = ScreenPt(96, 48);
+  lp0 = LinePoints(sp0, sp1);
+  EXPECT_PRED3(eqlp, lp, lp0, 3);
+  // Check line segment2
+  sp0 = ScreenPt(32, 48);
+  sp1 = ScreenPt(96, 48);
+  lp0 = LinePoints(sp0, sp1);
+  EXPECT_PRED3(eqlp, lp, lp0, 3);
+
+  n = GetRectangle(&r4, lp);
+  EXPECT_EQ(n, 4);
+  // Check line segment0 (v)
+  sp0 = ScreenPt(77, 0);
+  sp1 = ScreenPt(109, 32);
+  lp0 = LinePoints(sp0, sp1);
+  EXPECT_PRED3(eqlp, lp, lp0, 4);
+  // Check line segment1 (front)
+  sp0 = ScreenPt(109, 32);
+  sp1 = ScreenPt(77, 64);
+  lp0 = LinePoints(sp0, sp1);
+  EXPECT_PRED3(eqlp, lp, lp0, 4);
+  // Check line segment2 (-v)
+  sp0 = ScreenPt(51, 64);
+  sp1 = ScreenPt(19, 32);
+  lp0 = LinePoints(sp0, sp1);
+  EXPECT_PRED3(eqlp, lp, lp0, 4);
+  // Check line segment3 (-v)
+  sp0 = ScreenPt(19, 32);
+  sp1 = ScreenPt(51, 0);
+  lp0 = LinePoints(sp0, sp1);
+  EXPECT_PRED3(eqlp, lp, lp0, 4);
+
+  n = GetRectangle(&r_inner, lp);
+  EXPECT_EQ(n, 4);
+  // Check line segment0 (v)
+  sp0 = ScreenPt(99, 30);
+  sp1 = ScreenPt(44, 62);
+  lp0 = LinePoints(sp0, sp1);
+  EXPECT_PRED3(eqlp, lp, lp0, 4);
+  // Check line segment1 (front)
+  sp0 = ScreenPt(44, 62);
+  sp1 = ScreenPt(28, 34);
+  lp0 = LinePoints(sp0, sp1);
+  EXPECT_PRED3(eqlp, lp, lp0, 4);
+  // Check line segment2 (-v)
+  sp0 = ScreenPt(28, 34);
+  sp1 = ScreenPt(83, 2);
+  lp0 = LinePoints(sp0, sp1);
+  EXPECT_PRED3(eqlp, lp, lp0, 4);
+  // Check line segment3 (-v)
+  sp0 = ScreenPt(83, 2);
+  sp1 = ScreenPt(99, 30);
+  lp0 = LinePoints(sp0, sp1);
+  /* EXPECT_PRED3(eqlp, lp, lp0, 4); */
+};

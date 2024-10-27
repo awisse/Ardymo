@@ -20,3 +20,7 @@ $(TARGET) : $(OBJECTS)
 clean:
 	$(RM) $(TARGET)
 	$(RM) $(OBJECTS)
+
+.PHONY: install
+install:
+	cp -p $(TARGET) $(HOME)/bin

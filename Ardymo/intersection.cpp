@@ -187,6 +187,7 @@ uint8_t intersects_rectangle(LineVector sensor, rectangle_t rect) {
   // Front
   rect_side.p += v;
   rect_side.v = front;
+  rect_side.l = rect.w;
   n_int += intersects_line_vector(sensor, rect_side);
   if (n_int == 2) {
     return 2;
@@ -195,6 +196,7 @@ uint8_t intersects_rectangle(LineVector sensor, rectangle_t rect) {
   // Right side
   rect_side.p += front;
   rect_side.v = -v;
+  rect_side.l = rect.l;
   n_int += intersects_line_vector(sensor, rect_side);
   if (n_int == 2) {
     return 2;
@@ -203,6 +205,7 @@ uint8_t intersects_rectangle(LineVector sensor, rectangle_t rect) {
   // Rear
   rect_side.p += rect_side.v;
   rect_side.v = -front;
+  rect_side.l = rect.w;
   n_int += intersects_line_vector(sensor, rect_side);
 
   return n_int;

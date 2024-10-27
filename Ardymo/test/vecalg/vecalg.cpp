@@ -7,8 +7,8 @@
 #include "../../objects.h"
 
 enum args {
-  TRIANGLE,
-  VECTORS
+  TWO,
+  FOUR
 };
 
 class Pt {
@@ -30,22 +30,38 @@ class Pt {
 
     Pt operator-(const Pt& other) {
       Pt newpt = other;
-      newpt.x -= this->x;
-      newpt.y -= this->y;
+      newpt.x -= x;
+      newpt.y -= y;
       return newpt;
     }
 
     float len(void) {
-      float len = std::sqrt(this->x * this->x + this->y * this->y);
+      float len = std::sqrt(x * x + y * y);
       return len;
     }
 
-    Pt rotate(float angle) {
+    Pt rotate(float phi) {
       Pt rotated = *this;
-      rotn trig = get_rotn(angle);
-      rotated.x = trig.cos * this->x - trig.sin * this->y;
-      rotated.y = trig.sin * this->x + trig.cos * this->y;
+      rotn trig = get_rotn(phi);
+      rotated.x = trig.cos * x - trig.sin * y;
+      rotated.y = trig.sin * x + trig.cos * y;
       return rotated;
+    }
+
+    float angle(void) {
+      // Get the angle of the vector, clockwise rotation
+      float a;
+      if ((x == 0) && (y == 0))
+        return INFINITY;
+      if ((x == 0) && (y > 0))
+        return 0;
+      if ((x == 0) && (y < 0))
+        return 180;
+
+      // Now that we have the edge cases, get the inverse tangent
+      a = std::atan2(-x, y);
+      return a / M_PI * 180;
+
     }
 };
 
@@ -55,8 +71,9 @@ void print_help() {
     "  -h  Print this help message\n"\
     "  -d  Compute the distance between (px,py) and (vx, vy)\n"\
     "  -l  Compute the hypothenuse of (x,y)\n"\
-    "  -a  <angle> The angle for clockwise rotation in degrees\n"\
-    "  -t  Print cosinus and sinus of <angle>\n"\
+    "  -p  <phi> The angle for clockwise rotation in degrees\n"\
+    "  -t  Print cosinus and sinus of <phi>\n"\
+    "  -a  Print the angle of (vx,vy) rotated around (px, py) in degrees\n"\
     "  -r  Print the point defined of a clockwise rotation of (vx,vy) "\
     "around (px,py)\n";
   exit(0);
@@ -67,10 +84,10 @@ void parse_args(char* argv[], Pt* p, Pt* v, args argt) {
   char* end;
 
   switch (argt) {
-    case VECTORS:
+    case FOUR:
       p->x = std::strtof(argv[optind++], &end);
       p->y = std::strtof(argv[optind++], &end);
-    case TRIANGLE:
+    case TWO:
       v->x = std::strtof(argv[optind++], &end);
       v->y = std::strtof(argv[optind++], &end);
   }
@@ -78,27 +95,28 @@ void parse_args(char* argv[], Pt* p, Pt* v, args argt) {
 
 int main(int argc, char* argv[]) {
 
-  int i = 0, angle = 0;
+  int i = 0, phi = 0;
   rotn trig;
   bool show_trig = false, distance = false, rotate = false;
+  bool get_angle = false;
   bool hypothenuse = false;
   int c;
   Pt p, v, w, rotated;
-  float s, len;
+  float s, len, angle;
 
   if (argc == 1) {
     print_help();
   }
 
-  while ((c = getopt(argc, argv, "a:dhlrt")) != -1) {
+  while ((c = getopt(argc, argv, "p:adhlrt")) != -1) {
     switch (c) {
 
       case 'h':
         print_help();
         break;
 
-      case 'a':
-        angle = std::atoi(optarg);
+      case 'p':
+        phi = std::atoi(optarg);
 
       case 't':
         show_trig = true;
@@ -112,6 +130,10 @@ int main(int argc, char* argv[]) {
         rotate = true;
         break;
 
+      case 'a':
+        get_angle = true;
+        break;
+
       case 'l': // Pythagoras
         hypothenuse = true;
     }
@@ -119,9 +141,9 @@ int main(int argc, char* argv[]) {
 
 
   if (show_trig) {
-    trig = get_rotn((int16_t)angle);
+    trig = get_rotn((int16_t)phi);
     std::printf("cos(%1$hd) = %2$f\nsin(%1$hd) = %3$f\n",
-        angle, trig.cos, trig.sin);
+        phi, trig.cos, trig.sin);
   }
 
   if (rotate || distance) {
@@ -131,11 +153,11 @@ int main(int argc, char* argv[]) {
       print_help();
     }
 
-    parse_args(argv, &p, &v, VECTORS);
+    parse_args(argv, &p, &v, FOUR);
 
     // Show result of rotation
     if (rotate) {
-      rotated = v.rotate(angle);
+      rotated = v.rotate(phi);
       std::printf("p =      (% 10.8f, % 10.8f)\n", p.x, p.y);
       std::printf("v =      (% 10.8f, % 10.8f)\n", v.x, v.y);
       std::printf("p + v =      (% 10.8f, % 10.8f)\n", (p+v).x, (p+v).y);
@@ -149,12 +171,19 @@ int main(int argc, char* argv[]) {
       std::printf("∥p - v∥ =  %10.8f\n", s);
     }
 
-  } else if (hypothenuse) {
+  } else if (hypothenuse || get_angle) {
 
     while (argc - optind >= 2) {
-      parse_args(argv, &p, &v, TRIANGLE);
-      len = v.len();
-      std::printf("length(p%d) = %10.8f\n", i++, len);
+      parse_args(argv, &p, &v, TWO);
+      if (hypothenuse) {
+        len = v.len();
+        std::printf("length(p%d) = %10.8f\n", i++, len);
+      }
+      if (get_angle) {
+        angle = v.angle();
+        std::printf("angle(p%d)  = %10.8f\n", i++, angle);
+      }
+
     }
   }
 

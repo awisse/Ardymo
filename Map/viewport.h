@@ -1,4 +1,5 @@
 #pragma once
+#include <math.h>
 #include "defines.h"
 #include "objects.h"
 #include "structs.h"
@@ -10,11 +11,15 @@ constexpr rectangle_t default_map = {{0.0, 0.0}, kBoardWidth, -90,
 constexpr float MinZoom = (float)kScreenWidth / (float)kBoardWidth;
 
 // Point to be drawn on the screen
+constexpr int16_t int16(float x) {
+  return (int16_t)lrintf(x);
+}
+
 struct ScreenPt {
   int16_t x, y;
   constexpr ScreenPt(int16_t x, int16_t y) : x(x), y(y) {}
   constexpr ScreenPt(int32_t x, int32_t y) : x((int16_t)x), y((int16_t)y) {}
-  constexpr ScreenPt(float x, float y) : x((int16_t)x), y((int16_t)y) {}
+  constexpr ScreenPt(float x, float y) : x(int16(x)), y(int16(y)) {}
   constexpr ScreenPt(const point p) : ScreenPt(p.x, p.y) {}
   constexpr ScreenPt(const Vec& v) : ScreenPt(v.x, v.y) {}
   ScreenPt() = default;
@@ -41,6 +46,7 @@ void PanRight(void);
 void PanLeft(void);
 void PanDown(void);
 void PanUp(void);
+void MoveTo(const point p);
 void ZoomIn(void);
 void ZoomOut(void);
 void ReCenter(const point p); // Re-center on point p

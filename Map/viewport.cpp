@@ -23,6 +23,10 @@ void PanUp(void) {
   viewport.pan_up();
 }
 
+void MoveTo(const point p) {
+  viewport.move_to(p);
+}
+
 void ZoomIn(void) {
   viewport.zoom_in();
 }
@@ -204,10 +208,10 @@ uint8_t GetCircle(const circle_t* circle, ScreenCircle* s_circle) {
   // it is completely outside the viewport
   rectangle_t vrect = viewport.get_rectangle();
   // Completely outside the viewport?
-    if (!(is_in_circle(Vec(vrect.p), circle) &&
-        is_in_circle(Vec(vrect.p.x + vrect.l, vrect.p.y), circle) &&
-        is_in_circle(Vec(vrect.p.x, vrect.p.y + vrect.w), circle) &&
-        is_in_circle(Vec(vrect.p.x + vrect.l, vrect.p.y + vrect.w), circle))) {
+  if (is_in_circle(Vec(vrect.p), circle) &&
+      is_in_circle(Vec(vrect.p.x + vrect.l, vrect.p.y), circle) &&
+      is_in_circle(Vec(vrect.p.x, vrect.p.y + vrect.w), circle) &&
+      is_in_circle(Vec(vrect.p.x + vrect.l, vrect.p.y + vrect.w), circle)) {
     return 0;
   }
 

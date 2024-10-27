@@ -42,6 +42,7 @@ void StepGame() {
   HandleInput(); // User input: Button presses
 
   if ((state == running) && Changed()) {
+    Platform::clear();
     GetVehicle(&vehicle);
     Draw(&vehicle); // Move according to heading and speed
     GetViewportPosition(&viewport_pos);

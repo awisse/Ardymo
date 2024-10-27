@@ -1,8 +1,8 @@
 # Description
 
-Unit tests for 
+Unit tests for
 
-1. The methods of the Vec class, 
+1. The methods of the Vec class,
 
 2. the rotate function in rotate.h,
 
@@ -16,3 +16,11 @@ The graphical representation of the test cases is in *intersections.odg* and
 *collisions.odg*.
 
 Using Google Test for C++.
+
+To run tests,
+
+1. Install Google Test (`apt install googletest`)
+
+2. `make`
+
+3. `./tests`
