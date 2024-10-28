@@ -9,6 +9,7 @@ Helper functions to unclutter main .ino file
 #include "structs.h"
 #include "globals.h"
 #include "platform.h"
+#include "comm.h"
 
 // Global variable
 State state;   // startup, running, menu, success, over
@@ -16,11 +17,9 @@ State state;   // startup, running, menu, success, over
 // Local to game.cpp
 uint32_t start; // Milliseconds at start of game
 bool show_viewport_coordinates;
-bool coordinates_changed;
+bool coordinates_toggled;
 
 // Functions
-void DoMenu();
-
 void InitGame() {
 
   rectangle_t r;
@@ -31,7 +30,7 @@ void InitGame() {
   ReCenter();
   state = running;
   show_viewport_coordinates = false;
-  coordinates_changed = false;
+  coordinates_toggled = false;
 }
 
 void StepGame() {
@@ -46,21 +45,31 @@ void StepGame() {
 
   HandleInput(); // User input: Button presses
 
-  if ((state == running) && (Changed() || coordinates_changed)) {
+  if ((state == running) && (Changed() || coordinates_toggled || Received())) {
+
+    // Receive vehicle position from Ardymo if available
+    if (Received()) {
+     receive_bytes((uint8_t*)&vehicle, sizeof(rectangle_t));
+     SetVehicleRect(&vehicle);
+    } else {
+      GetVehicleRect(&vehicle);
+    }
+
+    // Draw the map
     Platform::clear();
-    GetVehicleRect(&vehicle);
     Draw(&vehicle); // Move according to heading and speed
+
+    // Draw the vehicle coordinates if enabled
     if (show_viewport_coordinates) {
       GetViewportPosition(&viewport_pos);
       DrawPosition(&viewport_pos);
-      coordinates_changed = false;
+      coordinates_toggled = false;
     }
     Platform::display();
     MoveDone();
   }
 
-#ifdef DEBUG_
-/* #if 0 */
+#ifdef TIMER_
   // How much time for one frame?
   Platform::DebugPrint(Platform::millis() - start);
   Platform::DebugPrintln();
@@ -74,23 +83,12 @@ void Restart() {
 }
 
 void Terminate() {
-  // Different from menu. Needs long press.
-  if (state == running) {
-    DoMenu();
-  }
 }
 
-void DoMenu() {
-  state = menu;
-}
-
-void Menu() {
+void ToggleCoordinates() {
   // For now: Just toggle show_coordinates
-  /* if ((state == success) || (state == over)) { */
-  /*   DoMenu(); */
-  /* } */
   show_viewport_coordinates = !show_viewport_coordinates;
-  coordinates_changed = true;
+  coordinates_toggled = true;
 }
 
 void ReCenter(void) {

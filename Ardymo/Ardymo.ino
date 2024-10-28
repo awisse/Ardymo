@@ -1,14 +1,16 @@
-/* vim: ts=2:sts=2:expandtab
+/* vim: ft=cpp:ts=2:sts=2:expandtab
  *
  * Drawing and Rotating an arrow
  *
  */
-
 #include <Arduboy2.h>
 #include <stdint.h>
 #include "game.h"
 #include "defines.h"
 #include "platform.h"
+#ifdef USE_I2C
+#include <Wire.h>
+#endif
 
 Arduboy2 arduboy;
 
@@ -20,6 +22,11 @@ void setup() {
   Serial.begin(9600);
 #endif
 
+#ifdef USE_I2C
+  // Ardymo is the master
+  power_twi_enable();
+  Wire.begin();
+#endif
   // Wait for button to be pressed before beginning
   while (!arduboy.pressed(A_BUTTON)) {
     arduboy.idle();
@@ -43,6 +50,22 @@ uint8_t* Platform::getBuffer() {
   return arduboy.getBuffer();
 }
 
+// I2C Communication
+uint8_t Platform::master_receive(uint8_t* bytes, uint8_t address) {
+  // Receive bytes from slave at address
+  // This is unfinished. Not needed for now.
+  uint8_t n {}; // Number of bytes received
+  return n;
+}
+
+uint8_t Platform::master_send(uint8_t* bytes, uint8_t n, uint8_t address) {
+  // Send n bytes to slave at address
+  uint8_t error;
+  Wire.beginTransmission(address);
+  Wire.write(bytes, n);
+  error = Wire.endTransmission();
+  return error;
+}
 /******* Buttons **********************************************/
 uint8_t Platform::buttonsState() {
   uint8_t buttons = arduboy.buttonsState();
@@ -143,6 +166,10 @@ void Platform::eraseRectRow(uint8_t x, uint8_t y, uint8_t width, uint8_t height)
 /************* Timer ******************************************************/
 unsigned long Platform::millis() {
   return ::millis();
+}
+
+void Platform::delay(uint32_t ms) {
+  ::delay(ms);
 }
 
 /************* Text Functions *********************************************/
@@ -259,7 +286,7 @@ size_t Platform::println(double x, uint8_t decimals)
   arduboy.print(x, decimals);
 }
 
-#ifdef DEBUG_
+#if defined (DEBUG_) || defined (TIMER_)
 void Platform::DebugPrint(int16_t value, uint8_t base) {
   Serial.print(value, base);
 }
@@ -287,5 +314,5 @@ void Platform::DebugPrint(const char* text) {
 void Platform::DebugPrintln() {
   Serial.println();
 }
-#endif
+#endif // defined(DEBUG_) || defined(TIMER_)
 

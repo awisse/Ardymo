@@ -14,7 +14,7 @@ public:
   static uint8_t slave_receive(uint8_t* bytes, uint8_t n);
   static void slave_send(uint8_t* bytes, uint8_t n);
   static uint8_t master_receive(uint8_t* bytes, uint8_t address);
-  static void master_send(uint8_t* bytes, uint8_t n, uint8_t address);
+  static uint8_t master_send(uint8_t* bytes, uint8_t n, uint8_t address);
 #endif
 
   // Buttons
@@ -50,6 +50,7 @@ public:
 
   // Timer
   static uint32_t millis();
+  static void delay(uint32_t ms);
 
   // Text Functions
   static void setTextRawMode(bool raw);
@@ -90,7 +91,7 @@ public:
   // EEPROM
 
   // Debug
-#ifdef DEBUG_
+#if defined (DEBUG_) || defined (TIMER_)
   static void DebugPrint(int16_t value, uint8_t base=DEC);
   static void DebugPrint(uint16_t value, uint8_t base=DEC);
   static void DebugPrint(uint32_t value, uint8_t base=DEC);
@@ -98,7 +99,7 @@ public:
   static void DebugPrint(double value, uint8_t decimals=2);
   static void DebugPrint(const char* text);
   static void DebugPrintln();
-#endif
+#endif // DEBUG_ || TIMER_
 	
 #ifndef ARDUINO
 

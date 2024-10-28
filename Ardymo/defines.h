@@ -9,8 +9,10 @@
 #pragma once
 
 #define USE_I2C
-/* #define DRAWTEST */
-#define DEBUG_
+#define I2C_SLAVE_ADDR 0x10
+//#define DRAWTEST
+//#define DEBUG_
+//#define TIMER_
 // Platform dependant definitions
 #ifndef ARDUINO
 #include <stdint.h>
@@ -29,9 +31,6 @@
 typedef int long_;
 typedef short int_;
 #else
-// No I2C on a PC
-/* #define USE_I2C */
-#define I2C_SLAVE_ADDR 0x10
 //#define pgm_read_..., memcpy_p, ...
 #include <avr/pgmspace.h>
 typedef long long_;
@@ -55,9 +54,9 @@ const int16_t kCompassRadius = 24;
 // Vehicle Parameters
 // speed: steps per frame
 // Max speed: 10.0/second; kFrameDuration: Milliseconds / Frame
-constexpr float MaxSpeed = 10.0;
-// Twenty speed steps.
-constexpr float SpeedStep = MaxSpeed / 20.0;
+constexpr float MaxSpeed = 18.0; // Limited to 2 * 9.0
+// Eighteen speed steps.
+constexpr float SpeedStep = MaxSpeed / 18.0;
 constexpr int16_t AngleStep = 2;
 
 // Navigation steps

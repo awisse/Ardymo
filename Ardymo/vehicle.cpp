@@ -63,7 +63,7 @@ void GetVehicleRect(rectangle_t* rect) {
 }
 
 void SetVehicleRect(rectangle_t* rect) {
-  *rect = vehicle.as_rectangle();
+  vehicle.set_rectangle(rect);
 }
 
 void TurnRight(void) {

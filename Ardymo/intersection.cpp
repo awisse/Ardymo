@@ -24,6 +24,7 @@ uint8_t intersects(LineVector sensor, obstacle_t obst) {
 
   switch (obst.type) {
 
+    case BORDER:
     case LINE:
       return intersects_line(sensor, obst.item.line);
       break;

@@ -1,5 +1,4 @@
 #include <SDL.h>
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -22,7 +21,7 @@ int kZoomScale;
 bool textRawMode;
 #ifdef DEBUG_
 int counter;
-#endif
+#endif // DEBUG_
 
 uint8_t InputMask = 0;
 void cleanup();
@@ -65,9 +64,10 @@ void Platform::slave_send(uint8_t* bytes, uint8_t n) {
 uint8_t Platform::master_receive(uint8_t* bytes, uint8_t address) {
   return 0;
 }
-void Platform::master_send(uint8_t* bytes, uint8_t n, uint8_t address) {
+uint8_t Platform::master_send(uint8_t* bytes, uint8_t n, uint8_t address) {
+  return 0;
 }
-#endif
+#endif // USE_I2C
 
 // Buttons
 uint8_t Platform::buttonsState()
@@ -318,6 +318,9 @@ uint32_t Platform::millis() {
   return ms;
 }
 
+void Platform::delay(uint32_t ms) {
+  SDL_Delay(ms);
+}
 /******************** Text Functions *************************************/
 void Platform::setTextRawMode(bool raw) {
   textRawMode = raw;
@@ -494,7 +497,7 @@ void Platform::DebugPrintln(void) {
   std::cout.flush();
 }
 
-#endif
+#endif // (DEBUG_)
 
 
 // TODO: EEPROM

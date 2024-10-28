@@ -26,6 +26,7 @@ void setup() {
 
 #ifdef USE_I2C
   // Map is the slave
+  power_twi_enable();
   Wire.begin(I2C_SLAVE_ADDR);
   Wire.onReceive(I2C_SlaveReceive);
 #endif
@@ -79,8 +80,9 @@ uint8_t Platform::master_receive(uint8_t* bytes, uint8_t address) {
   return n;
 }
 
-void Platform::master_send(uint8_t* bytes, uint8_t n, uint8_t address) {
+uint8_t Platform::master_send(uint8_t* bytes, uint8_t n, uint8_t address) {
   // Send n bytes to slave at address
+  return 0;
 }
 
 /******* Buttons **********************************************/
@@ -299,7 +301,7 @@ size_t Platform::println(double x, uint8_t decimals)
   arduboy.print(x, decimals);
 }
 
-#ifdef DEBUG_
+#if defined(DEBUG_) || defined(TIMER_)
 void Platform::DebugPrint(int16_t value, uint8_t base) {
   Serial.print(value, base);
 }
@@ -327,5 +329,5 @@ void Platform::DebugPrint(const char* text) {
 void Platform::DebugPrintln() {
   Serial.println();
 }
-#endif
+#endif // defined(DEBUG_) || defined(TIMER_)
 

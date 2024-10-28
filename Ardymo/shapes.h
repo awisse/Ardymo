@@ -19,10 +19,10 @@ constexpr circle_t kTarget = {{202.5, 202.5}, 5.0};
 // (https://www.h-schmidt.net/FloatConverter/IEEE754.html)
 const obstacle_t PROGMEM obstacles[] = {
   // Borders of board
-  {LINE, 0.0, 0.0, kBoardWidth, -90, 0x01},  // North
-  {LINE, 0.0, 0.0, kBoardHeight, 0, 0x01},  // West
-  {LINE, 0.0, kBoardHeight, kBoardWidth, -90, 0x01},  // South
-  {LINE, kBoardWidth, 0.0, kBoardHeight, 0, 0x01},  // East
+  {BORDER, 0.0, 0.0, kBoardWidth, -90, 0x01},  // North
+  {BORDER, 0.0, 0.0, kBoardHeight, 0, 0x01},  // West
+  {BORDER, 0.0, kBoardHeight, kBoardWidth, -90, 0x01},  // South
+  {BORDER, kBoardWidth, 0.0, kBoardHeight, 0, 0x01},  // East
   // Obstacles
   {CIRCLE, 410.0, 220.0, 150.0}, // 1
   {RECTANGLE, 594.0, 586.0, 300.0, 30, 0x43160000}, // 2 (w=150.0)

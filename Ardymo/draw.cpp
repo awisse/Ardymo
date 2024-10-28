@@ -1,4 +1,5 @@
 // All the drawing takes place here.
+#include "string.h"
 #include "defines.h"
 #include "globals.h"
 #include "objects.h"
@@ -8,7 +9,7 @@
 #include "sprites.h"
 
 // Center of screen
-static Vec centre = {(float)((kScreenWidth>>1)-1), 
+static Vec centre = {(float)((kScreenWidth>>1)-1),
                      (float)((kScreenHeight>>1)-1)};
 
 // Helper functions
@@ -46,11 +47,6 @@ void DrawCompass(Vec vehicle_direction, int16_t alpha,
   Platform::fillCircle(arrow.x, arrow.y, 2);
   // 4. Display degrees in centre
   //
-#if 0
-/* #ifdef DEBUG_ */
-  Platform::DebugPrint(alpha);
-  Platform::DebugPrintln();
-#endif
   if (alpha < 0) {
     c = 'E';
     true_heading = 180 + alpha;
@@ -91,13 +87,13 @@ void DrawDistances(Distances* distances) {
   // Right
   Platform::eraseRectRow(kScreenWidth - 39, centre.y - 4, 34, 8);
   // Fix alignment depending on number
-  if (distances->right < 9.5) 
+  if (distances->right < 9.5)
     hoffset = 39 - 3 * 6;
   else if (distances->right < 99.5)
     hoffset = 39 - 2 * 6;
   else if (distances->right < 999.5)
     hoffset = 39 - 6;
-  else 
+  else
     hoffset = 39;
   Platform::setCursor(kScreenWidth - hoffset, centre.y - 4);
   Platform::print(distances->right, 0);
@@ -120,7 +116,7 @@ void DrawBackground() {
   // Draw main features of background:
   // 1a. rectangle in upper left corner.
   Platform::drawFastHLine(0, kStatusY, kStatusX);
-  Platform::drawFastVLine(kStatusX, 0, kStatusY  + 1);
+  Platform::drawFastVLine(kStatusX, 0, kStatusY);
   // 1b. rectangle in lower left corner.
   Platform::drawFastHLine(0, kScreenHeight-kStatusY-1, kStatusX);
   Platform::drawFastVLine(kStatusX, kScreenHeight-kStatusY-1, kStatusY);
@@ -148,5 +144,15 @@ void DrawGameOver(uint16_t elapsed) {
   Platform::print("Game Over");
   Platform::setCursor(centre.x - 21, centre.y);
   Platform::print(elapsed);
+}
+
+void DrawMessage(const char* msg) {
+  uint8_t msg_len = strlen(msg) * 6; // 6 pixels per 5x7 character
+  uint8_t x = (kScreenWidth - msg_len) / 2;
+
+  Platform::eraseRectRow(x, 24, msg_len + 4, 15);
+  Platform::drawRect(x, 24, msg_len + 4, 15);
+  Platform::setCursor(x + 3, 28);
+  Platform::print(msg);
 }
 // vim:fdm=syntax

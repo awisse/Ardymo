@@ -28,7 +28,7 @@ void Dispatch(Event e) {
       break;
 
     case Long_B:
-      Menu();
+      ToggleCoordinates(); // Is not a menu for now. Just toggling show coordinates
       break;
 
     case Left:

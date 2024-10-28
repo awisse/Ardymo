@@ -1,6 +1,7 @@
 /*
 Helper functions to unclutter main .ino file
  */
+#include "defines.h"
 #include "game.h"
 #include "draw.h"
 #include "controller.h"
@@ -8,18 +9,25 @@ Helper functions to unclutter main .ino file
 #include "globals.h"
 #include "vehicle.h"
 #include "target.h"
+#include "game.h"
 #include "platform.h"
 
 // Global variable
 State state;   // startup, running, menu, success, over
 // Local to game.cpp
-uint32_t start; // Milliseconds at start of game
+static uint32_t start; // Milliseconds at start of game
 static Target target;
+#ifdef USE_I2C
+static bool i2c_available;
+#endif // USE_I2C
 
 // Functions
 void DoMenu();
 void Success();
 void GameOver();
+#ifdef USE_I2C
+void I2C_Error(uint8_t error);
+#endif // USE_I2C
 
 void InitGame() {
 
@@ -30,6 +38,9 @@ void InitGame() {
   // Init target
   target = InitTarget();
   DrawBackground();
+#ifdef USE_I2C
+  i2c_available = true;
+#endif // USE_I2C
 }
 
 void StepGame() {
@@ -60,12 +71,24 @@ void StepGame() {
     DrawStatus(sensors.speed, tgt_distance);
     DrawDistances(&sensors.distances);
     DrawPosition(sensors.position);
+#ifdef USE_I2C
+    uint8_t error {}; // For I2C communication
+    rectangle_t vehicle_rectangle;
+    if (i2c_available) {
+      GetVehicleRect(&vehicle_rectangle);
+      error = Platform::master_send((uint8_t*)&vehicle_rectangle,
+        sizeof(rectangle_t), I2C_SLAVE_ADDR);
+      if (error) {
+        I2C_Error(error);
+        i2c_available = false;
+      }
+    }
+#endif
   }
   Platform::display();
 
-#ifdef DEBUG_
-/* #if 0 */
-  // How much time for one frame?
+#ifdef TIMER_
+  // How long for one frame?
   Platform::DebugPrint(Platform::millis() - start);
   Platform::DebugPrintln();
 #endif
@@ -108,5 +131,29 @@ void Success () {
   DrawSuccess(elapsed);
   state = success;
 }
+
+
+#ifdef USE_I2C
+void I2C_Error(uint8_t error) {
+  switch (error){
+    case 1:
+      DrawMessage("Data too long");
+      break;
+    case 2:
+      DrawMessage("NACK (Address)");
+      break;
+    case 3:
+      DrawMessage("NACK (Data)");
+      break;
+    case 5:
+      DrawMessage("I2C Timeout");
+    default:
+      DrawMessage("I2C Error");
+  }
+  Platform::display();
+  Platform::delay(5000);
+  Platform::eraseRectRow(6, 24, kScreenWidth - 12, 15);
+}
+#endif // USE_I2C
 
 // vim:fdm=syntax:tabstop=2:softtabstop=2:shiftwidth=2:expandtab

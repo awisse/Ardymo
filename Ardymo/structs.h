@@ -7,6 +7,7 @@
 #include "objects.h"
 
 enum geometry {
+  BORDER,
   LINE,
   CIRCLE,
   RECTANGLE,
