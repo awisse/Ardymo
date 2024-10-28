@@ -8,8 +8,9 @@
  */
 #pragma once
 
+#define USE_I2C
 /* #define DRAWTEST */
-/* #define DEBUG_ */
+#define DEBUG_
 // Platform dependant definitions
 #ifndef ARDUINO
 #include <stdint.h>
@@ -28,6 +29,9 @@
 typedef int long_;
 typedef short int_;
 #else
+// No I2C on a PC
+/* #define USE_I2C */
+#define I2C_SLAVE_ADDR 0x10
 //#define pgm_read_..., memcpy_p, ...
 #include <avr/pgmspace.h>
 typedef long long_;

@@ -5,7 +5,7 @@ Helper functions to unclutter main .ino file
 #include "draw.h"
 #include "controller.h"
 #include "viewport.h"
-#include "vrect.h"
+#include "vehicle.h"
 #include "structs.h"
 #include "globals.h"
 #include "platform.h"
@@ -23,11 +23,12 @@ void DoMenu();
 
 void InitGame() {
 
+  rectangle_t r;
   state = startup;
   Platform::clear();
   InitViewport();
   InitVehicle();
-  ReCenter(); // Start with the viewport centered on the vehicle
+  ReCenter();
   state = running;
   show_viewport_coordinates = false;
   coordinates_changed = false;
@@ -47,7 +48,7 @@ void StepGame() {
 
   if ((state == running) && (Changed() || coordinates_changed)) {
     Platform::clear();
-    GetVehicle(&vehicle);
+    GetVehicleRect(&vehicle);
     Draw(&vehicle); // Move according to heading and speed
     if (show_viewport_coordinates) {
       GetViewportPosition(&viewport_pos);
@@ -90,6 +91,12 @@ void Menu() {
   /* } */
   show_viewport_coordinates = !show_viewport_coordinates;
   coordinates_changed = true;
+}
+
+void ReCenter(void) {
+  rectangle_t r;
+  GetVehicleRect(&r);
+  ReCenter(r.p);
 }
 
 void GameOver() {

@@ -6,6 +6,8 @@
 class Vehicle;
 
 void InitVehicle(void);
+void GetVehicleRect(rectangle_t* rect);
+void SetVehicleRect(rectangle_t* rect);
 void TurnRight(void);
 void TurnLeft(void);
 void AccelerateForward(void);
@@ -29,7 +31,6 @@ class Vehicle {
     void turn(float alpha); // Rotate around center of rear
     void move(void); // Move in direction by present speed.
     bool collided(obstacle_t obst); // Collision with obstacles
-    rectangle_t as_rectangle(void);
     void accelerate_forward(void);
     void accelerate_backwards(void);
 
@@ -41,6 +42,10 @@ class Vehicle {
     float length(void) const {return rect.l;}
     float width(void) const {return rect.w;}
     int16_t rho(void) const {return rect.rho;}
+    rectangle_t as_rectangle(void);
+
+    // Setters (for I2C)
+    void set_rectangle(const rectangle_t* r);
 
   private:
     RectVector rect;

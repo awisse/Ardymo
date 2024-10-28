@@ -6,9 +6,13 @@
 
 #include <Arduboy2.h>
 #include <stdint.h>
+#include "comm.h"
 #include "game.h"
 #include "defines.h"
 #include "platform.h"
+#ifdef USE_I2C
+#include <Wire.h>
+#endif
 
 Arduboy2 arduboy;
 
@@ -18,6 +22,12 @@ void setup() {
   arduboy.begin();
 #ifdef DEBUG_
   Serial.begin(9600);
+#endif
+
+#ifdef USE_I2C
+  // Map is the slave
+  Wire.begin(I2C_SLAVE_ADDR);
+  Wire.onReceive(I2C_SlaveReceive);
 #endif
 
   // Wait for button to be pressed before beginning
@@ -41,6 +51,36 @@ void loop() {
 // General
 uint8_t* Platform::getBuffer() {
   return arduboy.getBuffer();
+}
+
+// I2C Communication
+uint8_t Platform::slave_receive(uint8_t* bytes, uint8_t n) {
+  // Receive bytes from master
+  uint8_t received = 0; // Number of bytes received
+  int16_t available = Wire.available();
+
+  while ((received < n) && (received < available)) {
+    bytes[received++] = Wire.read();
+  }
+  return received;
+}
+
+void Platform::slave_send(uint8_t* bytes, uint8_t n) {
+  // Send n bytes to master
+  if (n > 32) {
+    n = 32;
+  }
+  Wire.write(bytes, n);
+}
+
+uint8_t Platform::master_receive(uint8_t* bytes, uint8_t address) {
+  // Receive bytes from slave at address
+  uint8_t n = 0; // Number of bytes received
+  return n;
+}
+
+void Platform::master_send(uint8_t* bytes, uint8_t n, uint8_t address) {
+  // Send n bytes to slave at address
 }
 
 /******* Buttons **********************************************/

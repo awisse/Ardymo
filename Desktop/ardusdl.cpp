@@ -54,6 +54,21 @@ uint8_t* Platform::getBuffer() {
   return sBuffer;
 }
 
+// (I2C) Communication. 
+// Maybe move to sockets/UDP for PC-to-PC communication
+#ifdef USE_I2C
+uint8_t Platform::slave_receive(uint8_t* bytes, uint8_t n) {
+  return 0;
+}
+void Platform::slave_send(uint8_t* bytes, uint8_t n) {
+}
+uint8_t Platform::master_receive(uint8_t* bytes, uint8_t address) {
+  return 0;
+}
+void Platform::master_send(uint8_t* bytes, uint8_t n, uint8_t address) {
+}
+#endif
+
 // Buttons
 uint8_t Platform::buttonsState()
 {

@@ -58,6 +58,14 @@ void InitVehicle() {
   vehicle = Vehicle(kVehicle);
 }
 
+void GetVehicleRect(rectangle_t* rect) {
+  *rect = vehicle.as_rectangle();
+}
+
+void SetVehicleRect(rectangle_t* rect) {
+  *rect = vehicle.as_rectangle();
+}
+
 void TurnRight(void) {
   vehicle.turn(AngleStep);
 }
@@ -156,6 +164,10 @@ void Vehicle::move(void) {
   rect.p += rect.v * step;
 }
 
+rectangle_t Vehicle::as_rectangle(void) {
+  return rect.as_rectangle();
+}
+
 void Vehicle::accelerate_forward(void) {
   speed = speed >= MaxSpeed ? MaxSpeed : speed + SpeedStep;
   step = speed / 1000.0 * kFrameDuration / rect.l;
@@ -165,6 +177,10 @@ void Vehicle::accelerate_backwards(void) {
   // Max backward speed = half max speed
   speed = speed <= -MaxSpeed / 2.0 ? - MaxSpeed / 2.0 : speed - SpeedStep;
   step = speed / 1000.0 * kFrameDuration / rect.l;
+}
+
+void Vehicle::set_rectangle(const rectangle_t* r) {
+  rect = RectVector(*r);
 }
 
 side_t collides(Vehicle veh, obstacle_t obst) {

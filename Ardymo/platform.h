@@ -9,6 +9,14 @@ public:
   // General
   static uint8_t* getBuffer();
 
+  // (I2C) Communication
+#ifdef USE_I2C
+  static uint8_t slave_receive(uint8_t* bytes, uint8_t n);
+  static void slave_send(uint8_t* bytes, uint8_t n);
+  static uint8_t master_receive(uint8_t* bytes, uint8_t address);
+  static void master_send(uint8_t* bytes, uint8_t n, uint8_t address);
+#endif
+
   // Buttons
   static uint8_t buttonsState();
   static bool pressed(uint8_t buttons);
