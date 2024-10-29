@@ -28,16 +28,20 @@ void Crash(Vec*);
 void I2C_Error(uint8_t error);
 #endif // USE_I2C
 
+void BackToSquare1(void) {
+  Platform::clear();
+  InitVehicle();
+  DrawBackground();
+}
+
 void InitGame() {
 
   state = startup;
-  Platform::clear();
-  state = running;
-  InitVehicle();
-  DrawBackground();
+  BackToSquare1();
 #ifdef USE_I2C
   i2c_available = true;
 #endif // USE_I2C
+  state = running;
 }
 
 void StepGame() {
@@ -90,6 +94,13 @@ void StepGame() {
   Platform::DebugPrint(Platform::millis() - start);
   Platform::DebugPrintln();
 #endif
+
+  if (state == crash) {
+    Platform::delay(5000);
+    // Reposition Vehicle at start.
+    BackToSquare1();
+    state = running;
+  }
 }
 
 void Restart() {
