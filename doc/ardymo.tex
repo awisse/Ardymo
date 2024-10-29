@@ -59,6 +59,7 @@
 \newcommand{\Vb}{\mathbf{V}}
 \newcommand{\vb}{\mathbf{v}}
 \newcommand{\vbl}{\mathbf{v}_l}
+\newcommand{\vbr}{\mathbf{v}_r}
 \newcommand{\vbs}{\mathbf{v}_s}
 \newcommand{\vxl}{v_{xl}}
 \newcommand{\vyl}{v_{yl}}
@@ -505,11 +506,14 @@ A collision between two objects happens if there is an intersection between the
 surface of two objects. In this context, we only need
 to consider a collision between a vehicle (a rectangle) and a line, a circle
 or a rectangle. This reduces to identifying the intersection of one or more
-of the four line segments of the rectangle with another object.
+of the four line segments of the vehicle rectangle with another object.
 
 We have computed the intersection of an unbound line with a circle or a
 line segment in section~\ref{sec-intersection-distance}. We generalize this to
 the intersection of a segment by checking for the corresponding constraints.
+
+In subsection~\ref{sec-game-collision}, we se how this is applied in
+practice to the vehicle.
 
 \subsection{Line Segment}
 \label{sec-collision-line-segment}
@@ -567,7 +571,7 @@ a collision with the segment $S_s$ because $\xi_+=2.7\notin[0,1]$.
     \label{fig-intersection-circle}
 \end{figure}
 
-\pagebreak
+%\pagebreak
 \section{Game Objects}
 \label{sec-game-objects}
 There are four types of objects in the game.
@@ -692,6 +696,32 @@ The distance to the closest obstacle is displayed on the user interface
     \caption{Scanning and Distance}\label{fig-scanning}
 \end{figure}
 
+It total, we have eight sensor rays emanating  from the vehicle. Two from each
+corner of the vehicle.
+
+\subsection{Collision}
+\label{sec-game-collision}
+We configure each of the eight sensor rays such that it is easy to identify a
+collision point with a special set of points on the sensor ray.
+
+In \figref{fig-collision}, the directional vectors $\vbsig$ of the sensor
+rays $(\pbsig, \vbsig)$ are represented by the blue arrows. The length of
+$\vbsig$ is chosen as equal to the side $\vbr$. 
+
+An intersection point $\pbiot$ of the sensor ray with an obstacle is given by
+\begin{equation}
+    \pbiot = \pbsig + \nu\vbsig,\quad \nu \in \Rb.
+\end{equation}
+This intersection point is a \textbf{collision} if $-1<\nu<0$. In
+\figref{fig-collision}, the intersection point in the red circle is a collision
+point with the vehicle. The intersection point in the green circle however is
+not a collision point as $\nu>0$.
+
+\begin{figure}
+    \centering
+    \includegraphics{odg/collision.pdf}
+    \caption{Collision}\label{fig-collision}
+\end{figure}
 \subsection{Vehicle Structure}
 \label{sec-game-vehicle-structure}
 
