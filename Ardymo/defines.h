@@ -12,7 +12,7 @@
 #define I2C_SLAVE_ADDR 0x10
 //#define DRAWTEST
 //#define DEBUG_
-//#define TIMER_
+#define TIMER_
 // Platform dependant definitions
 #ifndef ARDUINO
 #include <stdint.h>

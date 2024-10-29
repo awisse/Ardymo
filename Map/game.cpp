@@ -18,8 +18,12 @@ State state;   // startup, running, menu, success, over
 uint32_t start; // Milliseconds at start of game
 bool show_viewport_coordinates;
 bool coordinates_toggled;
+bool follow_vehicle;
 
 // Functions
+
+void ReCenter();
+
 void InitGame() {
 
   rectangle_t r;
@@ -31,6 +35,7 @@ void InitGame() {
   state = running;
   show_viewport_coordinates = false;
   coordinates_toggled = false;
+  follow_vehicle = true;
 }
 
 void StepGame() {
@@ -57,6 +62,9 @@ void StepGame() {
 
     // Draw the map
     Platform::clear();
+    if (follow_vehicle) {
+      ReCenter();
+    }
     Draw(&vehicle); // Move according to heading and speed
 
     // Draw the vehicle coordinates if enabled
@@ -95,6 +103,10 @@ void ReCenter(void) {
   rectangle_t r;
   GetVehicleRect(&r);
   ReCenter(r.p);
+}
+
+void ToggleFollow(void) {
+  follow_vehicle = !follow_vehicle;
 }
 
 void GameOver() {

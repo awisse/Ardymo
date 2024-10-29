@@ -8,7 +8,7 @@
 
 struct intersection_t {
   Vec p;
-  float tau; // p = sensor.p + tau * sensor.v
+  float nu;  // p = sensor.p + nu * sensor.v
 };
 
 // Returns number of intersections found

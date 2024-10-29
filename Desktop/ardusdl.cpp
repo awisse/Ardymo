@@ -455,7 +455,7 @@ size_t Platform::println(double x, uint8_t decimals) {
 }
 
 //
-#ifdef DEBUG_
+#if defined (DEBUG_) || defined (TIMER_)
 void Platform::DebugPrint(int16_t value, uint8_t base) {
 
   std::cout << value;
@@ -497,7 +497,7 @@ void Platform::DebugPrintln(void) {
   std::cout.flush();
 }
 
-#endif // (DEBUG_)
+#endif // defined (DEBUG_) || defined (_TARGET)
 
 
 // TODO: EEPROM

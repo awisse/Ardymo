@@ -138,10 +138,16 @@ void DrawSuccess(uint16_t elapsed) {
   Platform::print(elapsed);
 }
 
+void DrawCrash(void) {
+  Platform::clear();
+  Platform::setCursor(centre.x - 33, centre.y - 8);
+  Platform::print("***CRASH***");
+}
+
 void DrawGameOver(uint16_t elapsed) {
   Platform::clear();
-  Platform::setCursor(centre.x - 21, centre.y - 8);
-  Platform::print("Game Over");
+  Platform::setCursor(centre.x - 42, centre.y - 8);
+  Platform::print("Target Destroyed");
   Platform::setCursor(centre.x - 21, centre.y);
   Platform::print(elapsed);
 }

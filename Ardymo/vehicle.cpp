@@ -13,46 +13,25 @@
 #include "globals.h"
 #include "defines.h"
 #include "shapes.h"
+#include "utils.h"
 
 static Vehicle vehicle;
 
-// Directions to check for distance
+// Direction of vector v of sensor to check for distance.
 enum direction_t {
-  FORWARD = 0,
-  BACKWARD = 1
+  POSITIVE = 0,
+  NEGATIVE = 1
+};
+
+// Information about closest obstacle - or collision.
+struct closest_t {
+  uint8_t index_positive; // Index of closest obstacle, positive v-direction
+  uint8_t index_negative; // Index of closest obstacle, negative v-direction
+  distance_t type; // FREE (No obstacle in sight), INTERSECTION, COLLISION.
 };
 
 // Helper functions
-
-void GetDistances(LineVector sensor, float* distances) {
-  // Compute distance to all obstacles.
-  // Return the closest
-  obstacle_t obst;
-  intersection_t x; // Point of intersection
-  float d;
-  size_t obstacle_count = sizeof(obstacles) / sizeof(obstacle_t);
-  int16_t i, j, intersection_count;
-
-  // Set Distances to infinity
-  distances[0] = distances[1] = INFINITY;
-  for (i=0; i<obstacle_count; i++) {
-    memcpy_P(&obst, obstacles + i, sizeof(obstacle_t));
-#ifndef ARDUINO
-    // Byte alignment on Arduino different from 64-bit intel.
-    memcpy((uint8_t*)&obst.item + 0xE, (uint8_t*)&obst.item + 0x10, 2);
-#endif
-    intersection_count = intersects(sensor, obst);
-    for (j=0; j<intersection_count; j++) {
-      x = intersect_point(j);
-      d = distance(sensor.p, j);
-      if ((x.tau > 0) && (d < distances[FORWARD])) {
-        distances[FORWARD] = d;
-      } else if (d < distances[BACKWARD]) {
-        distances[BACKWARD] = d;
-      }
-    }
-  }
-}
+closest_t GetDistances(LineVector sensor, float* distances);
 
 void InitVehicle() {
   vehicle = Vehicle(kVehicle);
@@ -87,60 +66,102 @@ void MoveVehicle(void) {
 }
 
 void CheckSensors(SensorValues* sensors) {
-  // There are in principle eight sensor rays 
+  // There are in principle eight sensor rays
   // emanating from the vehicle, two from each corner parallel
   // to the sides of the vehicle (see Figure 7 in ardymo.pdf).
   LineVector sensor;
   float d; // Temporary distance variable
   float distances[2];
+  uint8_t n;
+  closest_t closest; // Information on closest obstacle
 
-  // Left
-  sensor = LineVector(vehicle.p(), vehicle.v(), vehicle.length(), 0);
-  // FORWARD
-  GetDistances(sensor, distances);
-  sensors->distances.front = distances[FORWARD] - vehicle.length();
-  // REARWARD
-  sensors->distances.rear = distances[BACKWARD];
-
-  // Right
-  sensor = LineVector(vehicle.p() + vehicle.front(), vehicle.v(), 
-      vehicle.length(), 0);
-  GetDistances(sensor, distances);
-  // FORWARD
-  if (distances[FORWARD] < (sensors->distances.right - vehicle.width())) {
-    sensors->distances.right = distances[FORWARD] - vehicle.width();
-  }
-  // REARWARD
-  if (distances[BACKWARD] < sensors->distances.left) {
-    sensors->distances.left = distances[BACKWARD];
-  }
-  
-  // Front
-  sensor = LineVector(vehicle.p() + vehicle.v(), vehicle.front(), 
-      vehicle.width(), 0);
-  GetDistances(sensor, distances);
-  // Right
-  sensors->distances.right = distances[FORWARD] - vehicle.width();
-  // Left
-  sensors->distances.left = distances[BACKWARD];
-
-  // Rear
-  sensor = LineVector(vehicle.p(), vehicle.front(), vehicle.width(), 0);
-  GetDistances(sensor, distances);
-  // Right
-  if (distances[FORWARD] < (sensors->distances.right - vehicle.width())) {
-    sensors->distances.right = distances[FORWARD] - vehicle.width();
-  }
-  // Left
-  if (distances[BACKWARD] < sensors->distances.left) {
-    sensors->distances.left = distances[BACKWARD];
-  }
-
+  // First set sensors without computations
   sensors->heading = vehicle.v().normalized().as_point();
   // Position: Center of front
   sensors->position = vehicle.p() + vehicle.v() + vehicle.front() / 2.0;
   sensors->alpha = vehicle.rho();
   sensors->speed = vehicle.get_speed();
+
+  // Reset sensors
+  sensors->on_target = false;
+  sensors->collision = NONE;
+
+  // ======================== Front left-right ============================
+  sensor = LineVector(vehicle.p() + vehicle.v(), -vehicle.front(),
+      vehicle.width(), 0);
+  closest = GetDistances(sensor, distances);
+  // Collision - Front
+  if (closest.type == COLLISION) {
+      sensors->collision = FRONT;
+      if (closest.index_positive == 0) {
+        sensors->on_target = true;
+      }
+      return;
+  }
+  // RIGHTWARD
+  sensors->distances.right = distances[NEGATIVE] - vehicle.width();
+  // LEFTWARD (-vehicle.front() points left)
+  sensors->distances.left = distances[POSITIVE];
+
+  // ======================== Left forward-rearward =======================
+  sensor = LineVector(vehicle.p() + vehicle.v(), vehicle.v(),
+      vehicle.length(), 0);
+  closest = GetDistances(sensor, distances);
+  // Collision - Left
+  if (closest.type == COLLISION) {
+      sensors->collision = LEFT;
+      if (closest.index_positive == 0) {
+        sensors->on_target = true;
+      }
+      return;
+  }
+  // FORWARD
+  sensors->distances.front = distances[POSITIVE];
+  // REARWARD
+  sensors->distances.rear = distances[NEGATIVE] - vehicle.length();
+
+  // ======================== Right forward-rearward ======================
+  sensor = LineVector(vehicle.p() + vehicle.front(), -vehicle.v(),
+      vehicle.length(), 0);
+  closest =  GetDistances(sensor, distances);
+  // Collision - Right
+  if (closest.type == COLLISION) {
+    sensors->collision = RIGHT;
+    if (closest.index_positive == 0) {
+      sensors->on_target = true;
+    }
+    return;
+  }
+  // REARWARD (-vehicle.v points rearward)
+  if (distances[POSITIVE] < sensors->distances.rear) {
+    sensors->distances.rear = distances[POSITIVE];
+  }
+  // FORWARD
+  if (distances[NEGATIVE] < sensors->distances.front + vehicle.length()) {
+    sensors->distances.front = distances[NEGATIVE] - vehicle.length();
+  }
+
+  // ======================== Rear left-right =============================
+  sensor = LineVector(vehicle.p(), -vehicle.front(),
+      vehicle.width(), 0);
+  closest = GetDistances(sensor, distances);
+  // Collision - Rear
+  if (closest.type == COLLISION) {
+    sensors->collision = REAR;
+    if (closest.index_positive == 0) {
+      sensors->on_target = true;
+    }
+    return;
+  }
+  // RIGHTWARD (-vehicle.front points leftward)
+  if (distances[NEGATIVE] < (sensors->distances.right + vehicle.width())) {
+    sensors->distances.right = distances[NEGATIVE] - vehicle.width();
+    }
+  // LEFTWARD
+  if (distances[POSITIVE] < sensors->distances.left) {
+    sensors->distances.left = distances[POSITIVE];
+  }
+
 }
 
 void Vehicle::turn(float alpha) {
@@ -183,33 +204,40 @@ void Vehicle::set_rectangle(const rectangle_t* r) {
   rect = RectVector(*r);
 }
 
-side_t collides(Vehicle veh, obstacle_t obst) {
-  // Collision of a vehicle with an obstacle
-  // Returns the first side where the collision was detected
-  LineVector rect_side;
+closest_t GetDistances(LineVector sensor, float* distances) {
+  // Compute distance to all obstacles.
+  // Return the index of the closest
+  obstacle_t obst;
+  intersection_t ix; // Point of intersection
+  float d {};
+  size_t obstacle_count = sizeof(obstacles) / sizeof(obstacle_t);
+  int16_t i, j; // Loop variables
+  uint8_t intersection_count {};
+  closest_t closest {0, 0, FREE};
 
-  // Detect a frontal collision first
-  rect_side = LineVector(veh.p() + veh.v(), // p + v = front-left
-                         veh.front(), 1);
-  if (intersects(rect_side, obst))
-    return FRONT;
-
-  // Then a rear collision
-  rect_side.p = veh.p() + veh.front(); // p+front = rear-right
-  rect_side.v = -veh.front();
-  if (intersects(rect_side, obst))
-    return REAR;
-
-  // Left side. p = rear-left
-  rect_side = LineVector(veh.p(), veh.v(), 1);
-  if (intersects(rect_side, obst))
-    return LEFT;
-
-  // Right side
-  rect_side.p += veh.v() + veh.front();
-  rect_side.v = -rect_side.v;
-  if (intersects(rect_side, obst))
-    return RIGHT;
-
-  return NONE;
+  // Set Distances to infinity
+  distances[0] = distances[1] = INFINITY;
+  for (i=0; i<obstacle_count; i++) {
+    get_obstacle(&obst, i);
+    intersection_count = intersects(sensor, obst);
+    for (j=0; j<intersection_count; j++) {
+      ix = intersect_point(j);
+      d = distance(sensor.p, j);
+      closest.type = INTERSECTION;
+      if ((ix.nu > 0) && (d < distances[POSITIVE])) {
+        distances[POSITIVE] = d;
+        // obstacle i is now the closest
+        closest.index_positive = i;
+      } else if ((ix.nu > -1.0) && (ix.nu < 0)) {
+        // Collision with obstacle i
+        closest.type = COLLISION;
+        closest.index_positive = i;
+        return closest;
+      } else if (d < distances[NEGATIVE]) {
+        distances[NEGATIVE] = d;
+        closest.index_negative = i;
+      }
+    }
+  }
+  return closest;
 }

@@ -9,8 +9,6 @@
 constexpr rectangle_t kVehicle = {
   {kBoardWidth - 10.0, kBoardHeight - 10.0}, 10.0, 90, 5.0};
 
-constexpr circle_t kTarget = {{202.5, 202.5}, 5.0};
-
 // Enter the obstacles here. The format used for the `.item` part of 
 // `obstacle_t` is {float, float, float, int16_t, uint32_t}. The last entry
 // represents a `float` for the `rectangle_t` obstacle. In order to
@@ -18,6 +16,8 @@ constexpr circle_t kTarget = {{202.5, 202.5}, 5.0};
 // use the [IEEE-754 Floating Point Converter]
 // (https://www.h-schmidt.net/FloatConverter/IEEE754.html)
 const obstacle_t PROGMEM obstacles[] = {
+  // Target: Must be element zero of the obstacles array
+  {CIRCLE, 202.5, 202.5, 5.0},
   // Borders of board
   {BORDER, 0.0, 0.0, kBoardWidth, -90, 0x01},  // North
   {BORDER, 0.0, 0.0, kBoardHeight, 0, 0x01},  // West

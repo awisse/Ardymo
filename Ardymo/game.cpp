@@ -25,6 +25,7 @@ static bool i2c_available;
 void DoMenu();
 void Success();
 void GameOver();
+void Crash();
 #ifdef USE_I2C
 void I2C_Error(uint8_t error);
 #endif // USE_I2C
@@ -46,7 +47,7 @@ void InitGame() {
 void StepGame() {
 
   static int16_t alpha = 0;
-  SensorValues sensors;
+  SensorValues sensors {0, 0, FREE};
   Vec tgt_heading;
   float tgt_distance;
   uint32_t start;
@@ -57,6 +58,15 @@ void StepGame() {
   MoveVehicle(); // Move according to heading and speed
   // Check for collisions and distance to obstacles and target:
   CheckSensors(&sensors);
+
+  // Check whether collision with target
+  if (sensors.on_target) {
+    GameOver();
+  }
+
+  if (sensors.collision != NONE) {
+    Crash();
+  }
 
   tgt_heading = target.Heading(&sensors);
   tgt_distance = target.p.distance(sensors.position);
@@ -95,7 +105,7 @@ void StepGame() {
 }
 
 void Restart() {
-  if ((state == success) || (state == running) || (state == over)) {
+  if ((state == success) || (state == running) || (state == over) || (state == crash)) {
     InitGame();
   }
 }
@@ -132,6 +142,11 @@ void Success () {
   state = success;
 }
 
+void Crash() {
+
+  DrawCrash();
+  state = crash;
+}
 
 #ifdef USE_I2C
 void I2C_Error(uint8_t error) {

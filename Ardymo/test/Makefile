@@ -5,7 +5,7 @@ INCLUDE := $(shell $(PKGCONFIG) --cflags gtest)
 # $(wildcard $(srcpath)/*.h *.h)
 LIBS := $(shell $(PKGCONFIG) --libs gtest_main)
 CXXFLAGS = -g $(INCLUDE)
-SOURCES := objects.cpp vehicle.cpp rotate.cpp intersection.cpp tests.cpp
+SOURCES := objects.cpp vehicle.cpp rotate.cpp intersection.cpp tests.cpp utils.cpp
 OBJECTS := $(SOURCES:%.cpp=%.o)
 INCLUDES := $(wildcard $(srcdir)/*.h *.h)
 

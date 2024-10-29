@@ -9,6 +9,7 @@ enum State {
   running, // Player is playing
   menu,    // Menu is open
   success, // Successfully finished
+  crash,   // Crashed into obstacle
   over     // Game Over
 };
 

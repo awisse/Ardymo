@@ -3,7 +3,13 @@
 #include "objects.h"
 #include "structs.h"
 
-class Vehicle;
+constexpr uint8_t COLLIDED {1};
+
+enum distance_t {
+  FREE,
+  INTERSECTION,
+  COLLISION
+};
 
 void InitVehicle(void);
 void GetVehicleRect(rectangle_t* rect);
@@ -13,8 +19,6 @@ void TurnLeft(void);
 void AccelerateForward(void);
 void AccelerateBackward(void);
 void MoveVehicle(void);
-// Collision of rectangle with an object
-side_t collides(Vehicle, obstacle_t);
 
 void CheckSensors(SensorValues* sensors);
 

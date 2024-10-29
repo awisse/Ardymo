@@ -20,7 +20,7 @@ void Dispatch(Event e) {
       break;
 
     case Long_A:
-      ReCenter();
+      ToggleFollow(); // Viewport follows vehicle
       break;
 
     case Short_B:

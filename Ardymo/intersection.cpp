@@ -81,8 +81,11 @@ uint8_t intersects_line_vector(LineVector sensor, LineVector line) {
     if (!sensor.seg) {
       // No. sensor is unbound. The endpoints of the `line` segment
       // are on sensor.
-      X[0] = {line.p, 0.0};
-      X[1] = {line.p + line.v, 1.0};
+      // We have to find the υ of the intersection points.
+      nu = pl_minus_ps.div(sensor.v);
+      X[0] = {line.p, nu};
+      nu = (pl_minus_ps+line.v).div(sensor.v);
+      X[1] = {line.p + line.v, nu};
       return 2;
     }
     // Yes, sensor is a segment. Check the four cases for intersections
@@ -116,7 +119,6 @@ uint8_t intersects_line_vector(LineVector sensor, LineVector line) {
   if (line.seg && ((tau < 0) || (tau > 1))) {
     return 0;
   }
-
   nu = (line.v.x * pl_minus_ps.y - line.v.y * pl_minus_ps.x) / det;
 
   // Is `sensor` a segment?

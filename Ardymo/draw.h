@@ -16,6 +16,7 @@ void DrawPosition(Vec vehicle_position);
 void DrawDistances(Distances*);
 void DrawSuccess(uint16_t elapsed);
 void DrawGameOver(uint16_t elapsed);
+void DrawCrash(void);
 // Draw message in the center of the screen
 void DrawMessage(const char* msg);
 

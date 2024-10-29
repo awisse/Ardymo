@@ -5,6 +5,7 @@
 #include "objects.h"
 #include "viewport.h"
 #include "shapes.h"
+#include "utils.h"
 #include "draw.h"
 
 // Center of screen
@@ -25,16 +26,10 @@ void Draw(rectangle_t* vehicle) {
 
   // Start with the vehicle
   DrawRectangle(vehicle);
-  // Next the target
-  DrawCircle(&kTarget);
 
   // All obstacles
   for (i=0; i<n; i++) {
-    memcpy_P(&obst, obstacles+i, sizeof(obstacle_t));
-#ifndef ARDUINO
-    // Byte alignment on Arduino different from x86_64.
-    memcpy((uint8_t*)&obst.item + 0xE, (uint8_t*)&obst.item + 0x10, 2);
-#endif
+    get_obstacle(&obst, i);
     switch (obst.type) {
       case LINE:
         DrawLine(&obst.item.line);

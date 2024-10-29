@@ -115,6 +115,8 @@ struct SensorValues {
   float speed;
   // Collision
   side_t collision;
+  // Collision with target
+  bool on_target;
 };
 
 // vim:ft=cpp

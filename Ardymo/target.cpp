@@ -1,9 +1,13 @@
 // Functions for the target object
 #include "target.h"
 #include "shapes.h"
+#include "utils.h"
 
 Target InitTarget(void) {
-  return Target(kTarget);
+  obstacle_t obst;
+
+  get_obstacle(&obst, 0);
+  return Target(obst);
 }
 
 Vec Target::Heading(SensorValues*  sensors) {
