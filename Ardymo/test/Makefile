@@ -1,7 +1,8 @@
 TARGET := tests
 VPATH := ..
 PKGCONFIG := $(shell which pkg-config)
-INCLUDE := $(shell $(PKGCONFIG) --cflags gtest) $(wildcard $(srcpath)/*.h *.h)
+INCLUDE := $(shell $(PKGCONFIG) --cflags gtest) 
+# $(wildcard $(srcpath)/*.h *.h)
 LIBS := $(shell $(PKGCONFIG) --libs gtest_main)
 CXXFLAGS = -g $(INCLUDE)
 SOURCES := objects.cpp vehicle.cpp rotate.cpp intersection.cpp tests.cpp
@@ -10,7 +11,7 @@ INCLUDES := $(wildcard $(srcdir)/*.h *.h)
 
 all: $(TARGET)
 
-%.o : %.cpp $(INCLUDES)
+%.o : %.cpp | $(INCLUDES)
 	$(CXX) -c -o $(@F) $(CXXFLAGS) $<
 
 $(TARGET) : $(OBJECTS)
