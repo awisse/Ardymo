@@ -115,6 +115,11 @@ struct SensorValues {
   float speed;
   // Collision
   side_t collision;
+  // Target
+  // Distance
+  float tgt_distance;
+  Vec tgt_heading; // Direction of target with respect to vehicle axis
+
   // Collision with target
   bool on_target;
 };

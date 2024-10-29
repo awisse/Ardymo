@@ -8,7 +8,6 @@ Helper functions to unclutter main .ino file
 #include "structs.h"
 #include "globals.h"
 #include "vehicle.h"
-#include "target.h"
 #include "game.h"
 #include "platform.h"
 
@@ -16,7 +15,6 @@ Helper functions to unclutter main .ino file
 State state;   // startup, running, menu, success, over
 // Local to game.cpp
 static uint32_t start; // Milliseconds at start of game
-static Target target;
 #ifdef USE_I2C
 static bool i2c_available;
 #endif // USE_I2C
@@ -25,7 +23,7 @@ static bool i2c_available;
 void DoMenu();
 void Success();
 void GameOver();
-void Crash();
+void Crash(Vec*);
 #ifdef USE_I2C
 void I2C_Error(uint8_t error);
 #endif // USE_I2C
@@ -36,8 +34,6 @@ void InitGame() {
   Platform::clear();
   state = running;
   InitVehicle();
-  // Init target
-  target = InitTarget();
   DrawBackground();
 #ifdef USE_I2C
   i2c_available = true;
@@ -48,8 +44,6 @@ void StepGame() {
 
   static int16_t alpha = 0;
   SensorValues sensors {0, 0, FREE};
-  Vec tgt_heading;
-  float tgt_distance;
   uint32_t start;
 
   start = Platform::millis();
@@ -57,28 +51,22 @@ void StepGame() {
   HandleInput(); // User input: Button presses
   MoveVehicle(); // Move according to heading and speed
   // Check for collisions and distance to obstacles and target:
-  CheckSensors(&sensors);
 
-  // Check whether collision with target
-  if (sensors.on_target) {
-    GameOver();
-  }
-
-  if (sensors.collision != NONE) {
-    Crash();
-  }
-
-  tgt_heading = target.Heading(&sensors);
-  tgt_distance = target.p.distance(sensors.position);
-
-  if ((tgt_distance < 2.0) && (sensors.speed == 0)) {
-    Success();
-    return;
+  if (state == running) {
+    // Check whether collision with target
+    CheckSensors(&sensors);
+    if (sensors.on_target) {
+      GameOver();
+    } else if (sensors.collision != NONE) {
+      Crash(&sensors.position);
+    } else if ((sensors.tgt_distance < 2.0) && (sensors.speed == 0)) {
+      Success();
+    }
   }
 
   if (state == running) {
-    DrawCompass(sensors.heading, sensors.alpha, tgt_heading);
-    DrawStatus(sensors.speed, tgt_distance);
+    DrawCompass(sensors.heading, sensors.alpha, sensors.tgt_heading);
+    DrawStatus(sensors.speed, sensors.tgt_distance);
     DrawDistances(&sensors.distances);
     DrawPosition(sensors.position);
 #ifdef USE_I2C
@@ -142,9 +130,9 @@ void Success () {
   state = success;
 }
 
-void Crash() {
+void Crash(Vec* position) {
 
-  DrawCrash();
+  DrawCrash(position);
   state = crash;
 }
 

@@ -13,9 +13,11 @@
 #include "globals.h"
 #include "defines.h"
 #include "shapes.h"
+#include "target.h"
 #include "utils.h"
 
 static Vehicle vehicle;
+static Target target;
 
 // Direction of vector v of sensor to check for distance.
 enum direction_t {
@@ -35,6 +37,7 @@ closest_t GetDistances(LineVector sensor, float* distances);
 
 void InitVehicle() {
   vehicle = Vehicle(kVehicle);
+  target = InitTarget();
 }
 
 void GetVehicleRect(rectangle_t* rect) {
@@ -70,6 +73,7 @@ void CheckSensors(SensorValues* sensors) {
   // emanating from the vehicle, two from each corner parallel
   // to the sides of the vehicle (see Figure 7 in ardymo.pdf).
   LineVector sensor;
+  Vec tgt_heading;
   float d; // Temporary distance variable
   float distances[2];
   uint8_t n;
@@ -77,12 +81,22 @@ void CheckSensors(SensorValues* sensors) {
 
   // First set sensors without computations
   sensors->heading = vehicle.v().normalized().as_point();
+
   // Position: Center of front
   sensors->position = vehicle.p() + vehicle.v() + vehicle.front() / 2.0;
   sensors->alpha = vehicle.rho();
   sensors->speed = vehicle.get_speed();
 
-  // Reset sensors
+  // Target
+  tgt_heading = target.p - sensors->position;
+  sensors->tgt_distance = tgt_heading.length() - target.r;
+  // Compute angle with respect to vehicle heading
+  sensors->tgt_heading = tgt_heading
+    .rotate(180 - sensors->alpha)
+    .normalized()
+    .as_point();
+
+  // Reset sensors to be computed
   sensors->on_target = false;
   sensors->collision = NONE;
 

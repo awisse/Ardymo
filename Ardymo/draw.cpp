@@ -13,6 +13,7 @@ static Vec centre = {(float)((kScreenWidth>>1)-1),
                      (float)((kScreenHeight>>1)-1)};
 
 // Helper functions
+void draw_seconds(uint16_t elapsed, int16_t x, int16_t y);
 
 // Draw elapsed time and distance to target in top left corner
 void DrawStatus(float speed, float distance) {
@@ -81,7 +82,7 @@ void DrawDistances(Distances* distances) {
   Platform::print('m');
   // Left
   Platform::eraseRectRow(6, centre.y - 4, 30, 8);
-  Platform::setCursor(6, centre.y - 4);
+  Platform::setCursor(7, centre.y - 4);
   Platform::print(distances->left, 0);
   Platform::print('m');
   // Right
@@ -103,11 +104,11 @@ void DrawDistances(Distances* distances) {
 
 void DrawPosition(Vec vehicle_position) {
 
-  Platform::eraseRectRow(0, kScreenHeight - 16, kStatusX - 1, 15);
-  Platform::setCursor(1, kScreenHeight - kStatusY + 1);
+  Platform::eraseRectRow(0, kScreenHeight - 16, kStatusX - 1, kStatusX - 1);
+  Platform::setCursor(1, kScreenHeight - kStatusY + 2);
   Platform::print("x ");
   Platform::print((int16_t)vehicle_position.x);
-  Platform::setCursor(1, kScreenHeight - kStatusY + 9);
+  Platform::setCursor(1, kScreenHeight - kStatusY + 10);
   Platform::print("y ");
   Platform::print((int16_t)vehicle_position.y);
 }
@@ -132,24 +133,28 @@ void DrawBackground() {
 
 void DrawSuccess(uint16_t elapsed) {
   Platform::clear();
-  Platform::setCursor(centre.x - 21, centre.y - 8);
-  Platform::print("SUCCESS");
-  Platform::setCursor(centre.x - 21, centre.y);
-  Platform::print(elapsed);
+  Platform::setCursor(centre.x - 45, centre.y - 8);
+  Platform::print("*** SUCCESS ***");
+  draw_seconds(elapsed, centre.x - 36, centre.y);
 }
 
-void DrawCrash(void) {
+void DrawCrash(Vec* position) {
   Platform::clear();
-  Platform::setCursor(centre.x - 33, centre.y - 8);
-  Platform::print("***CRASH***");
+  Platform::setCursor(centre.x - 39, centre.y - 8);
+  Platform::print("----CRASH----");
+  Platform::setCursor(centre.x - 33, centre.y - 0);
+  Platform::print("(");
+  Platform::print(position->x, 0);
+  Platform::print(",");
+  Platform::print(position->y, 0);
+  Platform::print(")");
 }
 
 void DrawGameOver(uint16_t elapsed) {
   Platform::clear();
-  Platform::setCursor(centre.x - 42, centre.y - 8);
+  Platform::setCursor(centre.x - 48, centre.y - 9);
   Platform::print("Target Destroyed");
-  Platform::setCursor(centre.x - 21, centre.y);
-  Platform::print(elapsed);
+  draw_seconds(elapsed, centre.x - 36, centre.y);
 }
 
 void DrawMessage(const char* msg) {
@@ -160,5 +165,11 @@ void DrawMessage(const char* msg) {
   Platform::drawRect(x, 24, msg_len + 4, 15);
   Platform::setCursor(x + 3, 28);
   Platform::print(msg);
+}
+
+void draw_seconds(uint16_t elapsed, int16_t x, int16_t y) {
+  Platform::setCursor(x, y);
+  Platform::print(elapsed);
+  Platform::print(" seconds");
 }
 // vim:fdm=syntax

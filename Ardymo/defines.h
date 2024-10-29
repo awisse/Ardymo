@@ -10,9 +10,9 @@
 
 #define USE_I2C
 #define I2C_SLAVE_ADDR 0x10
-//#define DRAWTEST
-//#define DEBUG_
-#define TIMER_
+/* #define DRAWTEST */
+/* #define DEBUG_ */
+//#define TIMER_
 // Platform dependant definitions
 #ifndef ARDUINO
 #include <stdint.h>
@@ -43,8 +43,13 @@ const uint16_t kFrameDuration = 100;
 // Screen and layout
 const int16_t kScreenWidth = 128;
 const int16_t kScreenHeight = 64;
+#ifdef DEBUG_
+const int16_t kBoardWidth = 8 * kScreenWidth;
+const int16_t kBoardHeight = 8 * kScreenHeight;
+#else
 const int16_t kBoardWidth = 16 * kScreenWidth;
 const int16_t kBoardHeight = 16 * kScreenHeight;
+#endif // DEBUG_
 // Status value rectangle top left
 const int16_t kStatusY = 18;
 const int16_t kStatusX = 37;

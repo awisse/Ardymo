@@ -24,6 +24,7 @@ const obstacle_t PROGMEM obstacles[] = {
   {BORDER, 0.0, kBoardHeight, kBoardWidth, -90, 0x01},  // South
   {BORDER, kBoardWidth, 0.0, kBoardHeight, 0, 0x01},  // East
   // Obstacles
+#ifndef DRAWTEST
   {CIRCLE, 410.0, 220.0, 150.0}, // 1
   {RECTANGLE, 594.0, 586.0, 300.0, 30, 0x43160000}, // 2 (w=150.0)
   {LINE, 860, 75, 400, 50, 0x01},  // 3
@@ -52,5 +53,5 @@ const obstacle_t PROGMEM obstacles[] = {
   {LINE, 1850, 700, 300, 0, 0x01},  // 25
   {LINE, 1850, 700, 198, -90, 0x01},  // 26
   {LINE, 1850, 1000, 198, -90, 0x01},  // 27
-  // Test obstacles
+#endif // DRAWTEST
 };
