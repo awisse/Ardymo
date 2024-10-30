@@ -235,7 +235,7 @@ closest_t GetDistances(LineVector sensor, float* distances) {
   closest_t closest {0, 0, FREE};
 
   // Set Distances to infinity
-  distances[0] = distances[1] = INFINITY;
+  distances[POSITIVE] = distances[NEGATIVE] = INFINITY;
   for (i=0; i<obstacle_count; i++) {
     get_obstacle(&obst, i);
     intersection_count = intersects(sensor, obst);
@@ -243,7 +243,7 @@ closest_t GetDistances(LineVector sensor, float* distances) {
       ix = intersect_point(j);
       d = distance(sensor.p, j);
       closest.type = INTERSECTION;
-      if ((ix.nu > 0) && (d < distances[POSITIVE])) {
+      if ((ix.nu >= 0) && (d < distances[POSITIVE])) {
         distances[POSITIVE] = d;
         // obstacle i is now the closest
         closest.index_positive = i;
@@ -252,7 +252,7 @@ closest_t GetDistances(LineVector sensor, float* distances) {
         closest.type = COLLISION;
         closest.index_positive = i;
         return closest;
-      } else if (d < distances[NEGATIVE]) {
+      } else if ((ix.nu <= -1.0) && (d < distances[NEGATIVE])) {
         distances[NEGATIVE] = d;
         closest.index_negative = i;
       }
