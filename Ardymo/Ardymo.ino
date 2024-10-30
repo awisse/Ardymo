@@ -51,11 +51,23 @@ uint8_t* Platform::getBuffer() {
 }
 
 // I2C Communication
-uint8_t Platform::master_receive(uint8_t* bytes, uint8_t address) {
-  // Receive bytes from slave at address
-  // This is unfinished. Not needed for now.
-  uint8_t n {}; // Number of bytes received
+uint8_t Platform::master_receive(uint8_t* bytes, uint8_t n) {
+  // Receive bytes from slave after request
+  uint8_t available = Wire.available(); // Number of bytes received
+  uint8_t i;
+
+  n = (n < available) ? n : available;
+
+  for (i=0; i<n; i++) {
+    *(bytes + i) = Wire.read();
+  }
   return n;
+}
+
+uint8_t Platform::master_request(uint8_t address, uint8_t n) {
+  // Request bytes from slave at address
+  uint8_t received = Wire.requestFrom(address, n);
+  return received;
 }
 
 uint8_t Platform::master_send(uint8_t* bytes, uint8_t n, uint8_t address) {
@@ -309,6 +321,30 @@ void Platform::DebugPrint(double value, uint8_t decimals) {
 
 void Platform::DebugPrint(const char* text) {
   Serial.print((char*)text);
+}
+
+void Platform::DebugPrintln(int16_t value, uint8_t base) {
+  Serial.println(value, base);
+}
+
+void Platform::DebugPrintln(uint16_t value, uint8_t base) {
+  Serial.println(value, base);
+}
+
+void Platform::DebugPrintln(uint32_t value, uint8_t base) {
+  Serial.println(value, base);
+}
+
+void Platform::DebugPrintln(float value, uint8_t decimals) {
+  Serial.println((double)value, decimals);
+}
+
+void Platform::DebugPrintln(double value, uint8_t decimals) {
+  Serial.println(value, decimals);
+}
+
+void Platform::DebugPrintln(const char* text) {
+  Serial.println((char*)text);
 }
 
 void Platform::DebugPrintln() {

@@ -61,8 +61,14 @@ uint8_t Platform::slave_receive(uint8_t* bytes, uint8_t n) {
 }
 void Platform::slave_send(uint8_t* bytes, uint8_t n) {
 }
-uint8_t Platform::master_receive(uint8_t* bytes, uint8_t address) {
+uint8_t Platform::master_receive(uint8_t* bytes, uint8_t n) {
   return 0;
+}
+uint8_t Platform::master_request(uint8_t address, uint8_t bytes) {
+  // Receive bytes from slave at address
+  // This is unfinished. Not needed for now.
+  uint8_t n {};
+  return n;
 }
 uint8_t Platform::master_send(uint8_t* bytes, uint8_t n, uint8_t address) {
   return 0;
@@ -489,6 +495,42 @@ void Platform::DebugPrint(double value, uint8_t decimals) {
 
 void Platform::DebugPrint(const char* text) {
   std::cout << text;
+  std::cout.flush();
+}
+
+void Platform::DebugPrintln(int16_t value, uint8_t base) {
+
+  std::cout << value << '\n';
+  std::cout.flush();
+}
+
+void Platform::DebugPrintln(uint16_t value, uint8_t base) {
+
+  std::cout << value << '\n';
+  std::cout.flush();
+}
+
+void Platform::DebugPrintln(uint32_t value, uint8_t base) {
+  std::cout << value << '\n';
+  std::cout.flush();
+}
+
+void Platform::DebugPrintln(float value, uint8_t decimals) {
+  char strfloat[64];
+  formatFloat(strfloat, value, decimals);
+  std::cout << strfloat << '\n';
+  std::cout.flush();
+}
+
+void Platform::DebugPrintln(double value, uint8_t decimals) {
+  char strdouble[64];
+  formatFloat(strdouble, value, decimals);
+  std::cout << strdouble << '\n';
+  std::cout.flush();
+}
+
+void Platform::DebugPrintln(const char* text) {
+  std::cout << text << '\n';
   std::cout.flush();
 }
 

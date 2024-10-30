@@ -5,10 +5,16 @@
 
 constexpr uint8_t COLLIDED {1};
 
-enum distance_t {
+enum distance_t : int16_t {
   FREE,
   INTERSECTION,
   COLLISION
+};
+
+enum check_t : int16_t { // Which direction to check
+  LEFT_RIGHT,
+  FORWARD_REARWARD,
+  BOTH
 };
 
 void InitVehicle(void);
@@ -20,7 +26,7 @@ void AccelerateForward(void);
 void AccelerateBackward(void);
 void MoveVehicle(void);
 
-void CheckSensors(SensorValues* sensors);
+void CheckSensors(SensorValues* sensors, check_t which);
 
 class Vehicle {
 

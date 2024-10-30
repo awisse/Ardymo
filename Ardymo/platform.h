@@ -13,7 +13,8 @@ public:
 #ifdef USE_I2C
   static uint8_t slave_receive(uint8_t* bytes, uint8_t n);
   static void slave_send(uint8_t* bytes, uint8_t n);
-  static uint8_t master_receive(uint8_t* bytes, uint8_t address);
+  static uint8_t master_request(uint8_t address, uint8_t n);
+  static uint8_t master_receive(uint8_t* bytes, uint8_t n);
   static uint8_t master_send(uint8_t* bytes, uint8_t n, uint8_t address);
 #endif
 
@@ -98,6 +99,12 @@ public:
   static void DebugPrint(float value, uint8_t decimals=2);
   static void DebugPrint(double value, uint8_t decimals=2);
   static void DebugPrint(const char* text);
+  static void DebugPrintln(int16_t value, uint8_t base=DEC);
+  static void DebugPrintln(uint16_t value, uint8_t base=DEC);
+  static void DebugPrintln(uint32_t value, uint8_t base=DEC);
+  static void DebugPrintln(float value, uint8_t decimals=2);
+  static void DebugPrintln(double value, uint8_t decimals=2);
+  static void DebugPrintln(const char* text);
   static void DebugPrintln();
 #endif // DEBUG_ || TIMER_
 	

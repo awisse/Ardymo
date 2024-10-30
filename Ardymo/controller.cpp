@@ -43,8 +43,7 @@ void Dispatch(Event e) {
     default:
       ;
 #ifdef DEBUG_
-      Platform::DebugPrint("default in Dispatch");
-      Platform::DebugPrintln();
+      Platform::DebugPrintln("default in Dispatch");
 #endif
   }
 }

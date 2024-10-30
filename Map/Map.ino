@@ -29,6 +29,7 @@ void setup() {
   power_twi_enable();
   Wire.begin(I2C_SLAVE_ADDR);
   Wire.onReceive(I2C_SlaveReceive);
+  Wire.onRequest(I2C_MasterRequest);
 #endif
 
   // Wait for button to be pressed before beginning
@@ -74,9 +75,16 @@ void Platform::slave_send(uint8_t* bytes, uint8_t n) {
   Wire.write(bytes, n);
 }
 
-uint8_t Platform::master_receive(uint8_t* bytes, uint8_t address) {
-  // Receive bytes from slave at address
-  uint8_t n = 0; // Number of bytes received
+uint8_t Platform::master_receive(uint8_t* bytes, uint8_t n) {
+  // Receive bytes from slave after request
+  uint8_t available = Wire.available(); // Number of bytes received
+  uint8_t i;
+
+  n = (n < available) ? n : available;
+
+  for (i=0; i<n; i++) {
+    *(bytes + i) = Wire.read();
+  }
   return n;
 }
 
@@ -325,6 +333,32 @@ void Platform::DebugPrint(double value, uint8_t decimals) {
 void Platform::DebugPrint(const char* text) {
   Serial.print((char*)text);
 }
+
+// DebugPrintln
+void Platform::DebugPrintln(int16_t value, uint8_t base) {
+  Serial.println(value, base);
+}
+
+void Platform::DebugPrintln(uint16_t value, uint8_t base) {
+  Serial.println(value, base);
+}
+
+void Platform::DebugPrintln(uint32_t value, uint8_t base) {
+  Serial.println(value, base);
+}
+
+void Platform::DebugPrintln(float value, uint8_t decimals) {
+  Serial.println((double)value, decimals);
+}
+
+void Platform::DebugPrintln(double value, uint8_t decimals) {
+  Serial.println(value, decimals);
+}
+
+void Platform::DebugPrintln(const char* text) {
+  Serial.println((char*)text);
+}
+
 
 void Platform::DebugPrintln() {
   Serial.println();

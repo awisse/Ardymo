@@ -12,7 +12,7 @@
 #define I2C_SLAVE_ADDR 0x10
 /* #define DRAWTEST */
 /* #define DEBUG_ */
-//#define TIMER_
+#define TIMER_
 // Platform dependant definitions
 #ifndef ARDUINO
 #include <stdint.h>
@@ -37,12 +37,19 @@ typedef long long_;
 typedef int int_;
 #endif
 
+// Split computations between Map and Ardymo?
+#ifdef USE_I2C
+constexpr bool kTimeSharing {true};
+#else
+constexpr bool kTimeSharing {false};
+#endif // USE_I2C
+
 // Milliseconds / Frame
-const uint16_t kFrameDuration = 100;
+const uint16_t kFrameDuration {100};
 
 // Screen and layout
-const int16_t kScreenWidth = 128;
-const int16_t kScreenHeight = 64;
+const int16_t kScreenWidth {128};
+const int16_t kScreenHeight {64};
 #ifdef DEBUG_
 const int16_t kBoardWidth = 8 * kScreenWidth;
 const int16_t kBoardHeight = 8 * kScreenHeight;
@@ -50,23 +57,21 @@ const int16_t kBoardHeight = 8 * kScreenHeight;
 const int16_t kBoardWidth = 16 * kScreenWidth;
 const int16_t kBoardHeight = 16 * kScreenHeight;
 #endif // DEBUG_
-// Status value rectangle top left
-const int16_t kStatusY = 18;
-const int16_t kStatusX = 37;
+       //
+// Status value rectangle top left, coordinates bottom left
+const int16_t kStatusY {18};
+const int16_t kStatusX {37};
 // Compass circle
-const int16_t kCompassRadius = 24;
+const int16_t kCompassRadius {24};
 
 // Vehicle Parameters
 // speed: steps per frame
 // Max speed: 10.0/second; kFrameDuration: Milliseconds / Frame
-constexpr float MaxSpeed = 18.0; // Limited to 2 * 9.0
+constexpr float MaxSpeed {18.0}; // Limited to 2 * 9.0
 // Eighteen speed steps.
-constexpr float SpeedStep = MaxSpeed / 18.0;
-constexpr int16_t AngleStep = 2;
-
-// Navigation steps
-const int16_t kDirectionStep = 1;
-
+constexpr float SpeedStep {MaxSpeed / 18.0};
+constexpr int16_t AngleStep {2};
+constexpr float kTargetReached {5.0};
 
 #define DEC 10
 #define HEX 16

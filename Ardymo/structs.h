@@ -6,20 +6,21 @@
 #include <stdint.h>
 #include "objects.h"
 
-enum geometry {
+enum geometry : uint16_t {
   BORDER,
   LINE,
   CIRCLE,
   RECTANGLE,
 };
 
-enum side_t {
+enum side_t : uint16_t {
   NONE = 0,
   LEFT,
   FRONT,
   RIGHT,
   REAR,
-  NUM // Number of elements in side_t
+  NUM, // Number of usable elements (5)
+  INVALID = 0xFFFF // For I2C data check
 };
 
 // We must define our obstacles as a union of structs instead of a class
@@ -100,7 +101,7 @@ struct RectVector { // A rectangle in vector format
 
 // Distances to obstacles and target
 struct Distances {
-  float left, front, right, rear;
+  float left, right, front, rear;
 };
 
 struct SensorValues {
@@ -122,6 +123,12 @@ struct SensorValues {
 
   // Collision with target
   bool on_target;
+};
+
+struct SharedData { // Data computed by Map and shared to Ardymo
+  float dist_left, dist_right; // Distances to obstacles left and right
+  side_t collision; // Collision detected left or right
+  bool on_target; // Vehicle crashed into target
 };
 
 // vim:ft=cpp

@@ -1,4 +1,4 @@
-// vim ft=cpp
+// vim: ft=cpp
 //
 // Arrow points
 #include "defines.h"
