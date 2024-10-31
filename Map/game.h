@@ -1,5 +1,5 @@
 #pragma once
-#include "defines.h"
+#include "src/defines.h"
 
 void InitGame();
 void StepGame(); // Return true if screen must be updated

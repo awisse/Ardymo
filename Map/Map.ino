@@ -6,10 +6,10 @@
 
 #include <Arduboy2.h>
 #include <stdint.h>
-#include "comm.h"
+#include "src/comm.h"
 #include "game.h"
-#include "defines.h"
-#include "platform.h"
+#include "src/defines.h"
+#include "src/platform.h"
 #ifdef USE_I2C
 #include <Wire.h>
 #endif

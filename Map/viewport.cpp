@@ -1,4 +1,4 @@
-#include "intersection.h"
+#include "src/intersection.h"
 #include "viewport.h"
 
 ViewPort viewport;

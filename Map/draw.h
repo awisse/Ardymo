@@ -1,8 +1,8 @@
 // Drawing/display functions
 #pragma once
 #include <stdint.h>
-#include "structs.h"
-#include "objects.h"
+#include "src/structs.h"
+#include "src/objects.h"
 
 // Redraw Viewport. The vehicle position might have changed
 void Draw(rectangle_t* vehicle);

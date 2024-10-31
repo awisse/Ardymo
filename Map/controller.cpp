@@ -4,8 +4,8 @@
 #include "controller.h"
 #include "viewport.h"
 #include "game.h"
-#include "defines.h"
-#include "platform.h"
+#include "src/defines.h"
+#include "src/platform.h"
 
 uint8_t previousButtons, currentButtons;
 uint8_t DebouncedButtons();

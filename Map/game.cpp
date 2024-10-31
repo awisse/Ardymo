@@ -5,11 +5,11 @@ Helper functions to unclutter main .ino file
 #include "draw.h"
 #include "controller.h"
 #include "viewport.h"
-#include "vehicle.h"
-#include "structs.h"
-#include "globals.h"
-#include "platform.h"
-#include "comm.h"
+#include "src/vehicle.h"
+#include "src/structs.h"
+#include "src/globals.h"
+#include "src/platform.h"
+#include "src/comm.h"
 
 // Global variable
 State state;   // startup, running, menu, success, over

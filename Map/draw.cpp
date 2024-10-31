@@ -1,11 +1,11 @@
 // All the drawing takes place here.
-#include "defines.h"
-#include "globals.h"
-#include "platform.h"
-#include "objects.h"
+#include "src/defines.h"
+#include "src/globals.h"
+#include "src/platform.h"
+#include "src/objects.h"
 #include "viewport.h"
-#include "shapes.h"
-#include "utils.h"
+#include "src/shapes.h"
+#include "src/utils.h"
 #include "draw.h"
 
 // Center of screen

@@ -1,8 +1,8 @@
 #pragma once
 #include <math.h>
-#include "defines.h"
-#include "objects.h"
-#include "structs.h"
+#include "src/defines.h"
+#include "src/objects.h"
+#include "src/structs.h"
 
 constexpr rectangle_t default_view = {{0.0, 0.0}, kScreenWidth, -90,
   kScreenHeight};
