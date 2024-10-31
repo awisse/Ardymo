@@ -1,6 +1,5 @@
 // All the drawing takes place here.
 #include "src/defines.h"
-#include "src/globals.h"
 #include "src/platform.h"
 #include "src/objects.h"
 #include "viewport.h"

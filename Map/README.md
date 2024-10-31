@@ -28,11 +28,11 @@ left, right, up and down. The view can follow the vehicle or not.
 
 ### Controls
 
-| Key    | Action                                  |
-|--------|-----------------------------------------|
-| UP     | Move the view up                        |
-| DOWN   | Move the view down                      |
-| LEFT   | Move the view left                      |
-| RIGHT  | Move the view right                     |
-| Long A | Toggle follow vehicle                   |
-| Long B | Toggle display coordinates of vehicle   |
+| Key    | Action                                            |
+|--------|---------------------------------------------------|
+| UP     | Move the view up                                  |
+| DOWN   | Move the view down                                |
+| LEFT   | Move the view left                                |
+| RIGHT  | Move the view right                               |
+| Long A | Toggle follow vehicle                             |
+| Long B | Toggle coordinates of top-left corner of viewport |

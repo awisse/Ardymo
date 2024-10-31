@@ -8,7 +8,6 @@ Helper functions to unclutter main .ino file
 #include "viewport.h"
 #include "src/vehicle.h"
 #include "src/structs.h"
-#include "src/globals.h"
 #include "src/platform.h"
 #include "src/comm.h"
 #ifdef USE_I2C
