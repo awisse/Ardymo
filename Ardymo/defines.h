@@ -13,7 +13,9 @@
 /* #define DRAWTEST */
 /* #define DEBUG_ */
 /* #define TIMER_ */
+
 // Platform dependant definitions
+// Start width *NOT* Arduino. Map <pgmspace.h> functions.
 #ifndef ARDUINO
 #include <stdint.h>
 #include <string.h>
@@ -28,6 +30,9 @@
 #define memcpy_P(dest, src, size) memcpy(dest, src, size)
 // If you absolutely must use `long` and `int`,
 // use these instead: `long_` and `int_`.
+// Preferably use types from stdint.h: int16_t, int32_t, ...
+// `int` on amd64 is 32 bits but 16 bits on Arduino.
+// `long` on amd64 is 64 bits but 32 bits on Arduino.
 typedef int long_;
 typedef short int_;
 #else
@@ -50,14 +55,8 @@ const uint16_t kFrameDuration {100};
 // Screen and layout
 const int16_t kScreenWidth {128};
 const int16_t kScreenHeight {64};
-#ifdef DEBUG_
-const int16_t kBoardWidth = 8 * kScreenWidth;
-const int16_t kBoardHeight = 8 * kScreenHeight;
-#else
 const int16_t kBoardWidth = 16 * kScreenWidth;
 const int16_t kBoardHeight = 16 * kScreenHeight;
-#endif // DEBUG_
-       //
 // Status value rectangle top left, coordinates bottom left
 const int16_t kStatusY {18};
 const int16_t kStatusX {37};
@@ -69,8 +68,9 @@ const int16_t kCompassRadius {24};
 // Max speed: 10.0/second; kFrameDuration: Milliseconds / Frame
 constexpr float MaxSpeed {18.0}; // Limited to 2 * 9.0
 // Eighteen speed steps.
-constexpr float SpeedStep {MaxSpeed / 18.0};
-constexpr int16_t AngleStep {2};
+constexpr float SpeedStep {MaxSpeed / 18.0}; // Acceleration per key press
+constexpr int16_t AngleStep {2}; // Number of degrees for one key press
+// Player succeds if the vehicle is less than `kTargetReached` from target
 constexpr float kTargetReached {5.0};
 
 #define DEC 10
@@ -78,17 +78,6 @@ constexpr float kTargetReached {5.0};
 #define OCT 8
 #define BINARY 2
 
-// Buttons
-#define INPUT_LEFT 32u
-#define INPUT_RIGHT 64u
-#define INPUT_UP 128u
-#define INPUT_DOWN 16u
-#define INPUT_A 8u
-#define INPUT_B 4u
-
 // Colours
 #define COLOUR_WHITE 1
 #define COLOUR_BLACK 0
-
-// Time
-#define LONG_PRESS 2000

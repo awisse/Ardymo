@@ -1,7 +1,7 @@
 // Dispatching user events to the appropriate functions,
 // depending on the global State type variable state.
 // Emulates "registring listeners"
-#include "controller.h"
+#include "src/controller.h"
 #include "viewport.h"
 #include "game.h"
 #include "src/defines.h"

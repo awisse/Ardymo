@@ -70,6 +70,7 @@ void StepGame() {
   // Check for collisions and distance to obstacles and target:
 
   if (state == running) {
+#ifdef USE_I2C
     if (kTimeSharing) {
       receive_ok = GetSharedData(&shared);
     }
@@ -77,8 +78,11 @@ void StepGame() {
         CheckSensors(&sensors, FORWARD_REARWARD);
         UseSharedData(&sensors, &shared);
     } else {
+#endif // USE_I2C
       CheckSensors(&sensors, BOTH);
+#ifdef USE_I2C
     }
+#endif // USE_I2C
 
 #ifdef DEBUG_
     PrintSensors(&sensors);

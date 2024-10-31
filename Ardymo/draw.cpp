@@ -5,7 +5,6 @@
 #include "objects.h"
 #include "draw.h"
 #include "platform.h"
-#include "shapes.h"
 #include "sprites.h"
 
 // Center of screen

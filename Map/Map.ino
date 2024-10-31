@@ -55,6 +55,7 @@ uint8_t* Platform::getBuffer() {
   return arduboy.getBuffer();
 }
 
+#ifdef USE_I2C
 // I2C Communication
 uint8_t Platform::slave_receive(uint8_t* bytes, uint8_t n) {
   // Receive bytes from master
@@ -92,6 +93,7 @@ uint8_t Platform::master_send(uint8_t* bytes, uint8_t n, uint8_t address) {
   // Send n bytes to slave at address
   return 0;
 }
+#endif // USE_I2C
 
 /******* Buttons **********************************************/
 uint8_t Platform::buttonsState() {

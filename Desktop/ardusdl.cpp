@@ -5,6 +5,7 @@
 #include <iostream>
 #include "EEPROM.h"
 #include "../Ardymo/defines.h"
+#include "../Ardymo/controller.h"
 #include "../Ardymo/game.h"
 #include "../Ardymo/platform.h"
 #include "Font5x7.h"

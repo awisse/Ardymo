@@ -13,6 +13,17 @@ typedef enum {
   Down
 } Event;
 
+// Buttons
+#define INPUT_LEFT 32u
+#define INPUT_RIGHT 64u
+#define INPUT_UP 128u
+#define INPUT_DOWN 16u
+#define INPUT_A 8u
+#define INPUT_B 4u
+
+// Time
+#define LONG_PRESS 2000
+
 void HandleInput();
 
 // vim: tabstop=2:softtabstop=2:shiftwidth=2:expandtab:filetype=arduino

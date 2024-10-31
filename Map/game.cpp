@@ -2,14 +2,18 @@
 Helper functions to unclutter main .ino file
  */
 #include "game.h"
+#include "src/defines.h"
 #include "draw.h"
-#include "controller.h"
+#include "src/controller.h"
 #include "viewport.h"
 #include "src/vehicle.h"
 #include "src/structs.h"
 #include "src/globals.h"
 #include "src/platform.h"
 #include "src/comm.h"
+#ifdef USE_I2C
+#include "src/comm.h"
+#endif // USE_I2C
 
 // Global variable
 State state;   // startup, running, menu, success, over
@@ -118,6 +122,7 @@ void ReCenter(void) {
   ReCenter(r.p);
 }
 
+#ifdef USE_I2C
 void ShareSensors(SensorValues* sensors) {
   // Sharing left-right distances, on_target and collision.
   SharedData shared;
@@ -130,6 +135,7 @@ void ShareSensors(SensorValues* sensors) {
   PrintShared(&shared);
 #endif // DEBUG_
 }
+#endif // USE_I2C
 
 void ToggleFollow(void) {
   follow_vehicle = !follow_vehicle;

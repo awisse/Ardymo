@@ -7,7 +7,7 @@ ardymosources = $(wildcard $(ardymodir)/*.cpp *.cpp)
 ardymoobjects = $(ardymosources:%.cpp=%.o)
 
 mapdir := ../Map
-mapsources = $(wildcard $(mapdir)/*.cpp *.cpp)
+mapsources = $(wildcard $(mapdir)/src/*.cpp $(mapdir)/*.cpp *.cpp)
 mapobjects = $(mapsources:%.cpp=%.o)
 
 INCLUDES = $(wildcard $(mapdir)/*.h $(ardymodir)/*.h *.h)

@@ -1,3 +1,6 @@
+/* Functions for I2C communication
+ * Description of functions in comm.h
+ */
 #include "string.h"
 #include "comm.h"
 #include "platform.h"
@@ -25,6 +28,8 @@ void I2C_MasterRequest(void) {
   } else {
     // Send clear bogus data for master to know not to use
     memset(send_buffer, 0xFF, 32); // Notably: collision will be 0xFF
+    Platform::slave_send(send_buffer, n_bytes_to_send);
+    memset(send_buffer, 0, 32);
   }
 }
 
@@ -32,7 +37,6 @@ uint8_t master_receive(uint8_t n) {
   received = true;
   return Platform::master_receive(recv_buffer, n);
 }
-#endif
 
 void receive_bytes(uint8_t* dest, size_t n) {
   if (n > 32) {
@@ -55,4 +59,5 @@ void send_bytes(uint8_t* src, uint8_t n) {
 bool Received(void) {
   return received;
 }
+#endif
 // vim: ft=cpp

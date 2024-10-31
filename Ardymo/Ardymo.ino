@@ -10,7 +10,7 @@
 #include "platform.h"
 #ifdef USE_I2C
 #include <Wire.h>
-#endif
+#endif // USE_I2C
 
 Arduboy2 arduboy;
 
@@ -26,7 +26,8 @@ void setup() {
   // Ardymo is the master
   power_twi_enable();
   Wire.begin();
-#endif
+#endif // USE_I2C
+
   // Wait for button to be pressed before beginning
   while (!arduboy.pressed(A_BUTTON)) {
     arduboy.idle();
@@ -50,6 +51,7 @@ uint8_t* Platform::getBuffer() {
   return arduboy.getBuffer();
 }
 
+#ifdef USE_I2C
 // I2C Communication
 uint8_t Platform::master_receive(uint8_t* bytes, uint8_t n) {
   // Receive bytes from slave after request
@@ -78,6 +80,8 @@ uint8_t Platform::master_send(uint8_t* bytes, uint8_t n, uint8_t address) {
   error = Wire.endTransmission();
   return error;
 }
+#endif // USE_I2C
+
 /******* Buttons **********************************************/
 uint8_t Platform::buttonsState() {
   uint8_t buttons = arduboy.buttonsState();
