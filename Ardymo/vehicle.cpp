@@ -236,7 +236,9 @@ closest_t GetDistances(LineVector sensor, float* distances) {
   // Set Distances to infinity
   distances[POSITIVE] = distances[NEGATIVE] = INFINITY;
   for (i=0; i<obstacle_count; i++) {
+    // Get the next obstacle from shapes.h
     get_obstacle(&obst, i);
+    // Find intersections of the sensor ray with the obstacle
     intersection_count = intersects(sensor, obst);
     for (j=0; j<intersection_count; j++) {
       ix = intersect_point(j);

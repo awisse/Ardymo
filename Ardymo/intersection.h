@@ -6,6 +6,8 @@
 #include "objects.h"
 #include "structs.h"
 
+// Structure which indicates where on the sensor the intersection point
+// is found.
 struct intersection_t {
   Vec p;
   float nu;  // p = sensor.p + nu * sensor.v

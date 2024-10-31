@@ -14,24 +14,26 @@ Helper functions to unclutter main .ino file
 #endif // USE_I2C
 
 // Global variable
-State state;   // startup, running, menu, success, over
+State state;   // startup, running, menu, success, crash, over
 // Local to game.cpp
-static uint32_t start; // Milliseconds at start of game
+static uint32_t game_start; // Milliseconds at start of game
 #ifdef USE_I2C
-static bool i2c_available;
+static bool i2c_available; // Set to false if Map Arduboy mini not available
 #endif // USE_I2C
 
-// Functions
+// Auxiliary functions
 void DoMenu();
 void Success();
 void GameOver();
 void Crash(Vec*);
 #ifdef USE_I2C
 void I2C_Error(uint8_t error);
-// Get left/right distances (8 bytes) and on_target (1 byte) from remote
+// Get left/right distances (8 bytes), crash info (2 bytes) and 
+// on_target (1 byte) from remote. Returns `false` if received data invalid.
 bool GetSharedData(SharedData* shared);
-void UseSharedData(SensorValues* remote, SharedData* shared);
-uint8_t received {}; // Bytes received on request
+// Insert the received shared data into the SensorValues structure.
+void UseSharedData(SensorValues* sensors, SharedData* shared);
+uint8_t received {}; // Number of bytes received on request
 #ifdef DEBUG_
 void PrintSensors(SensorValues* sensors);
 void PrintShared(SharedData* shared);
@@ -56,13 +58,11 @@ void InitGame() {
 
 void StepGame() {
 
-  static int16_t alpha = 0;
   SensorValues sensors {0, 0, FREE};
   SharedData shared; // Remote data received from Map
-  uint32_t start;
-  bool receive_ok; // True if received data is usable
+  uint32_t step_start; // For measuring the length of one step.
 
-  start = Platform::millis();
+  step_start = Platform::millis();
 
   HandleInput(); // User input: Button presses
   MoveVehicle(); // Move according to heading and speed
@@ -70,6 +70,8 @@ void StepGame() {
 
   if (state == running) {
 #ifdef USE_I2C
+    // Try to receive sensor data from Map
+    bool receive_ok; // True if received data is usable
     if (kTimeSharing) {
       receive_ok = GetSharedData(&shared);
     }
@@ -103,6 +105,7 @@ void StepGame() {
     DrawDistances(&sensors.distances);
     DrawPosition(sensors.position);
 #ifdef USE_I2C
+    // Send vehicle rectangle to Map
     uint8_t error {}; // For I2C communication
     rectangle_t vehicle_rectangle;
     if (i2c_available) {
@@ -124,7 +127,7 @@ void StepGame() {
 
 #ifdef TIMER_
   // How long for one frame?
-  Platform::DebugPrintln(Platform::millis() - start);
+  Platform::DebugPrintln(Platform::millis() - step_start);
 #endif // TIMER_
 
   if (state == crash) {
@@ -141,6 +144,7 @@ void Restart() {
   }
 }
 
+// Unused for now
 void Terminate() {
   // Different from menu. Needs long press.
   if (state == running) {
@@ -148,10 +152,12 @@ void Terminate() {
   }
 }
 
+// Unused for now
 void DoMenu() {
   state = menu;
 }
 
+// Unused for now
 void Menu() {
   // Display the menu at GameState.level
   if ((state == success) || (state == over)) {
@@ -161,14 +167,14 @@ void Menu() {
 
 void GameOver() {
 
-  uint16_t elapsed = (Platform::millis() - start) / 1000;
+  uint16_t elapsed = (Platform::millis() - game_start) / 1000;
   DrawGameOver(elapsed);
   state = over;
 }
 
 void Success () {
   // Show result.
-  uint16_t elapsed = (Platform::millis() - start) / 1000;
+  uint16_t elapsed = (Platform::millis() - game_start) / 1000;
   DrawSuccess(elapsed);
   state = success;
 }
@@ -180,6 +186,7 @@ void Crash(Vec* position) {
 }
 
 #ifdef USE_I2C
+// Print verbose I2C messages
 void I2C_Error(uint8_t error) {
   switch (error){
     case 1:
@@ -201,6 +208,7 @@ void I2C_Error(uint8_t error) {
   Platform::eraseRectRow(6, 24, kScreenWidth - 12, 15);
 }
 
+// Try to receive data requested from Map
 bool GetSharedData(SharedData* shared) {
   received = master_receive(sizeof(SharedData));
   if (received == sizeof(SharedData)) {
@@ -227,6 +235,7 @@ void UseSharedData(SensorValues* sensors, SharedData* shared) {
 #endif // DEBUG_
 }
 
+// Leave debug code here for now. Takes no space on Arduboy
 #ifdef DEBUG_
 void PrintSensors(SensorValues* sensors) {
   Platform::DebugPrintln("=====Sensors=====");

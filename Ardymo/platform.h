@@ -3,6 +3,9 @@
 #include <stdint.h>
 #include "defines.h"
 
+// A namespace with static functions which are used in the code and implemented
+// depending on the platform: Arduboy or PC. The implementations for the
+// PC versions are in ../Desktop/ardusdl.cpp
 class Platform
 {
 public:

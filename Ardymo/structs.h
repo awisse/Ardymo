@@ -16,6 +16,7 @@ enum State {
   over     // Game Over
 };
 
+// Obstacle types
 enum geometry : uint16_t {
   BORDER,
   LINE,
@@ -23,6 +24,7 @@ enum geometry : uint16_t {
   RECTANGLE,
 };
 
+// Recangle sides. Also used to show on which side a collision occurred.
 enum side_t : uint16_t {
   NONE = 0,
   LEFT,
@@ -35,7 +37,8 @@ enum side_t : uint16_t {
 
 // We must define our obstacles as a union of structs instead of a class
 // because the obstacles will be saved in PROGMEM.
-// First a structure to use for the PROGMEM area
+// First a structure to use for the PROGMEM area. This is used by the
+// compiler as the default.
 struct progmem_t {
   point p;
   float f;
@@ -60,7 +63,7 @@ struct rectangle_t {
   float l; // Length of rectangle (in the direction determined by rho)
   // Direction of the rectangle with respect to the south (0,1).
   // This convention is chosen in order for the vehicle pointing south
-  // corresponding to an angle of zero.
+  // corresponding to an angle of zero for computations.
   int16_t rho; 
   float w; // Width of rectangle (perpendicular to the direction)
 };
@@ -70,13 +73,13 @@ struct obstacle_t {
   union {
     // Start with a generic struct for initialization of PROGMEM area
     progmem_t _progmem_; // Generic. Unused.
-    rectangle_t rectangle; // First declaration must be the most general member
+    rectangle_t rectangle; 
     circle_t circle;
     line_t line;
   } item;
 };
 
-struct LineVector { // for sensor rays
+struct LineVector { // For sensor rays. Turns out rather big in the code :-(
 
   LineVector() : LineVector(Vec(), 0.0, 0, 0) {}
   LineVector(Vec p, Vec v, float l, uint8_t s) : p(p), v(v), l(l), seg(s) {}
@@ -93,7 +96,8 @@ struct LineVector { // for sensor rays
   uint8_t seg; // In case we want to use this for a segment
 };
 
-struct RectVector { // A rectangle in vector format
+struct RectVector { // A rectangle in vector format. For storage of
+                    // precomputed values.
   Vec p; // Origin of rectangle, like in rectangle_t
   Vec v; // "Left" side of the rectangle and direction
   Vec front; // Side perpendicular to v,

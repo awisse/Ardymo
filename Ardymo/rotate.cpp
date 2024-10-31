@@ -1,5 +1,5 @@
 //
-// Define sin and cos as a function of degrees in 1 degree (positive integer)
+// Define sin and cos as a function of degrees in 1 degree (integer)
 // steps
 #include "platform.h"
 #include "rotate.h"

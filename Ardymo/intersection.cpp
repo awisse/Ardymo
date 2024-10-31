@@ -5,6 +5,8 @@
  * of intersection. We don't use pointers as return values. Takes too much
  * overhead.
  *
+ * Descriptions of the functions in intersection.h
+ *
  */
 #include "math.h"
 #include "intersection.h"
@@ -42,7 +44,6 @@ uint8_t intersects(LineVector sensor, obstacle_t obst) {
   }
 }
 
-// Distance is
 float distance(Vec origin, uint8_t n) {
 
   float d1 = origin.distance(X[0].p), d2;
@@ -88,8 +89,8 @@ uint8_t intersects_line_vector(LineVector sensor, LineVector line) {
       X[1] = {line.p + line.v, nu};
       return 2;
     }
-    // Yes, sensor is a segment. Check the four cases for intersections
-    // intersection points are the endpoints of one segment which are
+    // Yes, sensor is a segment. Check the four cases for intersections.
+    // Intersection points are the endpoints of one segment which are
     // included in the other segment
     tau = -pl_minus_ps.div(line.v);
     if (cmp01(tau)) {
@@ -121,8 +122,9 @@ uint8_t intersects_line_vector(LineVector sensor, LineVector line) {
   }
   nu = (line.v.x * pl_minus_ps.y - line.v.y * pl_minus_ps.x) / det;
 
-  // Is `sensor` a segment?
+  // Is `sensor` a segment? 
   if (sensor.seg == 1) {
+    // The intersection must be within the segment.
     // pl_minus_ps = -(p_sigma - p_l)
     if ((nu < 0) || (nu > 1)) {
       return 0;
@@ -172,7 +174,7 @@ uint8_t intersects_circle(LineVector sensor, circle_t circle) {
 
 uint8_t intersects_rectangle(LineVector sensor, rectangle_t rect) {
   uint8_t n_int, found; // Number of intersections
-  LineVector rect_side; // Not initialized !!
+  LineVector rect_side; // Check the four sides of the rectangle
   intersection_t store_ix; // Store first intersection point found
   Vec v, front;
 

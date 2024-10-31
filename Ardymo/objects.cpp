@@ -1,6 +1,6 @@
 /* vim: ft=cpp:ts=2:sts=2:expandtab
  *
- * Struct and classes used in program
+ * The `Vec` class used in the program.
  */
 #include "objects.h"
 #include "rotate.h"

@@ -3,18 +3,21 @@
 #include "objects.h"
 #include "structs.h"
 
+// To give it a name ...
 constexpr uint8_t COLLIDED {1};
 
 enum distance_t : int16_t {
-  FREE,
-  INTERSECTION,
-  COLLISION
+  FREE,        // No obstacle in sight
+  INTERSECTION,// sensor ray intersects an obstacle
+  COLLISION    // The vehicle has an intersection with an obstacle
 };
 
-enum check_t : int16_t { // Which direction to check
-  LEFT_RIGHT,
-  FORWARD_REARWARD,
-  BOTH
+// For timeshared sensor calcultions.
+// Which direction to check
+enum check_t : int16_t {
+  LEFT_RIGHT,       // Checked by Map
+  FORWARD_REARWARD, // Checked by Ardymo
+  BOTH              // Both directions checked by Ardymo if Map not available
 };
 
 void InitVehicle(void);

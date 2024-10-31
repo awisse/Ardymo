@@ -1,4 +1,4 @@
-/* vim: ts=2:sts=2:expandtab
+/* vim: ts=2:sts=2:expandtab:ft=cpp
  *
  * Rotation matrix for angles from 0 to 45 degrees.
  * For starters, we stop at 45 degrees given that all the other values can be deduced.

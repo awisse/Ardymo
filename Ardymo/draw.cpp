@@ -6,7 +6,7 @@
 #include "platform.h"
 #include "sprites.h"
 
-// Center of screen
+// Centre of screen
 static Vec centre = {(float)((kScreenWidth>>1)-1),
                      (float)((kScreenHeight>>1)-1)};
 
@@ -24,7 +24,7 @@ void DrawStatus(float speed, float distance) {
   Platform::print('m');
 }
 
-// Redraw compass arrow with new coordinates
+// Redraw compass with new coordinates
 void DrawCompass(Vec vehicle_direction, int16_t alpha,
     Vec target_direction) {
   Vec arrow;
@@ -101,7 +101,7 @@ void DrawDistances(Distances* distances) {
 }
 
 void DrawPosition(Vec vehicle_position) {
-
+  // Bottom left corner
   Platform::eraseRectRow(0, kScreenHeight - 16, kStatusX - 1, kStatusX - 1);
   Platform::setCursor(1, kScreenHeight - kStatusY + 2);
   Platform::print("x ");
@@ -129,6 +129,7 @@ void DrawBackground() {
 
 }
 
+// A simple success screen.
 void DrawSuccess(uint16_t elapsed) {
   Platform::clear();
   Platform::setCursor(centre.x - 45, centre.y - 8);
@@ -136,6 +137,7 @@ void DrawSuccess(uint16_t elapsed) {
   draw_seconds(elapsed, centre.x - 36, centre.y);
 }
 
+// A simple crash screen.
 void DrawCrash(Vec* position) {
   Platform::clear();
   Platform::setCursor(centre.x - 39, centre.y - 8);
@@ -148,6 +150,7 @@ void DrawCrash(Vec* position) {
   Platform::print(")");
 }
 
+// A simple game over screen.
 void DrawGameOver(uint16_t elapsed) {
   Platform::clear();
   Platform::setCursor(centre.x - 48, centre.y - 9);
@@ -155,6 +158,8 @@ void DrawGameOver(uint16_t elapsed) {
   draw_seconds(elapsed, centre.x - 36, centre.y);
 }
 
+// Draw a message to the user in the center of the screen.
+// Info, Warning, or Alert.
 void DrawMessage(const char* msg) {
   uint8_t msg_len = strlen(msg) * 6; // 6 pixels per 5x7 character
   uint8_t x = (kScreenWidth - msg_len) / 2;
@@ -165,6 +170,7 @@ void DrawMessage(const char* msg) {
   Platform::print(msg);
 }
 
+// For end of game screens.
 void draw_seconds(uint16_t elapsed, int16_t x, int16_t y) {
   Platform::setCursor(x, y);
   Platform::print(elapsed);
