@@ -1,10 +1,23 @@
 # Description
 
-The program `rotate` prints out sinus and cosinus values for integer degrees
-on the values in `rotate.h`. It can also compute the sum of two 2-dimensional
-vectors after rotating the second around the point in the plane defined by 
-the first.
+## Instructions
 
-Finally, it can compute the euclidian distance between the two points.
+The program `vecalg` 
 
-Mostly used for testing purposes.
+1. can compute the distance between two coordinates (px, py) and (vx, vy),
+
+2. compute the hypothenuse of (x, y)
+
+3. print the cosinus and sinus of an angle <phi> given by the option `-p`.
+
+4. print the angle of (vx, vy) rotated around (px, py) in degrees with respect
+   to the vector (0, 1).
+
+5. print the point obtained by a clockwise rotation of (vx, vy) around (px,
+   py).
+
+Mostly used for testing purposes. For instructions, `vecalg -h`.
+
+## Building
+
+Run `make` in this directory.

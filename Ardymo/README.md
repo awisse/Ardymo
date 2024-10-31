@@ -7,7 +7,23 @@ If the *Map* I2C client is not available, the display will show *NACK
 (Address)* for five seconds and after that the game can be played without the 
 *Map* application. No more attempts are made to establish I2C communication.
 
+## Compiling
+
+Use [ArduinoIDE](https://www.arduino.cc/en/software) or 
+[arduino-cli](https://arduino.github.io/arduino-cli/1.0/).
+
 ## Gameplay
+
+In order to use the *Map* application via I2C with this game. You must
+
+1. Load the *Map* application on the other Arduboy.
+
+2. Connect the other Ardudoy to the Arduboy with Ardymo installed with an I2C
+   cable. (QWIIC).
+
+3. Start the *Map* application on the other Arduboy **before** starting the
+   *Ardymo* application, so as to allow *Ardymo* to find the *Map* client on
+   the I2C bus.
 
 ### Objective
 
@@ -20,8 +36,12 @@ If the player crashes into an obstacle the vehicle is replaced at the starting
 position. The coordinates of the crash are displayed. If the player crashes
 into the target, the target is destroyed and the game is lost.
 
+**NB:** The game is a lot less interesting when the player is looking at the
+map during the gameplay. The map allows a spectator to follow the progress
+of the player.
+
 ### Screen
-![Screen](../doc/odg/screen.pdf)
+![Screen](../doc/odg/screen.png)
 
 The sensor values available are:
 1. The distances to the nearest obstacle to the left, the right, rearward and 
@@ -47,6 +67,14 @@ DOWN button. The vehicle turns left or right around the midpoint of its rear
 side by 2 degrees when the LEFT or RIGHT buttons are pressed respectively.
 
 ### Controls
+
+|        |                                         |
+|--------|-----------------------------------------|
+| UP     | Accelerate forward                      |
+| DOWN   | Accelerate rearward                     |
+| LEFT   | Turn left                               |
+| RIGHT  | Turn right                              |
+| Long A | Restart game. Retry I2C communication   |
 
 A long A press restarts the game. I2C communication is attempted again. is can also be used to try to reestablish
 I2C communication.

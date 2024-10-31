@@ -3,7 +3,7 @@
 #include <math.h>
 #include <gtest/gtest.h>
 #include "../viewport.h"
-#include "../intersection.h"
+#include "../src/intersection.h"
 
 bool eqv(Vec v, Vec w) {
   return (abs(v.x - w.x) < epsilon) && (abs(v.y - w.y) < epsilon);

@@ -1,26 +1,20 @@
-# Description
+# Instructions
 
-Unit tests for ViewPort class.
+## Description
 
-1. Movements (pan left, right, up, down).
+Unit tests for
 
-2. Centering on a target point.
+1. The ViewPort class
 
-3. Scaling.
+2. The GetLine, GetCircle and GetRectangle functions.
 
-4. Map2Screen (Transform map coordinates to screen coordinates)
+## Running the tests
 
-5. GetLine
-
-6. GetCircle
-
-7. GetRectangle
-
-# Tests
+Using Google Test for C++.
 
 To run tests,
 
-1. Install Google Test (`apt install googletest`)
+1. Install Google Test (`apt install googletest` on Debian/Ubuntu)
 
 2. `make`
 

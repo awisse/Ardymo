@@ -1,4 +1,6 @@
-# Description
+# Instructions
+
+## Description
 
 Unit tests for
 
@@ -15,11 +17,13 @@ Unit tests for
 The graphical representation of the test cases is in *intersections.odg* and
 *collisions.odg*.
 
+## Running the tests
+
 Using Google Test for C++.
 
 To run tests,
 
-1. Install Google Test (`apt install googletest`)
+1. Install Google Test (`apt install googletest` on Debian/Ubuntu)
 
 2. `make`
 
