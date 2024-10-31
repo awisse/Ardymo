@@ -68,7 +68,7 @@ side by 2 degrees when the LEFT or RIGHT buttons are pressed respectively.
 
 ### Controls
 
-|        |                                         |
+| Key    | Action                                  |
 |--------|-----------------------------------------|
 | UP     | Accelerate forward                      |
 | DOWN   | Accelerate rearward                     |
