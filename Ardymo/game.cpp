@@ -6,7 +6,6 @@ Helper functions to unclutter main .ino file
 #include "draw.h"
 #include "controller.h"
 #include "structs.h"
-#include "globals.h"
 #include "vehicle.h"
 #include "game.h"
 #include "platform.h"

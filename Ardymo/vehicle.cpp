@@ -10,7 +10,6 @@
 #endif
 #include "vehicle.h"
 #include "intersection.h"
-#include "globals.h"
 #include "defines.h"
 #include "shapes.h"
 #include "target.h"

@@ -1,7 +1,6 @@
 // All the drawing takes place here.
 #include "string.h"
 #include "defines.h"
-#include "globals.h"
 #include "objects.h"
 #include "draw.h"
 #include "platform.h"

@@ -6,6 +6,16 @@
 #include <stdint.h>
 #include "objects.h"
 
+// Game States
+enum State {
+  startup, // Application starts
+  running, // Player is playing
+  menu,    // Menu is open
+  success, // Successfully finished
+  crash,   // Crashed into obstacle
+  over     // Game Over
+};
+
 enum geometry : uint16_t {
   BORDER,
   LINE,
