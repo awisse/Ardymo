@@ -20,16 +20,16 @@ enum check_t : int16_t {
   BOTH              // Both directions checked by Ardymo if Map not available
 };
 
-void InitVehicle(void);
-void GetVehicleRect(rectangle_t* rect);
-void SetVehicleRect(rectangle_t* rect);
-void TurnRight(void);
-void TurnLeft(void);
-void AccelerateForward(void);
-void AccelerateBackward(void);
-void MoveVehicle(void);
+void initVehicle(void);
+void getVehicleRect(rectangle_t* rect);
+void setVehicleRect(rectangle_t* rect);
+void turnRight(void);
+void turnLeft(void);
+void accelerateForward(void);
+void accelerateBackward(void);
+void moveVehicle(void);
 
-void CheckSensors(SensorValues* sensors, check_t which);
+void checkSensors(SensorValues* sensors, check_t which);
 
 class Vehicle {
 

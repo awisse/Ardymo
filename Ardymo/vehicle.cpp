@@ -34,40 +34,40 @@ struct closest_t {
 // Helper functions
 closest_t GetDistances(LineVector sensor, float* distances);
 
-void InitVehicle() {
+void initVehicle() {
   vehicle = Vehicle(kVehicle);
   target = InitTarget();
 }
 
-void GetVehicleRect(rectangle_t* rect) {
+void getVehicleRect(rectangle_t* rect) {
   *rect = vehicle.as_rectangle();
 }
 
-void SetVehicleRect(rectangle_t* rect) {
+void setVehicleRect(rectangle_t* rect) {
   vehicle.set_rectangle(rect);
 }
 
-void TurnRight(void) {
+void turnRight(void) {
   vehicle.turn(AngleStep);
 }
 
-void TurnLeft(void) {
+void turnLeft(void) {
   vehicle.turn(-AngleStep);
 }
 
-void AccelerateForward(void) {
+void accelerateForward(void) {
   vehicle.accelerate_forward();
 }
 
-void AccelerateBackward(void) {
+void accelerateBackward(void) {
   vehicle.accelerate_backwards();
 }
 
-void MoveVehicle(void) {
+void moveVehicle(void) {
   vehicle.move();
 }
 
-void CheckSensors(SensorValues* sensors, check_t which) {
+void checkSensors(SensorValues* sensors, check_t which) {
   // There are in principle eight sensor rays
   // emanating from the vehicle, two from each corner parallel
   // to the sides of the vehicle (see Figure 7 in ardymo.pdf).

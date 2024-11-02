@@ -1,4 +1,5 @@
 #pragma once
+#include "structs.h"
 
 /* Key presses */
 typedef enum {
@@ -24,6 +25,6 @@ typedef enum {
 // Time
 #define LONG_PRESS 2000
 
-void HandleInput();
+void handleInput(State);
 
 // vim: tabstop=2:softtabstop=2:shiftwidth=2:expandtab:filetype=arduino

@@ -4,49 +4,21 @@
 #include "controller.h"
 #include "vehicle.h"
 #include "game.h"
+#include "menu.h"
 #include "defines.h"
 #include "platform.h"
 
-uint8_t previousButtons, currentButtons;
-uint8_t DebouncedButtons();
+static uint8_t previousButtons, currentButtons;
+uint8_t debouncedButtons();
+void dispatchShortA(State);
+void dispatchLongA(State);
+void dispatchShortB(State);
+void dispatchLongB(State);
+void dispatchLeft(State);
+void dispatchRight(State);
+void dispatchUp(State);
+void dispatchDown(State);
 
-
-void Dispatch(Event e) {
-/* For each event, call all "listeners" that subscribe to that event.
- * The listeners decide whether to act on the event. */
-  switch (e) {
-    case Short_A:
-      break;
-
-    case Long_A:
-      Restart();
-      break;
-
-    case Short_B:
-      break;
-
-    case Long_B:
-      break;
-
-    case Left:
-      TurnLeft();
-      break;
-    case Right:
-      TurnRight();
-      break;
-    case Up:
-      AccelerateForward();
-      break;
-    case Down:
-      AccelerateBackward();
-      break;
-    default:
-      ;
-#ifdef DEBUG_
-      Platform::DebugPrintln("default in Dispatch");
-#endif
-  }
-}
 
 bool JustPressed(uint8_t buttons) {
   return ((buttons & currentButtons) && !(buttons & previousButtons));
@@ -56,7 +28,7 @@ bool JustReleased(uint8_t buttons) {
   return (!(buttons & currentButtons) && (buttons & previousButtons));
 }
 
-void HandleInput() {
+void handleInput(State gameState) {
 
   static uint32_t startAPress;
   static bool AButtonDown;
@@ -70,7 +42,7 @@ void HandleInput() {
   if (JustPressed(INPUT_A)) {
     AButtonDown = true;
     startAPress = Platform::millis();
-    Dispatch(Short_A);
+    dispatchShortA(gameState);
   }
 
   if (JustReleased(INPUT_A)) {
@@ -80,14 +52,14 @@ void HandleInput() {
 
   if (AButtonDown && (Platform::millis() - startAPress) > LONG_PRESS) {
     startAPress = Platform::millis();
-    Dispatch(Long_A);
+    dispatchLongA(gameState);
   }
 
   // These events available for now:
   if (JustPressed(INPUT_B)) {
     BButtonDown = true;
     startBPress = Platform::millis();
-    Dispatch(Short_B);
+    dispatchShortB(gameState);
   }
 
   if (JustReleased(INPUT_B)) {
@@ -99,13 +71,13 @@ void HandleInput() {
   if (BButtonDown && (Platform::millis() - startBPress) > LONG_PRESS) {
     startBPress = Platform::millis();
     BButtonLongPressCycles++;
-    Dispatch(Long_B);
+    dispatchLongB(gameState);
   }
 
-  if (currentButtons & INPUT_UP) Dispatch(Up);
-  else if (currentButtons & INPUT_DOWN) Dispatch(Down);
-  else if (currentButtons & INPUT_LEFT) Dispatch(Left);
-  else if (currentButtons & INPUT_RIGHT) Dispatch(Right);
+  if (currentButtons & INPUT_UP) dispatchUp(gameState);
+  else if (currentButtons & INPUT_DOWN) dispatchDown(gameState);
+  else if (currentButtons & INPUT_LEFT) dispatchLeft(gameState);
+  else if (currentButtons & INPUT_RIGHT) dispatchRight(gameState);
 
 }
 
@@ -124,4 +96,77 @@ uint8_t DebouncedButtons() {
   return currentButtons;
 }
 
+void dispatchShortA(State gameState) {
+  switch (gameState) {
+    case menu:
+      menuSelect();
+      break;
+  }
+}
+
+void dispatchLongA(State gameState) {
+  switch (gameState) {
+    case running:
+      gameRetryI2C();
+      break;
+  }
+}
+
+void dispatchShortB(State gameState) {
+  switch (gameState) {
+    case menu:
+      hideMenu();
+      continueGame();
+      break;
+    case running:
+      enterMenu();
+      showMenu();
+      break;
+  }
+}
+
+void dispatchLongB(State gameState) {}
+
+void dispatchLeft(State gameState) {
+  switch (gameState) {
+    case running:
+      turnLeft();
+      break;
+    case menu:
+      menuLeft();
+      break;
+  }
+}
+
+void dispatchRight(State gameState) {
+  switch (gameState) {
+    case running:
+      turnRight();
+      break;
+    case menu:
+      menuRight();
+      break;
+  }
+}
+void dispatchUp(State gameState) {
+  switch (gameState) {
+    case running:
+      accelerateForward();
+      break;
+    case menu:
+      menuUp();
+      break;
+  }
+}
+
+void dispatchDown(State gameState) {
+  switch (gameState) {
+    case running:
+      accelerateBackward();
+      break;
+    case menu:
+      menuDown();
+      break;
+  }
+}
 // vim: tabstop=2:softtabstop=2:shiftwidth=2:expandtab

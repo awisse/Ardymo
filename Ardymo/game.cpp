@@ -9,54 +9,54 @@ Helper functions to unclutter main .ino file
 #include "vehicle.h"
 #include "game.h"
 #include "platform.h"
+#ifdef DEBUG_
+#include "debug.h"
+#endif // DEBUG_
 #ifdef USE_I2C
 #include "comm.h"
 #endif // USE_I2C
 
-// Global variable
-State state;   // startup, running, menu, success, crash, over
-// Local to game.cpp
-static uint32_t game_start; // Milliseconds at start of game
-#ifdef USE_I2C
-static bool i2c_available; // Set to false if Map Arduboy mini not available
-#endif // USE_I2C
+// Game
+static State state;
+
+// Game Level
+static uint8_t level;
+
+static uint32_t gameStart; // Milliseconds at start of game
+static bool bUseI2C;
 
 // Auxiliary functions
-void DoMenu();
-void Success();
-void GameOver();
-void Crash(Vec*);
-#ifdef USE_I2C
-void I2C_Error(uint8_t error);
-// Get left/right distances (8 bytes), crash info (2 bytes) and 
-// on_target (1 byte) from remote. Returns `false` if received data invalid.
-bool GetSharedData(SharedData* shared);
-// Insert the received shared data into the SensorValues structure.
-void UseSharedData(SensorValues* sensors, SharedData* shared);
-uint8_t received {}; // Number of bytes received on request
-#ifdef DEBUG_
-void PrintSensors(SensorValues* sensors);
-void PrintShared(SharedData* shared);
-#endif // DEBUG_
-#endif // USE_I2C
+void getSensors(SensorValues*, SharedData*);
+void computeGameState(SensorValues*);
+void sendI2CRequest();
+void succeeded();
+void gameOver();
+void crashed(Vec*);
 
-void BackToSquare1(void) {
+// I2C functions
+void I2C_Error(uint8_t error);
+// Get left/right distances (8 bytes), crash info (2 bytes) and
+// on_target (1 byte) from remote. Returns `false` if received data invalid.
+bool getSharedData(SharedData* shared);
+// Insert the received shared data into the SensorValues structure.
+void useSharedData(SensorValues* sensors, SharedData* shared);
+uint8_t received {}; // Number of bytes received on request
+
+void backToSquare1(void) {
   Platform::clear();
-  InitVehicle();
-  DrawBackground();
+  initVehicle();
+  drawBackground();
 }
 
-void InitGame() {
+void initGame() {
 
   state = startup;
-  BackToSquare1();
-#ifdef USE_I2C
-  i2c_available = true;
-#endif // USE_I2C
+  backToSquare1();
+  bUseI2C = true;
   state = running;
 }
 
-void StepGame() {
+void stepGame() {
 
   SensorValues sensors {0, 0, FREE};
   SharedData shared; // Remote data received from Map
@@ -64,65 +64,32 @@ void StepGame() {
 
   step_start = Platform::millis();
 
-  HandleInput(); // User input: Button presses
-  MoveVehicle(); // Move according to heading and speed
+  handleInput(state); // User input: Button presses
+  moveVehicle(); // Move according to heading and speed
   // Check for collisions and distance to obstacles and target:
 
-  if (state == running) {
-#ifdef USE_I2C
-    // Try to receive sensor data from Map
-    bool receive_ok; // True if received data is usable
-    if (kTimeSharing) {
-      receive_ok = GetSharedData(&shared);
-    }
-    if (kTimeSharing && receive_ok) {
-        CheckSensors(&sensors, FORWARD_REARWARD);
-        UseSharedData(&sensors, &shared);
-    } else {
-#endif // USE_I2C
-      CheckSensors(&sensors, BOTH);
-#ifdef USE_I2C
-    }
-#endif // USE_I2C
+  switch (state) {
+    case running:
+      // Try to receive sensor data from Map
+      getSensors(&sensors, &shared);
+      computeGameState(&sensors);
 
-#ifdef DEBUG_
-    PrintSensors(&sensors);
-#endif // DEBUG_
+      drawCompass(sensors.heading, sensors.alpha, sensors.tgt_heading);
+      drawStatus(sensors.speed, sensors.tgt_distance);
+      drawDistances(&sensors.distances);
+      drawPosition(sensors.position);
 
-    if (sensors.on_target) {
-      GameOver();
-    } else if (sensors.collision != NONE) {
-      Crash(&sensors.position);
-    } else if ((sensors.tgt_distance < kTargetReached)
-        && (sensors.speed == 0)) {
-      Success();
-    }
+      // Send vehicle rectangle to Map
+      sendI2CRequest();
+      break;
+
+    case crash:
+      Platform::delay(5000);
+      // Reposition Vehicle at start.
+      backToSquare1();
+      state = running;
   }
 
-  if (state == running) {
-    DrawCompass(sensors.heading, sensors.alpha, sensors.tgt_heading);
-    DrawStatus(sensors.speed, sensors.tgt_distance);
-    DrawDistances(&sensors.distances);
-    DrawPosition(sensors.position);
-#ifdef USE_I2C
-    // Send vehicle rectangle to Map
-    uint8_t error {}; // For I2C communication
-    rectangle_t vehicle_rectangle;
-    if (i2c_available) {
-      GetVehicleRect(&vehicle_rectangle);
-      error = Platform::master_send((uint8_t*)&vehicle_rectangle,
-        sizeof(rectangle_t), I2C_SLAVE_ADDR);
-      if (error) {
-        I2C_Error(error);
-        i2c_available = false;
-      } else {
-        if (kTimeSharing) {
-          received = Platform::master_request(I2C_SLAVE_ADDR, sizeof(shared));
-        }
-      }
-    }
-#endif
-  }
   Platform::display();
 
 #ifdef TIMER_
@@ -130,78 +97,120 @@ void StepGame() {
   Platform::DebugPrintln(Platform::millis() - step_start);
 #endif // TIMER_
 
-  if (state == crash) {
-    Platform::delay(5000);
-    // Reposition Vehicle at start.
-    BackToSquare1();
-    state = running;
-  }
 }
 
-void Restart() {
-  if ((state == success) || (state == running) || (state == over) || (state == crash)) {
-    InitGame();
-  }
+void gameRetryI2C(void) {
+  bUseI2C = true;
 }
 
-// Unused for now
-void Terminate() {
-  // Different from menu. Needs long press.
-  if (state == running) {
-    DoMenu();
-  }
+void continueGame(void) {
+  state = running;
 }
 
-// Unused for now
-void DoMenu() {
+void enterMenu() {
   state = menu;
 }
 
-// Unused for now
-void Menu() {
-  // Display the menu at GameState.level
-  if ((state == success) || (state == over)) {
-    DoMenu();
+uint8_t getLevel(void) {
+  return level;
+}
+
+void setLevel(uint8_t newLevel) {
+  level = newLevel;
+}
+
+bool getI2C() {
+  return bUseI2C;
+}
+
+void setI2C(bool onOff) {
+  bUseI2C = onOff;
+}
+
+void getSensors(SensorValues* sensors, SharedData* shared) {
+
+    bool receiveOK; // True if received data is usable
+    if (bUseI2C) {
+      receiveOK = getSharedData(shared);
+    }
+    if (bUseI2C && receiveOK) {
+        checkSensors(sensors, FORWARD_REARWARD);
+        useSharedData(sensors, shared);
+    } else {
+      checkSensors(sensors, BOTH);
+    }
+}
+
+void computeGameState(SensorValues* sensors) {
+
+#ifdef DEBUG_
+    printSensors(sensors);
+#endif // DEBUG_
+
+    if (sensors->on_target) {
+      gameOver();
+    } else if (sensors->collision != NONE) {
+      crashed(&sensors->position);
+    } else if ((sensors->tgt_distance < kTargetReached)
+        && (sensors->speed == 0)) {
+      succeeded();
+    }
+}
+
+void sendI2CRequest() {
+  uint8_t error {}; // For I2C communication
+  rectangle_t vehicle_rectangle;
+  if (bUseI2C) {
+    getVehicleRect(&vehicle_rectangle);
+    error = Platform::master_send((uint8_t*)&vehicle_rectangle,
+      sizeof(rectangle_t), I2C_SLAVE_ADDR);
+    if (error) {
+      I2C_Error(error);
+      bUseI2C = false;
+    } else {
+      if (bUseI2C) {
+        received = Platform::master_request(I2C_SLAVE_ADDR, sizeof(SharedData));
+      }
+    }
   }
 }
 
-void GameOver() {
-
-  uint16_t elapsed = (Platform::millis() - game_start) / 1000;
-  DrawGameOver(elapsed);
-  state = over;
-}
-
-void Success () {
+void succeeded() {
   // Show result.
-  uint16_t elapsed = (Platform::millis() - game_start) / 1000;
-  DrawSuccess(elapsed);
+  uint16_t elapsed = (Platform::millis() - gameStart) / 1000;
+  drawSuccess(elapsed);
   state = success;
 }
 
-void Crash(Vec* position) {
+void gameOver() {
 
-  DrawCrash(position);
+  uint16_t elapsed = (Platform::millis() - gameStart) / 1000;
+  drawGameOver(elapsed);
+  state = over;
+}
+
+void crashed(Vec* position) {
+
+  drawCrash(position);
   state = crash;
 }
 
-#ifdef USE_I2C
 // Print verbose I2C messages
 void I2C_Error(uint8_t error) {
   switch (error){
     case 1:
-      DrawMessage("Data too long");
+      drawMessage("Data too long");
       break;
     case 2:
-      DrawMessage("NACK (Address)");
+      drawMessage("NACK (Address)");
       break;
     case 3:
-      DrawMessage("NACK (Data)");
+      drawMessage("NACK (Data)");
       break;
     case 5:
-      DrawMessage("I2C Timeout");
+      drawMessage("I2C Timeout");
     default:
-      DrawMessage("I2C Error");
+      drawMessage("I2C Error");
   }
   Platform::display();
   Platform::delay(5000);
@@ -209,7 +218,7 @@ void I2C_Error(uint8_t error) {
 }
 
 // Try to receive data requested from Map
-bool GetSharedData(SharedData* shared) {
+bool getSharedData(SharedData* shared) {
   received = master_receive(sizeof(SharedData));
   if (received == sizeof(SharedData)) {
     receive_bytes((uint8_t*)shared, sizeof(SharedData));
@@ -220,7 +229,7 @@ bool GetSharedData(SharedData* shared) {
   return false;
 }
 
-void UseSharedData(SensorValues* sensors, SharedData* shared) {
+void useSharedData(SensorValues* sensors, SharedData* shared) {
   // Complete the sensors struct with the values from Map
   // Insert left-right distances
   sensors->distances.left = shared->dist_left;
@@ -231,47 +240,7 @@ void UseSharedData(SensorValues* sensors, SharedData* shared) {
   }
   sensors->on_target |= shared->on_target;
 #ifdef DEBUG_
-      PrintShared(shared);
+      printShared(shared);
 #endif // DEBUG_
 }
-
-// Leave debug code here for now. Takes no space on Arduboy
-#ifdef DEBUG_
-void PrintSensors(SensorValues* sensors) {
-  Platform::DebugPrintln("=====Sensors=====");
-  Platform::DebugPrint("left, right, front, rear: (");
-  Platform::DebugPrint(sensors->distances.left);
-  Platform::DebugPrint(", ");
-  Platform::DebugPrint(sensors->distances.right);
-  Platform::DebugPrint(", ");
-  Platform::DebugPrint(sensors->distances.front);
-  Platform::DebugPrint(", ");
-  Platform::DebugPrint(sensors->distances.rear);
-  Platform::DebugPrintln(")");
-  Platform::DebugPrint("tgt_dist, speed, collision, on_target: ( ");
-  Platform::DebugPrint(sensors->tgt_distance);
-  Platform::DebugPrint(", ");
-  Platform::DebugPrint(sensors->speed);
-  Platform::DebugPrint(", ");
-  Platform::DebugPrint(sensors->collision);
-  Platform::DebugPrint(", ");
-  Platform::DebugPrint(sensors->on_target ? "over" : "fine");
-  Platform::DebugPrintln(")");
-}
-void PrintShared(SharedData* shared) {
-  Platform::DebugPrintln("=====Shared=====");
-  Platform::DebugPrint("left, right: (");
-  Platform::DebugPrint(shared->dist_left);
-  Platform::DebugPrint(", ");
-  Platform::DebugPrint(shared->dist_right);
-  Platform::DebugPrintln(")");
-  Platform::DebugPrint("collision, on_target: ( ");
-  Platform::DebugPrint(shared->collision);
-  Platform::DebugPrint(", ");
-  Platform::DebugPrint(shared->on_target ? "over" : "fine");
-  Platform::DebugPrintln(")");
-}
-#endif // DEBUG_
-#endif // USE_I2C
-
 // vim:fdm=syntax:tabstop=2:softtabstop=2:shiftwidth=2:expandtab

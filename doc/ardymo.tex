@@ -637,25 +637,32 @@ could be displayed on the Arduboy or another device while the gameplay is
 proceeding.
 
 \subsection{Controls}
-\label{sec-controls}
+\label{sec-game-controls}
 
 \begin{tabular}{>{\sffamily\bfseries}ll}
-    Up Button & Accelerate forward. \\
-    Down Button & Accelerate backwards.\\
+    Up Button & Accelerate forward. Menu up.\\
+    Down Button & Accelerate backwards. Menu down.\\
     Left Button & Turn left $\alpha$ degrees.\\
     Right Button & Turn right $\alpha$ degrees.\\
-    A Button & TBD.\\
-    B Button & Show menu.\\
+    A Button Short & Menu Select.\\
+    A Button Long & Retry I2C.\\
+    B Button Short & Show/hide menu.\\
 \end{tabular}
 
-Forward acceleration is $1\mssq$ when the speed is zero or positive,
-$3\mssq$ when the vehicle is moving backward (breaking).
-Backward acceleration is $-1\mssq$ when the speed is zero or negative,
-$-3\mssq$ when the vehicle is moving forward (breaking).
+Forward acceleration is $1\mssq$ when the speed is zero or positive.
+Backward acceleration is $-1\mssq$ when the speed is zero or negative.
 These values may be adjusted if necessary.
 
+\subsection{Menu}
+\label{sec-game-menu}
+
+\begin{itemize}
+    \item Level (Training, Easy, Medium, Difficult, Hard): Left/Right arrow.
+    \item Restart
+\end{itemize}
+
 \subsection{Vehicle Movement}
-\label{sec-vehicle-movement}
+\label{sec-game-vehicle-movement}
 
 The vehicle is defined as a rectangle $(\pb, l, \rho, w)$ as described in
 section~\ref{sec-representation-rectangle}.
@@ -728,7 +735,7 @@ not a collision point as $\nu>0$.
 Given the actions of the vehicle,
 \begin{itemize}
     \item Moving forward and backward at constant speed $V\in\Rb$ if not accelerated
-        (section~\ref{sec-vehicle-movement}).
+        (section~\ref{sec-game-vehicle-movement}).
     \item Rotating around the midpoint of the rear segment
         \figref{fig-vehicle-rotation}.
     \item "Emitting" sensor rays forward, backwards and sideways along the
@@ -949,6 +956,27 @@ A general rotation matrix $\Omega(\alpha)$ for clockwise rotation in the
         \sin(\alpha) & \cos(\alpha)
     \end{pmatrix}
 \end{equation}
+
+\section{Menu Implementation}
+\label{sec:menu:implementation}
+
+User input treatment.
+\begin{enumerate}
+    \item User clicks B button.
+    \item Set game state to \texttt{menu}. Draw menu. 
+    \item Wait for user input (Up, Down, A (Select), B (Exit Menu)
+        Left/Right: Select Level in Level menu row).
+    \item Dispatch dispatches depending on game state.
+    \item Target function sets new parameters.
+    \item Menu exit redraws with new values.
+\end{enumerate}
+
+\begin{itemize}
+    \item New file \textsl{menu.cpp}.
+    \item In \textsl{game.cpp}: Dispatcher functions for button presses
+        depending on game state.
+    \item In \textsl{draw.cpp}: Menu drawing functions.
+\end{itemize}
 
 \section{Proofs for rectangle intersections}
 \label{appendix-proofs-rectangle-intersections}

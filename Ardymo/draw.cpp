@@ -11,10 +11,11 @@ static Vec centre = {(float)((kScreenWidth>>1)-1),
                      (float)((kScreenHeight>>1)-1)};
 
 // Helper functions
-void draw_seconds(uint16_t elapsed, int16_t x, int16_t y);
+void drawSeconds(uint16_t elapsed, int16_t x, int16_t y);
+void eraseCompass(void);
 
 // Draw elapsed time and distance to target in top left corner
-void DrawStatus(float speed, float distance) {
+void drawStatus(float speed, float distance) {
   Platform::eraseRectRow(0, 0, kStatusX - 1, 15);
   Platform::setCursor(1, 1);
   Platform::print(speed, 1);
@@ -25,16 +26,14 @@ void DrawStatus(float speed, float distance) {
 }
 
 // Redraw compass with new coordinates
-void DrawCompass(Vec vehicle_direction, int16_t alpha,
-    Vec target_direction) {
+void drawCompass(Vec vehicle_direction, int16_t alpha, Vec target_direction) {
   Vec arrow;
   int16_t true_heading;
   int16_t voffset, hoffset; // position of degrees displayed
   char c;
 
   // Erase first
-  Platform::eraseRectRow((kScreenWidth >> 1) - 2 - kCompassRadius, 8,
-      kCompassRadius << 1, (kCompassRadius << 1)  - 1);
+  eraseCompass();
   // 1. Circle in the centre
   Platform::drawCircle(centre.x, centre.y, kCompassRadius);
   // 2. Arrow
@@ -66,7 +65,7 @@ void DrawCompass(Vec vehicle_direction, int16_t alpha,
   Platform::print(c);
 }
 
-void DrawDistances(Distances* distances) {
+void drawDistances(Distances* distances) {
   int16_t hoffset; // For right distance
   // Front
   Platform::eraseRectRow(centre.x + 6, 0, 48, 1);
@@ -100,7 +99,7 @@ void DrawDistances(Distances* distances) {
 
 }
 
-void DrawPosition(Vec vehicle_position) {
+void drawPosition(Vec vehicle_position) {
   // Bottom left corner
   Platform::eraseRectRow(0, kScreenHeight - 16, kStatusX - 1, kStatusX - 1);
   Platform::setCursor(1, kScreenHeight - kStatusY + 2);
@@ -111,7 +110,7 @@ void DrawPosition(Vec vehicle_position) {
   Platform::print((int16_t)vehicle_position.y);
 }
 
-void DrawBackground() {
+void drawBackground() {
   // Draw main features of background:
   // 1a. rectangle in upper left corner.
   Platform::drawFastHLine(0, kStatusY, kStatusX);
@@ -130,15 +129,15 @@ void DrawBackground() {
 }
 
 // A simple success screen.
-void DrawSuccess(uint16_t elapsed) {
+void drawSuccess(uint16_t elapsed) {
   Platform::clear();
   Platform::setCursor(centre.x - 45, centre.y - 8);
   Platform::print("*** SUCCESS ***");
-  draw_seconds(elapsed, centre.x - 36, centre.y);
+  drawSeconds(elapsed, centre.x - 36, centre.y);
 }
 
 // A simple crash screen.
-void DrawCrash(Vec* position) {
+void drawCrash(Vec* position) {
   Platform::clear();
   Platform::setCursor(centre.x - 39, centre.y - 8);
   Platform::print("----CRASH----");
@@ -151,16 +150,16 @@ void DrawCrash(Vec* position) {
 }
 
 // A simple game over screen.
-void DrawGameOver(uint16_t elapsed) {
+void drawGameOver(uint16_t elapsed) {
   Platform::clear();
   Platform::setCursor(centre.x - 48, centre.y - 9);
   Platform::print("Target Destroyed");
-  draw_seconds(elapsed, centre.x - 36, centre.y);
+  drawSeconds(elapsed, centre.x - 36, centre.y);
 }
 
 // Draw a message to the user in the center of the screen.
 // Info, Warning, or Alert.
-void DrawMessage(const char* msg) {
+void drawMessage(const char* msg) {
   uint8_t msg_len = strlen(msg) * 6; // 6 pixels per 5x7 character
   uint8_t x = (kScreenWidth - msg_len) / 2;
 
@@ -170,10 +169,44 @@ void DrawMessage(const char* msg) {
   Platform::print(msg);
 }
 
+// Draw menu in the middle
+void drawMenu(uint8_t selected, const char* item[]) {
+  // level is the top item in the menu.
+  // For now, there is just one more item
+  uint8_t i;
+  uint8_t maxLength {};
+  for (i=0; i<kMenuItems; i++) {
+    if (strlen(item[i]) > maxLength) {
+      maxLength = strlen(item[i]);
+    }
+  }
+  uint8_t width = maxLength * 6 + 4;
+  int16_t xPos = (kScreenWidth - width) / 2;
+
+  eraseCompass();
+
+  // Font height is 8. Rectangles must be 10.
+  for (i=0; i<kMenuItems; i++) {
+    Platform::setCursor(xPos + 2, kMenuTop + 2 + i * 10);
+    Platform::print(item[i]);
+  }
+  // Rectangle around selected item
+  Platform::drawRect(xPos, kMenuTop + 10 * selected, width, 11);
+
+}
+
 // For end of game screens.
-void draw_seconds(uint16_t elapsed, int16_t x, int16_t y) {
+void drawSeconds(uint16_t elapsed, int16_t x, int16_t y) {
   Platform::setCursor(x, y);
   Platform::print(elapsed);
   Platform::print(" seconds");
 }
+
+void eraseCompass(void) {
+  Platform::eraseRectRow((kScreenWidth >> 1) - 2 - kCompassRadius, 8,
+      (kCompassRadius << 1) + 4, (kCompassRadius << 1)  - 1);
+  // A short line at the top to erase, too
+  Platform::drawFastHLine((kScreenWidth >> 1) - 5, 7, 8, COLOUR_BLACK);
+}
+
 // vim:fdm=syntax

@@ -598,7 +598,7 @@ void Initialize() {
   }
   StartTime = 1000 * ts.tv_sec + ts.tv_nsec / 1000000;
   // Initialize Arduboy Game in game.h
-  InitGame();
+  initGame();
   // Initialize random number generator.
   srandom(StartTime);
 }
@@ -703,7 +703,7 @@ int main(int argc, char* argv[])
         }
       }
 
-    StepGame();
+    stepGame();
 
     /* if (!eeprom.isSaved()) { */
     /*   eeprom.save(); */
