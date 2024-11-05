@@ -30,9 +30,11 @@ left, right, up and down. The view can follow the vehicle or not.
 
 | Key    | Action                                            |
 |--------|---------------------------------------------------|
-| UP     | Move the view up                                  |
-| DOWN   | Move the view down                                |
-| LEFT   | Move the view left                                |
-| RIGHT  | Move the view right                               |
-| Long A | Toggle follow vehicle                             |
-| Long B | Toggle coordinates of top-left corner of viewport |
+| UP     | Move the view up/Menu up                          |
+| DOWN   | Move the view down/Menu down                      |
+| LEFT   | Move the view left, Previous option in menu item  |
+| RIGHT  | Move the view right, Next option in menu item     |
+| A      | Menu Select                                       |
+| B      | Open/Close menu                                   |
+| A+Down | Zoom in                                           |
+| A+Up   | Zoom out                                          |

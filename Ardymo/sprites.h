@@ -3,7 +3,7 @@
 // Arrow points
 #include "defines.h"
 
-enum {
+enum : uint8_t {
   UP_ARROW = 0,
   RIGHT_ARROW = 8,
   DOWN_ARROW = 16,
@@ -21,4 +21,16 @@ const PROGMEM uint8_t arrows[] = {
 0x01,0x07,0x1f,0x07,0x01,0x00,0x00,0x00,
 // sprites/arrow-left.png  width: 8 height: 8
 0x04,0x04,0x0e,0x0e,0x1f,0x00,0x00,0x00,
+};
+
+enum : uint8_t {
+  I2C_ON = 0,
+  I2C_OFF = 5
+};
+
+const PROGMEM uint8_t i2c_indicator[] = {
+// sprites/i2c-0.png  width: 5 height: 8
+0x0a,0x1a,0x0a,0x0b,0x0a,
+// sprites/i2c-off.png  width: 5 height: 8
+0x11,0x0a,0x04,0x0a,0x11
 };

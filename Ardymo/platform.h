@@ -13,17 +13,16 @@ public:
   static uint8_t* getBuffer();
 
   // (I2C) Communication
-#ifdef USE_I2C
   static uint8_t slave_receive(uint8_t* bytes, uint8_t n);
   static void slave_send(uint8_t* bytes, uint8_t n);
   static uint8_t master_request(uint8_t address, uint8_t n);
   static uint8_t master_receive(uint8_t* bytes, uint8_t n);
   static uint8_t master_send(uint8_t* bytes, uint8_t n, uint8_t address);
-#endif
 
   // Buttons
   static uint8_t buttonsState();
   static bool pressed(uint8_t buttons);
+  static bool notPressed(uint8_t buttons);
   static void pollButtons(void);
   static bool justPressed(uint8_t button);
   static bool justReleased(uint8_t button);
@@ -61,6 +60,8 @@ public:
   static void setCursor(int16_t x, int16_t y);
   static int16_t getCursorX(void);
   static int16_t getCursorY(void);
+  static uint8_t getFullCharWidth(void); // With character spacing
+  static uint8_t getLineHeight(void);
 
   // Print
   static size_t print(const char str[]);
@@ -79,6 +80,8 @@ public:
   static size_t print(float x, uint8_t decimals=2);
   // Float and double is the same on Arduboy:
   static size_t print(double x, uint8_t decimals=2);
+  // Print string from PROGMEN
+  static size_t print_P(const char str[]);
 
   static size_t println(void);
   static size_t println(const char str[]);
@@ -96,12 +99,14 @@ public:
 
   // Debug
 #if defined (DEBUG_) || defined (TIMER_)
+  static void DebugPrint(uint8_t value, uint8_t base=DEC);
   static void DebugPrint(int16_t value, uint8_t base=DEC);
   static void DebugPrint(uint16_t value, uint8_t base=DEC);
   static void DebugPrint(uint32_t value, uint8_t base=DEC);
   static void DebugPrint(float value, uint8_t decimals=2);
   static void DebugPrint(double value, uint8_t decimals=2);
   static void DebugPrint(const char* text);
+  static void DebugPrintln(uint8_t value, uint8_t base=DEC);
   static void DebugPrintln(int16_t value, uint8_t base=DEC);
   static void DebugPrintln(uint16_t value, uint8_t base=DEC);
   static void DebugPrintln(uint32_t value, uint8_t base=DEC);

@@ -14,7 +14,7 @@ struct intersection_t {
 };
 
 // Returns number of intersections found
-uint8_t intersects(LineVector sensor, obstacle_t obst);
+uint8_t intersects(const LineVector* sensor, const obstacle_t* obst);
 // Distance from origin to intersection points computed in intersection.cpp
 // i = {0,1}: Which of the two intersection points to compare to
 float distance(Vec origin, uint8_t i);

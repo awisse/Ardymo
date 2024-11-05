@@ -27,18 +27,18 @@ class Vec {
     Vec(const point p) : x(p.x), y(p.y) {}
 
     Vec operator+=(const Vec&);
-    Vec operator+(const Vec&);
-    Vec operator+(const point p);
-    Vec operator-(void); // Inverse sign
-    Vec operator-(const Vec&);
-    Vec operator*(const float a); // Scalar product
-    Vec operator/(const float a); // Division by scalar
-    float operator*(const Vec&); // Inner product
-    bool operator==(const Vec&);
+    Vec operator+(const Vec&) const;
+    Vec operator+(const point p) const;
+    Vec operator-(void) const; // Inverse sign
+    Vec operator-(const Vec&) const;
+    Vec operator*(const float a) const; // Scalar product
+    Vec operator/(const float a) const; // Division by scalar
+    float operator*(const Vec&) const; // Inner product
+    bool operator==(const Vec&) const;
 
     float div(const Vec&) const; // Division of collinear vectors.
     float det(const Vec&) const; // Determinant of the matrix (this, other)
-    float sq(void) const;     // ∥v∥^2
+    float square(void) const;     // ∥v∥^2
     float length(void) const; // ∥v∥
     float distance(const Vec&) const; // ∥v-other∥
     Vec normalized(void) const; // Vector normalized to ∥v∥=1

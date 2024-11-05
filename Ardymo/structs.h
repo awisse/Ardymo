@@ -7,13 +7,16 @@
 #include "objects.h"
 
 // Game States
-enum State {
+enum State : uint8_t {
   startup, // Application starts
   running, // Player is playing
-  menu,    // Menu is open
+  gamemenu,    // Menu is open
+  startupmenu, // Menu is open
+  help,    // Show help screen
   success, // Successfully finished
   crash,   // Crashed into obstacle
-  over     // Game Over
+  over,    // Game Over
+  waiting  // Waiting for Input
 };
 
 // Obstacle types

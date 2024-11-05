@@ -2,57 +2,25 @@
 // depending on the global State type variable state.
 // Emulates "registring listeners"
 #include "src/controller.h"
-#include "viewport.h"
-#include "game.h"
 #include "src/defines.h"
 #include "src/platform.h"
+#include "viewport.h"
+#include "menu.h"
+#include "game.h"
 
-uint8_t previousButtons, currentButtons;
-uint8_t DebouncedButtons();
+static uint8_t previousButtons, currentButtons;
+uint8_t debouncedButtons();
+void dispatchShortA(State);
+void dispatchLongA(State);
+void dispatchShortB(State);
+void dispatchLongB(State);
+void dispatchLeft(State);
+void dispatchRight(State);
+void dispatchUp(State);
+void dispatchUpA(State);   // Up with modifier A
+void dispatchDown(State);
+void dispatchDownA(State); // Down with modifier A
 
-
-void Dispatch(Event e) {
-/* For each event, call all "listeners" that subscribe to that event.
- * The listeners decide whether to act on the event. */
-  switch (e) {
-    case Short_A:
-      ZoomIn();
-      break;
-
-    case Long_A:
-      ToggleFollow(); // Viewport follows vehicle
-      break;
-
-    case Short_B:
-      ZoomOut();
-      break;
-
-    case Long_B:
-      ToggleCoordinates(); // Is not a menu for now. Just toggling show coordinates
-      break;
-
-    case Left:
-      PanLeft();
-      break;
-
-    case Right:
-      PanRight();
-      break;
-
-    case Up:
-      PanUp();
-      break;
-
-    case Down:
-      PanDown();
-      break;
-    default:
-      ;
-#ifdef DEBUG_
-      Platform::DebugPrintln("default in Dispatch");
-#endif
-  }
-}
 
 bool JustPressed(uint8_t buttons) {
   return ((buttons & currentButtons) && !(buttons & previousButtons));
@@ -62,7 +30,7 @@ bool JustReleased(uint8_t buttons) {
   return (!(buttons & currentButtons) && (buttons & previousButtons));
 }
 
-void HandleInput() {
+void handleInput(State gameState) {
 
   static uint32_t startAPress;
   static bool AButtonDown;
@@ -76,7 +44,7 @@ void HandleInput() {
   if (JustPressed(INPUT_A)) {
     AButtonDown = true;
     startAPress = Platform::millis();
-    Dispatch(Short_A);
+    dispatchShortA(gameState);
   }
 
   if (JustReleased(INPUT_A)) {
@@ -86,14 +54,14 @@ void HandleInput() {
 
   if (AButtonDown && (Platform::millis() - startAPress) > LONG_PRESS) {
     startAPress = Platform::millis();
-    Dispatch(Long_A);
+    dispatchLongA(gameState);
   }
 
   // These events available for now:
   if (JustPressed(INPUT_B)) {
     BButtonDown = true;
     startBPress = Platform::millis();
-    Dispatch(Short_B);
+    dispatchShortB(gameState);
   }
 
   if (JustReleased(INPUT_B)) {
@@ -105,13 +73,25 @@ void HandleInput() {
   if (BButtonDown && (Platform::millis() - startBPress) > LONG_PRESS) {
     startBPress = Platform::millis();
     BButtonLongPressCycles++;
-    Dispatch(Long_B);
+    dispatchLongB(gameState);
   }
 
-  if (currentButtons & INPUT_UP) Dispatch(Up);
-  else if (currentButtons & INPUT_DOWN) Dispatch(Down);
-  else if (currentButtons & INPUT_LEFT) Dispatch(Left);
-  else if (currentButtons & INPUT_RIGHT) Dispatch(Right);
+  if (currentButtons & INPUT_UP) {
+    if (AButtonDown) {
+      dispatchUpA(gameState);
+    } else {
+      dispatchUp(gameState);
+    }
+  }
+  else if (currentButtons & INPUT_DOWN) {
+    if (AButtonDown) {
+      dispatchDownA(gameState);
+    } else {
+      dispatchDown(gameState);
+    }
+  }
+  else if (currentButtons & INPUT_LEFT) dispatchLeft(gameState);
+  else if (currentButtons & INPUT_RIGHT) dispatchRight(gameState);
 
 }
 
@@ -128,6 +108,98 @@ uint8_t DebouncedButtons() {
 
   pressed = true;
   return currentButtons;
+}
+
+void dispatchShortA(State gameState) {
+  switch (gameState) {
+    case gamemenu:
+      menuSelect();
+      break;
+  }
+}
+
+void dispatchLongA(State gameState) { }
+
+void dispatchShortB(State gameState) {
+  switch (gameState) {
+    case gamemenu:
+      exitMenu();
+      break;
+    case running:
+      enterMenu();
+      break;
+    case help:
+      exitHelp();
+      break;
+  }
+}
+
+void dispatchLongB(State gameState) {}
+
+void dispatchLeft(State gameState) {
+  switch (gameState) {
+    case running:
+      panLeft();
+      break;
+    case gamemenu:
+      menuLeft();
+      break;
+    case help:
+      helpNext();
+      break;
+  }
+}
+
+void dispatchRight(State gameState) {
+  switch (gameState) {
+    case running:
+      panRight();
+      break;
+    case gamemenu:
+      menuRight();
+      break;
+    case help:
+      helpNext();
+      break;
+  }
+}
+
+void dispatchUp(State gameState) {
+  switch (gameState) {
+    case running:
+      panUp();
+      break;
+    case gamemenu:
+      menuUp();
+      break;
+  }
+}
+
+void dispatchUpA(State gameState) {
+  switch (gameState) {
+    case running:
+      zoomOut();
+      break;
+  }
+}
+
+void dispatchDown(State gameState) {
+  switch (gameState) {
+    case running:
+      panDown();
+      break;
+    case gamemenu:
+      menuDown();
+      break;
+  }
+}
+
+void dispatchDownA(State gameState) {
+  switch (gameState) {
+    case running:
+      zoomIn();
+      break;
+  }
 }
 
 // vim: tabstop=2:softtabstop=2:shiftwidth=2:expandtab

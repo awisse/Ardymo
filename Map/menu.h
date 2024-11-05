@@ -1,9 +1,8 @@
 #pragma once
-#include "structs.h"
 
-void showMenu(State);
+void showMenu();
 void refreshMenu();
-void menuSelect(State);
+void menuSelect();
 void menuRight();
 void menuLeft();
 void menuUp();

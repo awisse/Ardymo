@@ -3,57 +3,58 @@
 
 ViewPort viewport;
 
-void InitViewport(void) {
+void initViewport(void) {
     viewport = ViewPort(default_map, default_view);
 }
 
-void PanRight(void) {
+void panRight(void) {
   viewport.pan_right();
 }
 
-void PanLeft(void) {
+void panLeft(void) {
   viewport.pan_left();
 }
 
-void PanDown(void) {
+void panDown(void) {
   viewport.pan_down();
 }
 
-void PanUp(void) {
+void panUp(void) {
   viewport.pan_up();
 }
 
-void MoveTo(const point p) {
+void moveTo(const point p) {
   viewport.move_to(p);
 }
 
-void ZoomIn(void) {
+void zoomIn(void) {
   viewport.zoom_in();
 }
 
-void ZoomOut(void) {
+void zoomOut(void) {
   viewport.zoom_out();
 }
 
-void ReCenter(const point p) {
-  viewport.re_center(p);
+void reCenter(const point p) {
+  viewport.center_on(p);
 }
 
 bool Changed(void) {
   return viewport.is_moved();
 }
 
-void MoveDone(void) {
+void moveDone(void) {
   viewport.not_moved();
 }
 
-void GetViewportPosition(point* pos) {
+void getViewportPosition(point* pos) {
   *pos = viewport.get_rectangle().p;
 }
 
-void GetViewport(ViewPort* v) {
+void getViewport(ViewPort* v) {
   *v = viewport;
 }
+
 
 float bound(float x, float a, float b) {
   // Return x if a <= x <= b.
@@ -92,6 +93,8 @@ void ViewPort::pan_down(void) {
 }
 
 void ViewPort::zoom_in(void) {
+  point c = get_center();
+
   if (scale < 1.0) {
     scale *= 2.0;
     view.l /= 2.0;
@@ -100,11 +103,12 @@ void ViewPort::zoom_in(void) {
     v_step /= 2.0;
     moved = true;
   }
-  view.p.x = bound(view.p.x, 0, kBoardWidth - view.l);
-  view.p.y = bound(view.p.y, 0, kBoardHeight - view.w);
+  center_on(c);
 }
 
 void ViewPort::zoom_out(void) {
+  point c = get_center();
+
   if (scale > MinZoom) {
     scale /= 2.0;
     view.l *= 2.0;
@@ -119,11 +123,10 @@ void ViewPort::zoom_out(void) {
     v_step = view.w / 2.0;
     moved = true;
   }
-  view.p.x = bound(view.p.x, 0, kBoardWidth - view.l);
-  view.p.y = bound(view.p.y, 0, kBoardHeight - view.w);
+  center_on(c);
 }
 
-void ViewPort::re_center(const point p) {
+void ViewPort::center_on(const point p) {
   // Center the viewport on the point p.
   point to_p;
   to_p.x = p.x - view.l / 2.0;
@@ -149,14 +152,21 @@ obstacle_t ViewPort::as_obstacle(void) {
 
 }
 
-ScreenPt ViewPort::Map2Screen(const Vec v) const {
-  return Map2Screen(v.as_point());
+ScreenPt ViewPort::map2Screen(const Vec v) const {
+  return map2Screen(v.as_point());
 }
 
-ScreenPt ViewPort::Map2Screen(const point p) const {
+ScreenPt ViewPort::map2Screen(const point p) const {
   ScreenPt s_p = ScreenPt(scale * (p.x - view.p.x),
       scale * (p.y - view.p.y));
   return s_p;
+}
+
+point ViewPort::get_center(void) const {
+  point p;
+  p.x = view.p.x + view.l / 2;
+  p.y = view.p.y + view.w / 2;
+  return p;
 }
 
 void ViewPort::set_scale(float s) {
@@ -167,9 +177,10 @@ inline void ViewPort::not_moved(void) {
   moved = false;
 }
 
-uint8_t GetLine(const line_t* line, LinePoints* s_line) {
+uint8_t getLine(const line_t* line, LinePoints* s_line) {
 
   LineVector l = LineVector(*line);
+  obstacle_t vpObst = viewport.as_obstacle();
   uint8_t n; // Number of intersection points
 
   Vec l1 = l.p + l.v; // Endpoint of line
@@ -178,29 +189,29 @@ uint8_t GetLine(const line_t* line, LinePoints* s_line) {
 
   // Is line contained in Viewport?
   if (inside0 && inside1) {
-    s_line->l0 = viewport.Map2Screen(line->p);
-    s_line->l1 = viewport.Map2Screen(l1);
+    s_line->l0 = viewport.map2Screen(line->p);
+    s_line->l1 = viewport.map2Screen(l1);
     return 1;
   }
 
   // Find intersections of line with Viewport.
-  n = intersects(l, viewport.as_obstacle());
+  n = intersects(&l, &vpObst);
   if (n == 0) { // Neither inside nor intersection: nothing to draw
     return 0;
   }
-  s_line->l0 = viewport.Map2Screen(intersect_point(0).p);
+  s_line->l0 = viewport.map2Screen(intersect_point(0).p);
 
   if (n == 2) { // Line completely cuts through the viewport
-    s_line->l1 = viewport.Map2Screen(intersect_point(1).p);
+    s_line->l1 = viewport.map2Screen(intersect_point(1).p);
     return 1;
   }
 
   // The other endpoint of the screen line is an endpoint of the line
   // Find which one is inside the viewport
   if (inside0) {
-    s_line->l1 = viewport.Map2Screen(line->p);
+    s_line->l1 = viewport.map2Screen(line->p);
   } else { // Must be inside1
-    s_line->l1 = viewport.Map2Screen(l1);
+    s_line->l1 = viewport.map2Screen(l1);
   }
 
   return true;
@@ -210,7 +221,7 @@ bool is_in_circle(const Vec& p, const circle_t* circle) {
   return (p.distance(Vec(circle->p)) < circle->r);
 }
 
-uint8_t GetCircle(const circle_t* circle, ScreenCircle* s_circle) {
+uint8_t getCircle(const circle_t* circle, ScreenCircle* s_circle) {
 
   // Just scale the circle to the viewport for now, after checking whether
   // it is completely outside the viewport
@@ -223,14 +234,14 @@ uint8_t GetCircle(const circle_t* circle, ScreenCircle* s_circle) {
     return 0;
   }
 
-  s_circle->p = viewport.Map2Screen(circle->p);
-  s_circle->r = viewport.Scaled(circle->r);
+  s_circle->p = viewport.map2Screen(circle->p);
+  s_circle->r = viewport.scaled(circle->r);
   return 1;
 }
 
 // Transform a rectangle from shapes. Return the number of segments
 // in the viewport. Return the endpoints of the segments in `lines`.
-uint8_t GetRectangle(const rectangle_t* rect, LinePoints* lines) {
+uint8_t getRectangle(const rectangle_t* rect, LinePoints* lines) {
   uint8_t n=0; // Maybe no intersection at all. Must initialize to zero.
   uint8_t i;
   RectVector rv = RectVector(*rect);
@@ -241,28 +252,28 @@ uint8_t GetRectangle(const rectangle_t* rect, LinePoints* lines) {
   // Left
   point p = rect->p; // Corners of the rectangle
   line_t segment = {p, rect->l, rect->rho, 1};
-  if (i=GetLine(&segment, &line)) {
+  if (i=getLine(&segment, &line)) {
     lines[n++] = line;
   }
 
   // Front. Direction towards right
   p = (rv.p + rv.v).as_point();
   segment = {p, rect->w, (int16_t)(rect->rho + 90), 1};
-  if (i=GetLine(&segment, &line)) {
+  if (i=getLine(&segment, &line)) {
     lines[n++] = line;
   }
 
   // Right. Direction towards front
   p = (rv.p + rv.front).as_point();
   segment = {p, rect->l, rect->rho, 1};
-  if (i=GetLine(&segment, &line)) {
+  if (i=getLine(&segment, &line)) {
     lines[n++] = line;
   }
 
   // Rear. Direction towards right
   p = rect->p;
   segment = {p, rect->w, (int16_t)(rect->rho + 90), 1};
-  if (i=GetLine(&segment, &line)) {
+  if (i=getLine(&segment, &line)) {
     lines[n++] = line;
   }
 

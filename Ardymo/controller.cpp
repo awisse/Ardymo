@@ -98,29 +98,30 @@ uint8_t DebouncedButtons() {
 
 void dispatchShortA(State gameState) {
   switch (gameState) {
-    case menu:
-      menuSelect();
+    case gamemenu:
+    case startupmenu:
+      menuSelect(gameState);
+      break;
+    case waiting:
+      initGame();
       break;
   }
 }
 
-void dispatchLongA(State gameState) {
-  switch (gameState) {
-    case running:
-      gameRetryI2C();
-      break;
-  }
-}
+void dispatchLongA(State gameState) { }
 
 void dispatchShortB(State gameState) {
   switch (gameState) {
-    case menu:
-      hideMenu();
-      continueGame();
+    case gamemenu:
+    case startupmenu:
+      exitMenu(gameState);
       break;
     case running:
-      enterMenu();
-      showMenu();
+      enterMenu(gamemenu);
+
+      break;
+    case help:
+      exitHelp();
       break;
   }
 }
@@ -132,7 +133,8 @@ void dispatchLeft(State gameState) {
     case running:
       turnLeft();
       break;
-    case menu:
+    case gamemenu:
+    case startupmenu:
       menuLeft();
       break;
   }
@@ -143,7 +145,8 @@ void dispatchRight(State gameState) {
     case running:
       turnRight();
       break;
-    case menu:
+    case gamemenu:
+    case startupmenu:
       menuRight();
       break;
   }
@@ -153,7 +156,8 @@ void dispatchUp(State gameState) {
     case running:
       accelerateForward();
       break;
-    case menu:
+    case gamemenu:
+    case startupmenu:
       menuUp();
       break;
   }
@@ -164,7 +168,8 @@ void dispatchDown(State gameState) {
     case running:
       accelerateBackward();
       break;
-    case menu:
+    case gamemenu:
+    case startupmenu:
       menuDown();
       break;
   }

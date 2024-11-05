@@ -3,85 +3,127 @@
 #include "defines.h"
 #include "draw.h"
 
+enum : uint8_t {
+  RESTART_M,
+  HELP_M,
+  PLAY_M,
+  CONTINUE_M
+};
+
+enum : uint8_t {
+  LEVEL_POS,
+  I2C_POS,
+  STARTUP_HELP_POS = 2,
+  STARTUP_PLAY_POS = 3,
+  RUNNING_HELP_POS = 2,
+  RUNNING_RESTART_POS = 4,
+  RUNNING_CONTINUE_POS = 3
+};
+
 static uint8_t onItem {0};
 static uint8_t level;
 static bool bUseI2C;
-const char* displayedItems[kMenuItems];
+static uint8_t nMenuItems;
+static State menuShown; // Menu currenty displayed
+const char* displayedItems[5];
 
-static const char* aLevelItems[kLevels] = {"Train", "Easy", "Medium", 
+static const char* aLevelItems[kLevels] = {"Train", "Easy", "Medium",
   "Hard", "Ultra"};
-static const char* aMenuItems[1] = {"Reboot"};
+static const char* aMenuItems[4] = {"Restart", "Help", "Play", "Continue"};
 
 static const char* aUseI2CItems[2] = {"I2C off", "I2C on"};
 
-void updateMenu(void) {
-  displayedItems[MENU_LEVEL] = aLevelItems[level];
-  displayedItems[MENU_RESTART] = aMenuItems[0];
-  displayedItems[MENU_I2C] = aUseI2CItems[bUseI2C];
-  drawMenu(onItem, displayedItems);
+void refreshMenu() {
+  displayedItems[0] = aLevelItems[level];
+  displayedItems[1] = aUseI2CItems[bUseI2C];
+  drawMenu(onItem, nMenuItems, displayedItems);
 }
 
-void showMenu(void) {
+void showMenu(State state) {
   level = getLevel();
   bUseI2C = getI2C();
-  updateMenu();
-}
+  onItem = 0;
+  menuShown = state;
 
-void hideMenu(void) {
-  continueGame();
-}
-
-void menuSelect(void) {
-  switch (onItem) {
-    case MENU_LEVEL:
-      setLevel(level);
-    case MENU_RESTART:
-      initGame();
+  switch (state) {
+    case gamemenu:
+      nMenuItems = 5;
+      displayedItems[RUNNING_CONTINUE_POS] = aMenuItems[CONTINUE_M];
+      displayedItems[RUNNING_HELP_POS] = aMenuItems[HELP_M];
+      displayedItems[RUNNING_RESTART_POS] = aMenuItems[RESTART_M];
       break;
-    case MENU_I2C:
-      setI2C(bUseI2C);
+    case startupmenu:
+      nMenuItems = 4;
+      displayedItems[STARTUP_HELP_POS] = aMenuItems[HELP_M];
+      displayedItems[STARTUP_PLAY_POS] = aMenuItems[PLAY_M];
+  }
+  refreshMenu();
+}
+
+void menuSelect(State state) {
+  switch (state) {
+    case startupmenu:
+      switch (onItem) {
+        case STARTUP_HELP_POS:
+          showHelp();
+          break;
+        case STARTUP_PLAY_POS:
+          setLevel(level);
+          setI2C(bUseI2C);
+          exitMenu(state);
+          break;
+      }
+      break;
+    case gamemenu:
+      switch (onItem) {
+        case RUNNING_CONTINUE_POS:
+          setLevel(level);
+          setI2C(bUseI2C);
+          exitMenu(state);
+          break;
+        case RUNNING_RESTART_POS:
+          restartGame();
+          break;
+        case RUNNING_HELP_POS:
+          showHelp();
+          break;
+      }
   }
 }
 
-void menuRight(void) {
-
+void menuRight() {
   switch (onItem) {
-    case MENU_LEVEL:
+    case LEVEL_POS:
       level = (level + 1) % kLevels;
       break;
-    case MENU_I2C:
+    case I2C_POS:
       bUseI2C = !bUseI2C;
   }
-  updateMenu();
 }
 
-void menuLeft(void) {
-
+void menuLeft() {
   switch (onItem) {
-    case MENU_LEVEL: 
+    case LEVEL_POS:
       if (level == 0) {
         level = kLevels - 1;
       } else {
         level--;
       }
       break;
-    case MENU_I2C:
+    case I2C_POS:
       bUseI2C = !bUseI2C;
   }
-  updateMenu();
 }
 
-void menuUp(void) {
+void menuUp() {
   if (onItem == 0) {
-    onItem = kMenuItems;
+    onItem = nMenuItems - 1;
   } else {
     onItem--;
   }
-  updateMenu();
 }
 
-void menuDown(void) {
-  onItem = (onItem + 1) % kMenuItems;
-  updateMenu();
+void menuDown() {
+  onItem = (onItem + 1) % nMenuItems;
 }
 // vim: tabstop=2:softtabstop=2:shiftwidth=2:expandtab:filetype=cpp

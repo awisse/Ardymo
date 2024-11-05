@@ -5,19 +5,23 @@ Helper functions to unclutter main .ino file
 #include "game.h"
 #include "draw.h"
 #include "controller.h"
+#include "menu.h"
 #include "structs.h"
 #include "vehicle.h"
 #include "game.h"
+
 #include "platform.h"
 #ifdef DEBUG_
 #include "debug.h"
 #endif // DEBUG_
-#ifdef USE_I2C
 #include "comm.h"
-#endif // USE_I2C
 
 // Game
-static State state;
+static State stateStack[5]; // The stack of states
+static uint8_t stkPtr {0}; // The position of the stack level
+void pushState(State state);
+State popState();
+State getState(); // Get state from top of state stack
 
 // Game Level
 static uint8_t level;
@@ -25,12 +29,18 @@ static uint8_t level;
 static uint32_t gameStart; // Milliseconds at start of game
 static bool bUseI2C;
 
+// State functions
+void showStartup();
+void showRunning();
+void showCrash();
+void showSuccess();
+void showOver();
+
 // Auxiliary functions
 void getSensors(SensorValues*, SharedData*);
 void computeGameState(SensorValues*);
-void sendI2CRequest();
-void succeeded();
-void gameOver();
+void sendI2CVehicle();
+uint8_t sendI2CRequest();
 void crashed(Vec*);
 
 // I2C functions
@@ -40,54 +50,55 @@ void I2C_Error(uint8_t error);
 bool getSharedData(SharedData* shared);
 // Insert the received shared data into the SensorValues structure.
 void useSharedData(SensorValues* sensors, SharedData* shared);
-uint8_t received {}; // Number of bytes received on request
 
 void backToSquare1(void) {
-  Platform::clear();
   initVehicle();
   drawBackground();
 }
 
 void initGame() {
 
-  state = startup;
-  backToSquare1();
+  stkPtr = 0;
+  stateStack[0] = running;
+  pushState(startup);
   bUseI2C = true;
-  state = running;
+  backToSquare1();
 }
 
 void stepGame() {
 
-  SensorValues sensors {0, 0, FREE};
-  SharedData shared; // Remote data received from Map
   uint32_t step_start; // For measuring the length of one step.
 
   step_start = Platform::millis();
 
-  handleInput(state); // User input: Button presses
-  moveVehicle(); // Move according to heading and speed
+  handleInput(getState()); // User input: Button presses
   // Check for collisions and distance to obstacles and target:
 
-  switch (state) {
+  switch (getState()) {
+    case startupmenu:
+    case gamemenu:
+      refreshMenu();
+      break;
+
+    case startup:
+      showStartup();
+      break;
+
     case running:
-      // Try to receive sensor data from Map
-      getSensors(&sensors, &shared);
-      computeGameState(&sensors);
-
-      drawCompass(sensors.heading, sensors.alpha, sensors.tgt_heading);
-      drawStatus(sensors.speed, sensors.tgt_distance);
-      drawDistances(&sensors.distances);
-      drawPosition(sensors.position);
-
-      // Send vehicle rectangle to Map
-      sendI2CRequest();
+      showRunning();
       break;
 
     case crash:
-      Platform::delay(5000);
-      // Reposition Vehicle at start.
-      backToSquare1();
-      state = running;
+      showCrash();
+      break;
+
+    case over:
+      showOver();
+      break;
+
+    case success:
+      showSuccess();
+      break;
   }
 
   Platform::display();
@@ -99,16 +110,23 @@ void stepGame() {
 
 }
 
-void gameRetryI2C(void) {
-  bUseI2C = true;
+void restartGame(void) {
+  popState();
+  backToSquare1();
 }
 
-void continueGame(void) {
-  state = running;
+void enterMenu(State menu) {
+  showMenu(menu);
+  pushState(menu);
+
 }
 
-void enterMenu() {
-  state = menu;
+void exitMenu(State state) {
+  popState();
+  drawBackground();
+  if (state == startupmenu) {
+    popState();
+  }
 }
 
 uint8_t getLevel(void) {
@@ -127,37 +145,114 @@ void setI2C(bool onOff) {
   bUseI2C = onOff;
 }
 
+void showHelp() {
+  drawHelp();
+  pushState(help);
+}
+
+void exitHelp() {
+  popState(); // Help State
+  switch (getState()) {
+    case startupmenu:
+      popState();
+      break;
+    case gamemenu:
+      drawBackground();
+      showRunning();
+  }
+}
+
+void pushState(State state) {
+  stateStack[++stkPtr] = state;
+}
+
+State popState() {
+  uint8_t lvl = stkPtr == 0 ? 0 : --stkPtr;
+  return stateStack[lvl];
+}
+
+State getState() {
+  return stateStack[stkPtr];
+}
+
+void showStartup() {
+  drawStartup();
+  pushState(startupmenu);
+  showMenu(startupmenu);
+}
+
+void showRunning() {
+  SensorValues sensors {0, 0, FREE};
+  SharedData shared; // Remote data received from Map
+
+  moveVehicle(); // Move according to heading and speed
+  // Try to receive sensor data from Map
+  getSensors(&sensors, &shared);
+  computeGameState(&sensors);
+
+  drawI2C(bUseI2C);
+  drawCompass(sensors.heading, sensors.alpha, sensors.tgt_heading);
+  drawStatus(sensors.speed, sensors.tgt_distance);
+  drawDistances(&sensors.distances);
+  drawPosition(sensors.position);
+
+  // Send vehicle rectangle to Map
+  sendI2CVehicle();
+  sendI2CRequest();
+}
+
+void showCrash(void) {
+  Vec position = getVehiclePos();
+  drawCrash(&position);
+  popState();
+  Platform::display();
+  Platform::delay(5000);
+  // Reposition Vehicle at start.
+  backToSquare1();
+}
+
+void showSuccess() {
+  // Show result.
+  uint16_t elapsed = (Platform::millis() - gameStart) / 1000;
+  drawSuccess(elapsed);
+  pushState(waiting);
+}
+
+void showOver() {
+  uint16_t elapsed = (Platform::millis() - gameStart) / 1000;
+  drawGameOver(elapsed);
+  pushState(waiting);
+}
+
 void getSensors(SensorValues* sensors, SharedData* shared) {
 
-    bool receiveOK; // True if received data is usable
-    if (bUseI2C) {
-      receiveOK = getSharedData(shared);
-    }
-    if (bUseI2C && receiveOK) {
-        checkSensors(sensors, FORWARD_REARWARD);
-        useSharedData(sensors, shared);
-    } else {
-      checkSensors(sensors, BOTH);
-    }
+  bool receiveOK; // True if received data is usable
+  if (bUseI2C) {
+    receiveOK = getSharedData(shared);
+  }
+  if (bUseI2C && receiveOK) {
+    // User sensor data from Map
+      checkSensors(sensors, FORWARD_REARWARD);
+      useSharedData(sensors, shared);
+  } else {
+    // Compute sensor data ourselves
+    checkSensors(sensors, BOTH);
+  }
 }
 
 void computeGameState(SensorValues* sensors) {
 
-#ifdef DEBUG_
-    printSensors(sensors);
-#endif // DEBUG_
-
-    if (sensors->on_target) {
-      gameOver();
-    } else if (sensors->collision != NONE) {
-      crashed(&sensors->position);
-    } else if ((sensors->tgt_distance < kTargetReached)
-        && (sensors->speed == 0)) {
-      succeeded();
-    }
+  if (sensors->on_target) {
+    pushState(over);
+  } else if (sensors->collision != NONE) {
+    pushState(crash);
+  } else if ((sensors->tgt_distance < kTargetReached)
+      && (sensors->speed == 0)) {
+    pushState(success);
+  }
 }
 
-void sendI2CRequest() {
+void sendI2CVehicle() {
   uint8_t error {}; // For I2C communication
   rectangle_t vehicle_rectangle;
   if (bUseI2C) {
@@ -167,32 +262,16 @@ void sendI2CRequest() {
     if (error) {
       I2C_Error(error);
       bUseI2C = false;
-    } else {
-      if (bUseI2C) {
-        received = Platform::master_request(I2C_SLAVE_ADDR, sizeof(SharedData));
-      }
     }
   }
 }
 
-void succeeded() {
-  // Show result.
-  uint16_t elapsed = (Platform::millis() - gameStart) / 1000;
-  drawSuccess(elapsed);
-  state = success;
-}
-
-void gameOver() {
-
-  uint16_t elapsed = (Platform::millis() - gameStart) / 1000;
-  drawGameOver(elapsed);
-  state = over;
-}
-
-void crashed(Vec* position) {
-
-  drawCrash(position);
-  state = crash;
+uint8_t sendI2CRequest() {
+  uint8_t received;
+  if (bUseI2C) {
+    received = Platform::master_request(I2C_SLAVE_ADDR, sizeof(SharedData));
+  }
+  return received;
 }
 
 // Print verbose I2C messages
@@ -209,6 +288,7 @@ void I2C_Error(uint8_t error) {
       break;
     case 5:
       drawMessage("I2C Timeout");
+      break;
     default:
       drawMessage("I2C Error");
   }
@@ -219,6 +299,7 @@ void I2C_Error(uint8_t error) {
 
 // Try to receive data requested from Map
 bool getSharedData(SharedData* shared) {
+  uint8_t received;
   received = master_receive(sizeof(SharedData));
   if (received == sizeof(SharedData)) {
     receive_bytes((uint8_t*)shared, sizeof(SharedData));

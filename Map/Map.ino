@@ -10,9 +10,7 @@
 #include "game.h"
 #include "src/defines.h"
 #include "src/platform.h"
-#ifdef USE_I2C
 #include <Wire.h>
-#endif
 
 Arduboy2 arduboy;
 
@@ -24,13 +22,11 @@ void setup() {
   Serial.begin(9600);
 #endif
 
-#ifdef USE_I2C
   // Map is the slave
   power_twi_enable();
   Wire.begin(I2C_SLAVE_ADDR);
   Wire.onReceive(I2C_SlaveReceive);
   Wire.onRequest(I2C_MasterRequest);
-#endif
 
   // Wait for button to be pressed before beginning
   while (!arduboy.pressed(A_BUTTON)) {
@@ -38,13 +34,13 @@ void setup() {
   }
 
   arduboy.setFrameDuration(kFrameDuration);
-  InitGame();
+  initGame();
 }
 
 void loop() {
 
   if (arduboy.nextFrame()) {
-    StepGame();
+    stepGame();
   }
 }
 
@@ -55,7 +51,6 @@ uint8_t* Platform::getBuffer() {
   return arduboy.getBuffer();
 }
 
-#ifdef USE_I2C
 // I2C Communication
 uint8_t Platform::slave_receive(uint8_t* bytes, uint8_t n) {
   // Receive bytes from master
@@ -93,7 +88,6 @@ uint8_t Platform::master_send(uint8_t* bytes, uint8_t n, uint8_t address) {
   // Send n bytes to slave at address
   return 0;
 }
-#endif // USE_I2C
 
 /******* Buttons **********************************************/
 uint8_t Platform::buttonsState() {
@@ -103,6 +97,10 @@ uint8_t Platform::buttonsState() {
 
 bool Platform::pressed(uint8_t buttons) {
   return arduboy.pressed(buttons);
+}
+
+bool Platform::notPressed(uint8_t buttons) {
+  return arduboy.notPressed(buttons);
 }
 
 /******* Drawing **********************************************/
@@ -214,6 +212,14 @@ int16_t Platform::getCursorY(void) {
   return arduboy.getCursorY();
 }
 
+uint8_t Platform::getFullCharWidth(void) {
+  return arduboy.getCharacterWidth() + arduboy.getCharacterSpacing();
+}
+
+uint8_t Platform::getLineHeight(void) {
+  return arduboy.getCharacterHeight() + arduboy.getLineSpacing();
+}
+
 /******************** Print *************************************************/
 size_t Platform::print(const char str[])
 {
@@ -258,6 +264,16 @@ size_t Platform::print(float x, uint8_t decimals)
 size_t Platform::print(double x, uint8_t decimals)
 {
   arduboy.print(x, decimals);
+}
+
+// PROGMEM prints
+size_t Platform::print_P(const char str[]) {
+  uint8_t pos {0};
+  char c;
+
+  while (c=(char)pgm_read_byte(&str[pos++])) {
+    arduboy.print(c);
+  }
 }
 
 // *** println ***
@@ -312,6 +328,10 @@ size_t Platform::println(double x, uint8_t decimals)
 }
 
 #if defined(DEBUG_) || defined(TIMER_)
+void Platform::DebugPrint(uint8_t value, uint8_t base) {
+  Serial.print(value, base);
+}
+
 void Platform::DebugPrint(int16_t value, uint8_t base) {
   Serial.print(value, base);
 }

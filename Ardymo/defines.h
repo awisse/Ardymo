@@ -8,9 +8,8 @@
  */
 #pragma once
 
-#define USE_I2C
 #define I2C_SLAVE_ADDR 0x10
-#define DRAWTEST
+/* #define DRAWTEST */
 /* #define DEBUG_ */
 /* #define TIMER_ */
 
@@ -42,13 +41,6 @@ typedef long long_;
 typedef int int_;
 #endif
 
-// Split computations between Map and Ardymo?
-#ifdef USE_I2C
-constexpr bool kUseI2C {true};
-#else
-constexpr bool kUseI2C {false};
-#endif // USE_I2C
-
 // Number of game levels
 constexpr uint8_t kLevels {5};
 
@@ -59,8 +51,14 @@ const uint16_t kFrameDuration {100};
 // Screen dimensions (board width/height will be a parameter)
 const int16_t kScreenWidth {128};
 const int16_t kScreenHeight {64};
+#ifdef DRAWTEST
+const int16_t kBoardWidth = 4 * kScreenWidth;
+const int16_t kBoardHeight = 4 * kScreenHeight;
+#else
 const int16_t kBoardWidth = 16 * kScreenWidth;
 const int16_t kBoardHeight = 16 * kScreenHeight;
+#endif // DRAWTEST
+
 
 // Status value rectangle top left, coordinates bottom left
 const int16_t kStatusY {18};
@@ -70,8 +68,9 @@ const int16_t kStatusX {37};
 const int16_t kCompassRadius {24};
 
 // Menu position
-const int16_t kMenuTop {16};
-const uint8_t kMenuItems {3};
+const int16_t kMenuTop  {12};
+const int16_t kMenuLeft {38};
+const int16_t kMenuWidth {52};
 
 // Vehicle Parameters
 // speed: steps per frame

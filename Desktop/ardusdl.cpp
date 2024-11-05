@@ -56,7 +56,6 @@ uint8_t* Platform::getBuffer() {
 
 // (I2C) Communication. 
 // Maybe move to sockets/UDP for PC-to-PC communication
-#ifdef USE_I2C
 uint8_t Platform::slave_receive(uint8_t* bytes, uint8_t n) {
   return 0;
 }
@@ -74,7 +73,6 @@ uint8_t Platform::master_request(uint8_t address, uint8_t bytes) {
 uint8_t Platform::master_send(uint8_t* bytes, uint8_t n, uint8_t address) {
   return 0;
 }
-#endif // USE_I2C
 
 // Buttons
 uint8_t Platform::buttonsState()
@@ -84,6 +82,10 @@ uint8_t Platform::buttonsState()
 
 bool Platform::pressed(uint8_t buttons) {
   return (buttonsState() & buttons) == buttons;
+}
+
+bool Platform::notPressed(uint8_t buttons) {
+  return (buttonsState() & buttons) == 0;
 }
 
 void Platform::pollButtons(void) {
@@ -303,11 +305,11 @@ void Platform::eraseRectRow(uint8_t x, uint8_t y, uint8_t width, uint8_t height)
   // For the ardusdl version, compute rectangle and draw it
 
   row = y & 0xF8;
-  rows = ((y + height + 7) & 0xF8) - row;
+  rows = ((y + height) | 0x07) - row + 1;
 
   // Truncate
   width = (width > kScreenWidth - x) ? kScreenWidth - x : width;
-  rows = (rows > kScreenHeight - y) ? kScreenHeight - x : rows;
+  rows = (rows > kScreenHeight - row) ? kScreenHeight - row : rows;
 
   fillRect(x, row, width, rows, COLOUR_BLACK);
 
@@ -346,6 +348,14 @@ int16_t Platform::getCursorY(void) {
   return cursor.y;
 }
 
+uint8_t Platform::getFullCharWidth(void) {
+  return kFontWidth + kFontSpacing;
+}
+
+uint8_t Platform::getLineHeight(void) {
+  return kFontHeight + kLineSpacing;
+}
+
 /******************** Print **********************************************/
 size_t Platform::print(const char str[]) {
   return write(str);
@@ -377,7 +387,7 @@ size_t Platform::print(int32_t n, uint8_t base) {
 
   if ((n < 0) && (base == 10)) {
     t = write('-');
-    cursor.x += FONT_WIDTH + 1;
+    cursor.x += kFontWidth + kFontSpacing;
     n = -n;
   }
 
@@ -397,6 +407,10 @@ size_t Platform::print(float x, uint8_t decimals) {
 
 size_t Platform::print(double x, uint8_t decimals) {
   return printFloat(float(x), decimals);
+}
+
+size_t Platform::print_P(const char s[]) {
+  return print(s);
 }
 
 size_t Platform::println(void) {
@@ -731,20 +745,20 @@ size_t write(uint8_t c) {
 
   // Erase rectangle first
   Platform::fillRect(cursor.x, cursor.y,
-      FONT_WIDTH + 1, FONT_HEIGHT + 1, COLOUR_BLACK);
+      kFontWidth + kFontSpacing, kFontHeight + kLineSpacing, COLOUR_BLACK);
 
   if (!textRawMode) {
     switch (c) {
     case 0xa:
       cursor.x = 0;
-      cursor.y += FONT_HEIGHT + 1;
+      cursor.y += kFontHeight + kLineSpacing;
       return 0;
     case 0xd:
       return 1;
     }
   }
 
-  Platform::drawBitmap(cursor.x, cursor.y, &font5x7[FONT_WIDTH * c], 5, 8);
+  Platform::drawBitmap(cursor.x, cursor.y, &font5x7[kFontWidth * c], 5, 8);
   return 1;
 }
 
@@ -754,7 +768,7 @@ size_t write(const char str[]) { // Write a string at the cursor.
 
   while ((c=str[char_pos++]) && (cursor.x < kScreenWidth)) {
     t += write(c);
-    cursor.x += FONT_WIDTH + 1;
+    cursor.x += kFontWidth + kFontSpacing;
   }
   return t;
 }

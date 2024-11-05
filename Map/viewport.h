@@ -41,30 +41,30 @@ struct ScreenCircle {
   ScreenCircle(circle_t c) : ScreenCircle(c.p, c.r) {}
 };
 
-void InitViewport();
-void PanRight(void);
-void PanLeft(void);
-void PanDown(void);
-void PanUp(void);
-void MoveTo(const point p);
-void ZoomIn(void);
-void ZoomOut(void);
-void ReCenter(const point p); // Re-center on point p
+void initViewport();
+void panRight(void);
+void panLeft(void);
+void panDown(void);
+void panUp(void);
+void moveTo(const point p);
+void zoomIn(void);
+void zoomOut(void);
+void reCenter(const point p); // Re-center on point p
 bool Changed(void); // True if something in the viewport has changed
-void MoveDone(void);
-void GetViewportPosition(point*);
+void moveDone(void);
+void getViewportPosition(point*);
 
 class ViewPort;
-void GetViewport(ViewPort* v);
+void getViewport(ViewPort*);
 
 // Transform a line from shapes. Return false if not in viewport.
-uint8_t GetLine(const line_t* line, LinePoints* s_line);
+uint8_t getLine(const line_t* line, LinePoints* s_line);
 // Transform a circle from shapes. Return false if not in viewport.
-uint8_t GetCircle(const circle_t* circle, ScreenCircle* s_circle);
+uint8_t getCircle(const circle_t* circle, ScreenCircle* s_circle);
 // Transform a rectangle from shapes. Return false if not in viewport.
 // Returns the number of line segments in the viewport.
 // The array lines contains the endpoints of the lines to draw.
-uint8_t GetRectangle(const rectangle_t* rect, LinePoints* lines);
+uint8_t getRectangle(const rectangle_t* rect, LinePoints* lines);
 
 class ViewPort {
 
@@ -83,20 +83,21 @@ class ViewPort {
     void move_to(const point v); // Move view in direction of v
     void zoom_in(void);
     void zoom_out(void);
-    void re_center(const point p);
+    void center_on(const point p);
     // Check whether map point is in viewport
     bool inside(const point p);
     bool inside(const Vec& p);
     // Transform ViewPort into an obstacle
     obstacle_t as_obstacle(void);
     // Transform a Map point into a screen point
-    ScreenPt Map2Screen(const Vec p) const;
-    ScreenPt Map2Screen(const point p) const;
-    float Scaled(float x) {return x * scale;} // Scale x to viewport length
+    ScreenPt map2Screen(const Vec p) const;
+    ScreenPt map2Screen(const point p) const;
+    float scaled(float x) {return x * scale;} // Scale x to viewport length
 
     // Getters
     bool is_moved(void) const {return moved;}
     float get_scale(void) const {return scale;}
+    point get_center(void) const;
     rectangle_t get_rectangle(void) const {return view;}
 
     // Setters

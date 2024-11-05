@@ -5,8 +5,11 @@
 #include "src/objects.h"
 
 // Redraw Viewport. The vehicle position might have changed
-void Draw(rectangle_t* vehicle);
+void draw(rectangle_t* vehicle);
 // Draw position in bottom left corner.
-void DrawPosition(point* vehicle_position);
-
+void drawPosition(point* vehicle_position);
+// Draw the menu
+void drawMenu(uint8_t selected, uint8_t numItems, const char* items[]);
+// Draw Help
+void drawHelp(uint8_t page);
 // vim: tabstop=2:softtabstop=2:shiftwidth=2:expandtab:filetype=cpp

@@ -31,7 +31,7 @@ testing::AssertionResult AssertCollision(
     const LineVector sensor,
     const obstacle_t obst,
     const int i) {
-  uint8_t intersections = intersects(sensor, obst);
+  uint8_t intersections = intersects(&sensor, &obst);
   uint8_t n;
   intersection_t ix;
   
@@ -59,7 +59,7 @@ testing::AssertionResult AssertNoCollision(
     const LineVector sensor,
     const obstacle_t obst,
     const int i) {
-  uint8_t intersections = intersects(sensor, obst);
+  uint8_t intersections = intersects(&sensor, &obst);
   uint8_t n;
   intersection_t ix;
   
@@ -138,7 +138,7 @@ TEST_F (VecTest, Functions) {
   EXPECT_TRUE( isnan(a_.div(b_))); // Divison of non collinear vectors
   EXPECT_FLOAT_EQ(Vec(20.0, 30.0).div(Vec(10.0, 15.0000001)), 2.0);
 
-  EXPECT_FLOAT_EQ(c_.sq(), 409.0);
+  EXPECT_FLOAT_EQ(c_.square(), 409.0);
   EXPECT_FLOAT_EQ(b_.length(), 5.0);
 
   EXPECT_PRED2(eq, b_.rotate(130), Vec(-4.99254036, -0.27301693));
@@ -173,6 +173,15 @@ class TestIntersections : public testing::Test {
       bigcirc = mkObst(CIRCLE, {5.0, 5.0, 3.0});
       rect1 = mkObst(RECTANGLE,{2.5, 7.0, 4.0, 270, 0x40000000});
       rect2 = mkObst(RECTANGLE,{5.0, 6.0, 4.0, 240, 0x40000000});
+      // All Segments as LineVectors
+      seg0_lv = LineVector(seg0.item.line);
+      seg1_lv = LineVector(seg1.item.line);
+      seg2_lv = LineVector(seg2.item.line);
+      seg3_lv = LineVector(seg3.item.line);
+      seg4_lv = LineVector(seg4.item.line);
+      seg7_lv = LineVector(seg7.item.line);
+      seg5_lv = LineVector(seg5.item.line);
+      seg6_lv = LineVector(seg6.item.line);
     }
 
     LineVector sensor;
@@ -185,6 +194,14 @@ class TestIntersections : public testing::Test {
     obstacle_t seg7;
     obstacle_t seg5;
     obstacle_t seg6;
+    LineVector seg0_lv;
+    LineVector seg1_lv;
+    LineVector seg2_lv;
+    LineVector seg3_lv;
+    LineVector seg4_lv;
+    LineVector seg7_lv;
+    LineVector seg5_lv;
+    LineVector seg6_lv;
     obstacle_t circ;
     obstacle_t bigcirc;
     obstacle_t rect1;
@@ -195,30 +212,30 @@ class TestIntersections : public testing::Test {
 TEST_F (TestIntersections, Lines) {
 
   // Sensor with seg1
-  EXPECT_EQ(intersects(sensor, seg1), 1);
+  EXPECT_EQ(intersects(&sensor, &seg1), 1);
   EXPECT_PRED2(eq, intersect_point(0).p, Vec(5.16743371, 5.83256629));
 
-  EXPECT_EQ(intersects(sensor, seg3), 0);
+  EXPECT_EQ(intersects(&sensor, &seg3), 0);
 
-  EXPECT_EQ(intersects(sensor, seg5), 2);
+  EXPECT_EQ(intersects(&sensor, &seg5), 2);
   EXPECT_PRED2(eq, intersect_point(0).p, Vec(3.8, 3.46410162));
   EXPECT_PRED2(eq, intersect_point(1).p, Vec(4.3, 4.33012703));
 
-  EXPECT_EQ(intersects(seg0.item.line, seg1), 2);
+  EXPECT_EQ(intersects(&seg0_lv, &seg1), 2);
   EXPECT_PRED2(eq, intersect_point(0).p, Vec(6.0, 5.0));
   EXPECT_PRED2(eq, intersect_point(1).p, Vec(7.0, 4.0));
 
-  EXPECT_EQ(intersects(seg1.item.line, seg2), 0);
-  EXPECT_EQ(intersects(seg2.item.line, seg3), 0);
+  EXPECT_EQ(intersects(&seg1_lv, &seg2), 0);
+  EXPECT_EQ(intersects(&seg2_lv, &seg3), 0);
 
-  EXPECT_EQ(intersects(seg1.item.line, seg3), 1);
+  EXPECT_EQ(intersects(&seg1_lv, &seg3), 1);
   EXPECT_PRED2(eq, intersect_point(0).p, Vec(5.73205081, 5.26794919));
 
-  EXPECT_EQ(intersects(seg2.item.line, seg4), 2);
+  EXPECT_EQ(intersects(&seg2_lv, &seg4), 2);
   EXPECT_PRED2(eq, intersect_point(0).p, Vec(2.375, 3.64951905));
   EXPECT_PRED2(eq, intersect_point(1).p, Vec(3.125, 4.94855716));
 
-  EXPECT_EQ(intersects(seg4.item.line, seg2), 2);
+  EXPECT_EQ(intersects(&seg4_lv, &seg2), 2);
   EXPECT_PRED2(eq, intersect_point(0).p, Vec(2.375, 3.64951905));
   EXPECT_PRED2(eq, intersect_point(1).p, Vec(3.125, 4.94855716));
 }
@@ -226,31 +243,31 @@ TEST_F (TestIntersections, Lines) {
 // Tests of circle intersections
 TEST_F (TestIntersections, Circles) {
 
-  EXPECT_EQ(intersects(sensor, circ), 2);
+  EXPECT_EQ(intersects(&sensor, &circ), 2);
   EXPECT_PRED2(eq, intersect_point(0).p, Vec(4.70910866, 5.03872401));
   EXPECT_PRED2(eq, intersect_point(1).p, Vec(2.95499295, 2.00050647));
 
-  EXPECT_EQ(intersects(seg6.item.line, circ), 1);
+  EXPECT_EQ(intersects(&seg6_lv, &circ), 1);
   EXPECT_PRED2(eq, intersect_point(0).p, Vec(2.95499295, 2.00050647));
 
-  EXPECT_EQ(intersects(seg0.item.line, bigcirc), 1);
+  EXPECT_EQ(intersects(&seg0_lv, &bigcirc), 1);
   EXPECT_PRED2(eq, intersect_point(0).p, Vec(7.56155282, 3.43844718));
 
-  EXPECT_EQ(intersects(seg4.item.line, bigcirc), 0);
+  EXPECT_EQ(intersects(&seg4_lv, &bigcirc), 0);
 }
 
 // Tests of rectangle intersections
 TEST_F (TestIntersections, Rectangle) {
 
-  EXPECT_EQ(intersects(sensor, rect1), 2);
+  EXPECT_EQ(intersects(&sensor, &rect1), 2);
   EXPECT_PRED2(eq, intersect_point(0).p, Vec(6.5, 8.1406388));
   EXPECT_PRED2(eq, intersect_point(1).p, Vec(5.84145188, 7.0));
 
-  EXPECT_EQ(intersects(sensor, rect2), 2);
+  EXPECT_EQ(intersects(&sensor, &rect2), 2);
   EXPECT_PRED2(eq, intersect_point(0).p, Vec(6.19807621, 7.61769146));
   EXPECT_PRED2(eq, intersect_point(1).p, Vec(5.19807621, 5.88564065));
 
-  EXPECT_EQ(intersects(seg7.item.line, rect1), 2);
+  EXPECT_EQ(intersects(&seg7_lv, &rect1), 2);
   EXPECT_PRED2(eq, intersect_point(0).p, Vec(2.5, 8.0));
   EXPECT_PRED2(eq, intersect_point(1).p, Vec(6.5, 8.0));
 }
@@ -498,9 +515,9 @@ TEST_F (TestIntersections, Distance) {
 
   uint8_t n;
 
-  n = intersects(sensor, circ);
+  n = intersects(&sensor, &circ);
   EXPECT_FLOAT_EQ(distance(Vec(sensor.p), n), 2.3099859);
-  n = intersects(sensor, rect2);
+  n = intersects(&sensor, &rect2);
   EXPECT_FLOAT_EQ(distance(Vec(sensor.p), n), 6.79615243);
 }
 

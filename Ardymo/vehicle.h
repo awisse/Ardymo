@@ -23,6 +23,7 @@ enum check_t : int16_t {
 void initVehicle(void);
 void getVehicleRect(rectangle_t* rect);
 void setVehicleRect(rectangle_t* rect);
+Vec getVehiclePos(void);
 void turnRight(void);
 void turnLeft(void);
 void accelerateForward(void);

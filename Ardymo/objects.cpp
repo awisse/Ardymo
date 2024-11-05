@@ -12,36 +12,36 @@ Vec Vec::operator+=(const Vec& p) {
   return *this;
 }
 
-Vec Vec::operator+(const Vec& p) {
+Vec Vec::operator+(const Vec& p) const {
   Vec newpt = p;
   newpt += *this;
   return newpt;
 }
 
-Vec Vec::operator+(const point p) {
+Vec Vec::operator+(const point p) const {
   Vec newpt = Vec(p);
   newpt += *this;
   return newpt;
 }
 
-Vec Vec::operator-(void) {
+Vec Vec::operator-(void) const {
   Vec newpt = Vec(-x, -y);
   return newpt;
 }
 
-Vec Vec::operator-(const Vec& p) {
+Vec Vec::operator-(const Vec& p) const {
   Vec newpt = *this + (-Vec(p));
   return newpt;
 }
 
-Vec Vec::operator*(float a) {
+Vec Vec::operator*(float a) const {
   Vec newpt = *this;
   newpt.x *= a;
   newpt.y *= a;
   return newpt;
 }
 
-Vec Vec::operator/(float a) {
+Vec Vec::operator/(float a) const {
   // No room for checking zero division. Live with infinity!
   Vec newpt = *this;
   newpt.x /= a;
@@ -49,11 +49,11 @@ Vec Vec::operator/(float a) {
   return newpt;
 }
 
-float Vec::operator*(const Vec& p) {
+float Vec::operator*(const Vec& p) const {
   return p.x * x + p.y * y;
 }
 
-bool Vec::operator==(const Vec& p) {
+bool Vec::operator==(const Vec& p) const {
   return (x == p.x) && (y == p.y);
 
 }
@@ -75,18 +75,18 @@ float Vec::div(const Vec& p) const {
   return (fabsf(x)>fabsf(y)) ? x / p.x : y / p.y;
 }
 
-float Vec::sq(void) const {
+float Vec::square(void) const {
   return x*x + y*y;
 }
 
 float Vec::length(void) const {
-  return sqrtf(this->sq());
+  return sqrtf(this->square());
 }
 
 float Vec::distance(const Vec& p) const {
   /* return sqrtf((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y)); */
   Vec p0 = *this; // needed for const
-  return sqrtf((p0 - p).sq());
+  return sqrtf((p0 - p).square());
 }
 
 Vec Vec::normalized(void) const {

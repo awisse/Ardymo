@@ -1,14 +1,13 @@
-/**
+/** vim: ft=cpp
  * @file Font5x7.cpp
  */
 #pragma once
 #include <stdint.h>
 #define NUMGLYPHS 256
-#define FONT_WIDTH 5
-#define FONT_HEIGHT 7
-
-
-
+constexpr uint8_t kFontWidth {5};
+constexpr uint8_t kFontSpacing {1};
+constexpr uint8_t kFontHeight {8};
+constexpr uint8_t kLineSpacing {0};
 
 // ASCII based 5x7 font
 // IBM PC code page 437
@@ -270,10 +269,3 @@ const uint8_t font5x7[] = {
   0x00, 0x3C, 0x3C, 0x3C, 0x3C,
   0x00, 0x00, 0x00, 0x00, 0x00,
 };
-
-
-
-
-
-
-

@@ -8,39 +8,36 @@
 #include "game.h"
 #include "defines.h"
 #include "platform.h"
-#ifdef USE_I2C
 #include <Wire.h>
-#endif // USE_I2C
 
 Arduboy2 arduboy;
 
 void setup() {
   // put your setup code here, to run once:
 
-  arduboy.begin();
+  // Reduced boot sequence
+  /* arduboy.begin(); */
+  arduboy.boot();
+  arduboy.flashlight();
+  arduboy.waitNoButtons();
+
 #ifdef DEBUG_
   Serial.begin(9600);
 #endif
 
-#ifdef USE_I2C
   // Ardymo is the master
   power_twi_enable();
   Wire.begin();
-#endif // USE_I2C
-
-  // Wait for button to be pressed before beginning
-  while (!arduboy.pressed(A_BUTTON)) {
-    arduboy.idle();
-  }
+  Wire.setWireTimeout(5000, true);
 
   arduboy.setFrameDuration(kFrameDuration);
-  InitGame();
+  initGame();
 }
 
 void loop() {
 
   if (arduboy.nextFrame()) {
-    StepGame();
+    stepGame();
   }
 }
 
@@ -51,7 +48,6 @@ uint8_t* Platform::getBuffer() {
   return arduboy.getBuffer();
 }
 
-#ifdef USE_I2C
 // I2C Communication
 uint8_t Platform::master_receive(uint8_t* bytes, uint8_t n) {
   // Receive bytes from slave after request
@@ -80,7 +76,6 @@ uint8_t Platform::master_send(uint8_t* bytes, uint8_t n, uint8_t address) {
   error = Wire.endTransmission();
   return error;
 }
-#endif // USE_I2C
 
 /******* Buttons **********************************************/
 uint8_t Platform::buttonsState() {
@@ -303,6 +298,10 @@ size_t Platform::println(double x, uint8_t decimals)
 }
 
 #if defined (DEBUG_) || defined (TIMER_)
+void Platform::DebugPrint(uint8_t value, uint8_t base) {
+  Serial.print(value, base);
+}
+
 void Platform::DebugPrint(int16_t value, uint8_t base) {
   Serial.print(value, base);
 }
@@ -325,6 +324,10 @@ void Platform::DebugPrint(double value, uint8_t decimals) {
 
 void Platform::DebugPrint(const char* text) {
   Serial.print((char*)text);
+}
+
+void Platform::DebugPrintln(uint8_t value, uint8_t base) {
+  Serial.println(value, base);
 }
 
 void Platform::DebugPrintln(int16_t value, uint8_t base) {

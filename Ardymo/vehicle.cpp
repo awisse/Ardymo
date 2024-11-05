@@ -32,7 +32,7 @@ struct closest_t {
 };
 
 // Helper functions
-closest_t GetDistances(LineVector sensor, float* distances);
+closest_t GetDistances(const LineVector* sensor, float* distances);
 
 void initVehicle() {
   vehicle = Vehicle(kVehicle);
@@ -45,6 +45,10 @@ void getVehicleRect(rectangle_t* rect) {
 
 void setVehicleRect(rectangle_t* rect) {
   vehicle.set_rectangle(rect);
+}
+
+Vec getVehiclePos(void) {
+  return vehicle.p() + vehicle.v() + vehicle.front() / 2.0;
 }
 
 void turnRight(void) {
@@ -87,7 +91,7 @@ void checkSensors(SensorValues* sensors, check_t which) {
     sensors->heading = vehicle.v().normalized().as_point();
 
     // Position: Center of front
-    sensors->position = vehicle.p() + vehicle.v() + vehicle.front() / 2.0;
+    sensors->position = getVehiclePos();
     sensors->alpha = vehicle.rho();
     sensors->speed = vehicle.get_speed();
 
@@ -105,7 +109,7 @@ void checkSensors(SensorValues* sensors, check_t which) {
     // ======================== Front left-right ============================
     sensor = LineVector(vehicle.p() + vehicle.v(), -vehicle.front(),
         vehicle.width(), 0);
-    closest = GetDistances(sensor, distances);
+    closest = GetDistances(&sensor, distances);
     // Collision - Front
     if (closest.type == COLLISION) {
         sensors->collision = FRONT;
@@ -122,7 +126,7 @@ void checkSensors(SensorValues* sensors, check_t which) {
     // ======================== Rear left-right =============================
     sensor = LineVector(vehicle.p(), -vehicle.front(),
         vehicle.width(), 0);
-    closest = GetDistances(sensor, distances);
+    closest = GetDistances(&sensor, distances);
     // Collision - Rear
     if (closest.type == COLLISION) {
       sensors->collision = REAR;
@@ -145,7 +149,7 @@ void checkSensors(SensorValues* sensors, check_t which) {
     // ======================== Left forward-rearward =======================
     sensor = LineVector(vehicle.p() + vehicle.v(), vehicle.v(),
         vehicle.length(), 0);
-    closest = GetDistances(sensor, distances);
+    closest = GetDistances(&sensor, distances);
     // Collision - Left
     if (closest.type == COLLISION) {
         sensors->collision = LEFT;
@@ -162,7 +166,7 @@ void checkSensors(SensorValues* sensors, check_t which) {
     // ======================== Right forward-rearward ======================
     sensor = LineVector(vehicle.p() + vehicle.front(), -vehicle.v(),
         vehicle.length(), 0);
-    closest =  GetDistances(sensor, distances);
+    closest =  GetDistances(&sensor, distances);
     // Collision - Right
     if (closest.type == COLLISION) {
       sensors->collision = RIGHT;
@@ -222,7 +226,7 @@ void Vehicle::set_rectangle(const rectangle_t* r) {
   rect = RectVector(*r);
 }
 
-closest_t GetDistances(LineVector sensor, float* distances) {
+closest_t GetDistances(const LineVector* sensor, float* distances) {
   // Compute distance to all obstacles.
   // Return the index of the closest
   obstacle_t obst;
@@ -239,10 +243,10 @@ closest_t GetDistances(LineVector sensor, float* distances) {
     // Get the next obstacle from shapes.h
     get_obstacle(&obst, i);
     // Find intersections of the sensor ray with the obstacle
-    intersection_count = intersects(sensor, obst);
+    intersection_count = intersects(sensor, &obst);
     for (j=0; j<intersection_count; j++) {
       ix = intersect_point(j);
-      d = distance(sensor.p, j);
+      d = distance(sensor->p, j);
       closest.type = INTERSECTION;
       if ((ix.nu >= 0) && (d < distances[POSITIVE])) {
         distances[POSITIVE] = d;

@@ -1,7 +1,6 @@
 # Description
 
-This is the main game. It compiles by default with I2C communication enabled
-(`#define USE_I2C` in *defines.h*).
+This is the main game. It compiles by default with I2C communication enabled.
 
 If the *Map* I2C client is not available, the display will show *NACK 
 (Address)* for five seconds and after that the game can be played without the 
@@ -70,12 +69,10 @@ side by 2 degrees when the LEFT or RIGHT buttons are pressed respectively.
 
 | Key    | Action                                  |
 |--------|-----------------------------------------|
-| UP     | Accelerate forward                      |
-| DOWN   | Accelerate rearward                     |
-| LEFT   | Turn left                               |
-| RIGHT  | Turn right                              |
-| Long A | Restart game. Retry I2C communication   |
-
-A long A press restarts the game. I2C communication is attempted again. is can also be used to try to reestablish
-I2C communication.
+| UP     | Accelerate forward, next menu item      |
+| DOWN   | Accelerate rearward, previous menu item |
+| LEFT   | Turn left, previous option in menu item |
+| RIGHT  | Turn right, next option in menu item    |
+| B      | Open/Close Menu                         |
+| A      | Menu select                             |
 

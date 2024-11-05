@@ -12,7 +12,6 @@ static uint8_t n_bytes_to_send {};
 static bool received {false}; // True if new data received from master
 static bool available {false};// True if new sensor data available to send
 
-#ifdef USE_I2C
 // Passed to Wire.onReceive()
 void I2C_SlaveReceive(int16_t n) {
   uint8_t r_bytes;
@@ -59,5 +58,4 @@ void send_bytes(uint8_t* src, uint8_t n) {
 bool Received(void) {
   return received;
 }
-#endif
 // vim: ft=cpp
