@@ -5,7 +5,7 @@
 #include "src/objects.h"
 
 // Redraw Viewport. The vehicle position might have changed
-void draw(rectangle_t* vehicle);
+void draw(vehicle_t* vehicle);
 // Draw position in bottom left corner.
 void drawPosition(point* vehicle_position);
 // Draw the menu

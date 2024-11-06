@@ -19,18 +19,18 @@ void drawLine(const line_t* line);
 void drawCircle(const circle_t* circle);
 void drawRectangle(const rectangle_t* rect);
 
-void draw(rectangle_t* vehicle) {
+void draw(vehicle_t* vehicle) {
   // Draw the viewport. The vehicle is treated as the argument.
   obstacle_t obst;
   uint8_t i;
-  constexpr uint16_t n = sizeof(obstacles) / sizeof(obstacle_t);
+  uint16_t n = obst_count[vehicle->level];
 
   // Start with the vehicle
-  drawRectangle(vehicle);
+  drawRectangle(&vehicle->rect);
 
   // All obstacles
   for (i=0; i<n; i++) {
-    get_obstacle(&obst, i);
+    get_obstacle(&obst, vehicle->level, i);
     switch (obst.type) {
       case LINE:
         drawLine(&obst.item.line);

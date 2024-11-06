@@ -10,6 +10,5 @@ struct Target {
   float r;
 };
 
-Target InitTarget(void);
-
+Target InitTarget(uint8_t target);
 // vim: ft=cpp

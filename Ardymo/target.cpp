@@ -3,9 +3,9 @@
 #include "shapes.h"
 #include "utils.h"
 
-Target InitTarget(void) {
+Target InitTarget(uint8_t level) {
   obstacle_t obst;
 
-  get_obstacle(&obst, 0);
+  get_obstacle(&obst, level, 0);
   return Target(obst);
 }

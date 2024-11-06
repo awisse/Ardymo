@@ -17,6 +17,7 @@
 
 static Vehicle vehicle;
 static Target target;
+static uint8_t level;
 
 // Direction of vector v of sensor to check for distance.
 enum direction_t : int16_t {
@@ -34,9 +35,9 @@ struct closest_t {
 // Helper functions
 closest_t GetDistances(const LineVector* sensor, float* distances);
 
-void initVehicle() {
+void initVehicle(uint8_t l) {
   vehicle = Vehicle(kVehicle);
-  target = InitTarget();
+  target = InitTarget(l);
 }
 
 void getVehicleRect(rectangle_t* rect) {
@@ -69,6 +70,10 @@ void accelerateBackward(void) {
 
 void moveVehicle(void) {
   vehicle.move();
+}
+
+void setLevel(uint8_t l) {
+  level = l;
 }
 
 void checkSensors(SensorValues* sensors, check_t which) {
@@ -232,7 +237,7 @@ closest_t GetDistances(const LineVector* sensor, float* distances) {
   obstacle_t obst;
   intersection_t ix; // Point of intersection
   float d {};
-  size_t obstacle_count = sizeof(obstacles) / sizeof(obstacle_t);
+  uint8_t obstacle_count = obst_count[level];
   int16_t i, j; // Loop variables
   uint8_t intersection_count {};
   closest_t closest {0, 0, FREE};
@@ -241,7 +246,7 @@ closest_t GetDistances(const LineVector* sensor, float* distances) {
   distances[POSITIVE] = distances[NEGATIVE] = INFINITY;
   for (i=0; i<obstacle_count; i++) {
     // Get the next obstacle from shapes.h
-    get_obstacle(&obst, i);
+    get_obstacle(&obst, level, i);
     // Find intersections of the sensor ray with the obstacle
     intersection_count = intersects(sensor, &obst);
     for (j=0; j<intersection_count; j++) {

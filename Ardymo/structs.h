@@ -115,6 +115,11 @@ struct RectVector { // A rectangle in vector format. For storage of
   rectangle_t as_rectangle(void) {return {p.as_point(), l, rho, w};}
 };
 
+// Vehicle data to transmit from Ardymo to Map
+struct vehicle_t {
+  rectangle_t rect;
+  uint8_t level;
+};
 
 // Distances to obstacles and target
 struct Distances {

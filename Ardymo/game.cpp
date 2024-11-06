@@ -55,7 +55,7 @@ bool getSharedData(SharedData* shared);
 void useSharedData(SensorValues* sensors, SharedData* shared);
 
 void backToSquare1(void) {
-  initVehicle();
+  initVehicle(level);
   drawBackground();
 }
 
@@ -270,11 +270,12 @@ void computeGameState(SensorValues* sensors) {
 
 void sendI2CVehicle() {
   uint8_t error {}; // For I2C communication
-  rectangle_t vehicle_rectangle;
+  vehicle_t vehicle;
   if (bUseI2C) {
-    getVehicleRect(&vehicle_rectangle);
-    error = Platform::master_send((uint8_t*)&vehicle_rectangle,
-      sizeof(rectangle_t), I2C_SLAVE_ADDR);
+    getVehicleRect(&vehicle.rect);
+    vehicle.level = level;
+    error = Platform::master_send((uint8_t*)&vehicle,
+      sizeof(vehicle_t), I2C_SLAVE_ADDR);
     if (error) {
       I2C_Error(error);
       bUseI2C = false;

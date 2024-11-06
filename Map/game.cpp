@@ -17,17 +17,18 @@ Helper functions to unclutter main .ino file
 #endif // DEBUG_
 
 // State variable
-State state;   // running, gamemenu
+static State state;   // running, gamemenu
 
 // State functions
 void showRunning();
 
 // Local to game.cpp
 uint32_t start; // Milliseconds at start of game
-ShowCoords show_viewport_coordinates;
-bool redraw;
-bool bFollowVehicle;
-uint8_t helpPage {0};
+static ShowCoords show_viewport_coordinates;
+static bool redraw;
+static bool bFollowVehicle;
+static uint8_t level {4};
+static uint8_t helpPage {0};
 
 // Functions
 void ReCenter();
@@ -38,7 +39,7 @@ void initGame() {
   state = startup;
   Platform::clear();
   initViewport();
-  initVehicle();
+  initVehicle(level);
   ReCenter();
   state = running;
   redraw = false;
@@ -74,18 +75,22 @@ void stepGame() {
 
 void showRunning() {
 
-  rectangle_t vehicle;
+  vehicle_t vehicle;
   point viewportPos;
   SensorValues sensors;
 
   if (Received()) {
     // Receive vehicle position from Ardymo if available
-    receive_bytes((uint8_t*)&vehicle, sizeof(rectangle_t));
-    setVehicleRect(&vehicle);
+    receive_bytes((uint8_t*)&vehicle, sizeof(vehicle_t));
+    setVehicleRect(&vehicle.rect);
+    setLevel(vehicle.level);
+    level = vehicle.level;
     redraw = true;
+  } else {
+    getVehicleRect(&vehicle.rect);
+    vehicle.level = level;
   }
 
-  getVehicleRect(&vehicle);
   if (Changed() || redraw) {
     // Draw the map
     Platform::clear();
@@ -96,7 +101,7 @@ void showRunning() {
 
     // Draw the vehicle coordinates if enabled
     if (show_viewport_coordinates == VEHICLE_COORDS) {
-      drawPosition(&vehicle.p);
+      drawPosition(&vehicle.rect.p);
     }
     else if (show_viewport_coordinates == VIEW_COORDS) {
       getViewportPosition(&viewportPos);

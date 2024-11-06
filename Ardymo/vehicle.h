@@ -20,7 +20,7 @@ enum check_t : int16_t {
   BOTH              // Both directions checked by Ardymo if Map not available
 };
 
-void initVehicle(void);
+void initVehicle(uint8_t level);
 void getVehicleRect(rectangle_t* rect);
 void setVehicleRect(rectangle_t* rect);
 Vec getVehiclePos(void);
@@ -30,6 +30,7 @@ void accelerateForward(void);
 void accelerateBackward(void);
 void moveVehicle(void);
 
+void setLevel(uint8_t level);
 void checkSensors(SensorValues* sensors, check_t which);
 
 class Vehicle {

@@ -17,7 +17,12 @@ Arduboy2 arduboy;
 void setup() {
   // put your setup code here, to run once:
 
-  arduboy.begin();
+  // Reduced boot sequence
+  /* arduboy.begin(); */
+  arduboy.boot();
+  arduboy.flashlight();
+  arduboy.waitNoButtons();
+
 #ifdef DEBUG_
   Serial.begin(9600);
 #endif
