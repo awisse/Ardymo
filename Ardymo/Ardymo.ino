@@ -246,6 +246,16 @@ size_t Platform::print(double x, uint8_t decimals)
   arduboy.print(x, decimals);
 }
 
+// PROGMEM prints
+size_t Platform::print_P(const char str[]) {
+  uint8_t pos {0};
+  char c;
+
+  while (c=(char)pgm_read_byte(&str[pos++])) {
+    arduboy.print(c);
+  }
+}
+
 // *** println ***
 
 size_t Platform::println(void) {

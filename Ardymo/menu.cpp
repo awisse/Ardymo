@@ -27,15 +27,9 @@ static uint8_t nMenuItems;
 static State menuShown; // Menu currenty displayed
 const char* displayedItems[5];
 
-static const char* aLevelItems[kLevels] = {"Train", "Easy", "Medium",
-  "Hard", "Ultra"};
-static const char* aMenuItems[4] = {"Restart", "Help", "Play", "Continue"};
-
-static const char* aUseI2CItems[2] = {"I2C off", "I2C on"};
-
 void refreshMenu() {
-  displayedItems[0] = aLevelItems[level];
-  displayedItems[1] = aUseI2CItems[bUseI2C];
+  displayedItems[0] = pgm_read_ptr(&aLevelItems[level]);
+  displayedItems[1] = pgm_read_ptr(&aUseI2CItems[bUseI2C]);
   drawMenu(onItem, nMenuItems, displayedItems);
 }
 

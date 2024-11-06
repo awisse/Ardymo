@@ -208,7 +208,7 @@ void drawMessage(const char* msg) {
 }
 
 // Draw menu in the middle
-void drawMenu(uint8_t selected, uint8_t numItems, const char* item[]) {
+void drawMenu(uint8_t selected, uint8_t numItems, const char* items[]) {
   // level is the top item in the menu.
   // For now, there is just one more item
   uint8_t i;
@@ -218,7 +218,7 @@ void drawMenu(uint8_t selected, uint8_t numItems, const char* item[]) {
   // Font height is 8. Rectangles must be 10.
   for (i=0; i<numItems; i++) {
     Platform::setCursor(kMenuLeft + 2, kMenuTop + 2 + i * 10);
-    Platform::print(item[i]);
+    Platform::print_P(items[i]);
   }
   // Rectangle around selected item
   Platform::drawRect(kMenuLeft, kMenuTop + 10 * selected, kMenuWidth, 11);
