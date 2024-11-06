@@ -125,8 +125,7 @@ void drawHelp(uint8_t page) {
   Platform::setCursor((kScreenWidth - titleLength) / 2, 0);
 
   while (line < 8) { // 8 lines on screen
-    Platform::print_P((char*)&helpText[charPos]);
-    while (pgm_read_byte(&helpText[charPos++])); // Skip to next 0
+    charPos += Platform::print_P((char*)&helpText[charPos]);
     line++;
     Platform::setCursor(16, line * Platform::getLineHeight());
   }

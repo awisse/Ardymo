@@ -44,6 +44,9 @@ typedef int int_;
 // Number of game levels
 constexpr uint8_t kLevels {5};
 
+// Number of help pages
+constexpr uint8_t kHelpPages {3};
+
 // Milliseconds / Frame
 const uint16_t kFrameDuration {100};
 

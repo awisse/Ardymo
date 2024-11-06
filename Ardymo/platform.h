@@ -81,7 +81,7 @@ public:
   // Float and double is the same on Arduboy:
   static size_t print(double x, uint8_t decimals=2);
   // Print string from PROGMEN
-  static size_t print_P(const char str[]);
+  static uint8_t print_P(const char str[]);
 
   static size_t println(void);
   static size_t println(const char str[]);

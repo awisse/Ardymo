@@ -41,5 +41,5 @@ void drawMessage(const char* msg);
 void drawMenu(uint8_t selected, uint8_t numItems, const char* items[]);
 
 // Draw Help
-void drawHelp(void);
+void drawHelp(uint8_t page);
 // vim: tabstop=2:softtabstop=2:shiftwidth=2:expandtab:filetype=cpp

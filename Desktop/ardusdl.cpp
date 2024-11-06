@@ -409,8 +409,11 @@ size_t Platform::print(double x, uint8_t decimals) {
   return printFloat(float(x), decimals);
 }
 
-size_t Platform::print_P(const char s[]) {
-  return print(s);
+uint8_t Platform::print_P(const char s[]) {
+  uint8_t pos {0};
+  print(s);
+  while (s[pos++]);
+  return pos;
 }
 
 size_t Platform::println(void) {
@@ -483,6 +486,11 @@ void Platform::DebugPrint(int16_t value, uint8_t base) {
   std::cout.flush();
 }
 
+void Platform::DebugPrint(uint8_t value, uint8_t base) {
+  std::cout << value;
+  std::cout.flush();
+}
+
 void Platform::DebugPrint(uint16_t value, uint8_t base) {
 
   std::cout << value;
@@ -513,6 +521,11 @@ void Platform::DebugPrint(const char* text) {
   std::cout.flush();
 }
 
+void Platform::DebugPrintln(uint8_t value, uint8_t base) {
+  std::cout << value << '\n';
+  std::cout.flush();
+}
+
 void Platform::DebugPrintln(int16_t value, uint8_t base) {
 
   std::cout << value << '\n';
@@ -520,7 +533,6 @@ void Platform::DebugPrintln(int16_t value, uint8_t base) {
 }
 
 void Platform::DebugPrintln(uint16_t value, uint8_t base) {
-
   std::cout << value << '\n';
   std::cout.flush();
 }

@@ -5,6 +5,7 @@
 #include "draw.h"
 #include "platform.h"
 #include "sprites.h"
+#include "help.h"
 
 // Centre of screen
 static Vec centre = {(float)((kScreenWidth>>1)-1),
@@ -225,10 +226,21 @@ void drawMenu(uint8_t selected, uint8_t numItems, const char* items[]) {
 }
 
 // Draw Help Screen.
-void drawHelp() {
+void drawHelp(uint8_t page) {
+  uint8_t ix {0};  // Position in page string
+  uint8_t line {0}; // Current line
+  uint8_t c {0}; //
+
+  // Pointer to page to be displayed
+  char* pageStr = (char*)pgm_read_ptr(&helpPages[page]);
+
   Platform::clear();
-  Platform::setCursor(0, 0);
-  Platform::print("Help!!!");
+  while (c != (uint8_t)0xff) {
+    Platform::setCursor(0, line++ * 8);
+    ix += Platform::print_P(&pageStr[ix]);
+    c =(uint8_t)pgm_read_byte(&pageStr[ix]);
+  }
+
 }
 
 // For end of game screens.

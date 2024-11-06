@@ -26,6 +26,9 @@ State getState(); // Get state from top of state stack
 // Game Level
 static uint8_t level;
 
+// Help Page
+static uint8_t nHelpPage;
+
 static uint32_t gameStart; // Milliseconds at start of game
 static bool bUseI2C;
 
@@ -99,6 +102,10 @@ void stepGame() {
     case success:
       showSuccess();
       break;
+
+    case help:
+      drawHelp(nHelpPage);
+      break;
   }
 
   Platform::display();
@@ -146,7 +153,7 @@ void setI2C(bool onOff) {
 }
 
 void showHelp() {
-  drawHelp();
+  drawHelp(nHelpPage);
   pushState(help);
 }
 
@@ -160,6 +167,15 @@ void exitHelp() {
       drawBackground();
       showRunning();
   }
+}
+
+
+void nextHelp() {
+  nHelpPage = (nHelpPage + 1) % kHelpPages;
+}
+
+void previousHelp() {
+  nHelpPage = nHelpPage > 0 ? nHelpPage - 1 : kHelpPages - 1;
 }
 
 void pushState(State state) {

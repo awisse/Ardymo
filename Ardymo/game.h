@@ -12,5 +12,7 @@ bool getI2C();
 void setI2C(bool onOff);
 void showHelp();
 void exitHelp();
+void nextHelp();
+void previousHelp();
 
 // vim: tabstop=2:softtabstop=2:shiftwidth=2:expandtab:filetype=cpp

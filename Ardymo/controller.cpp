@@ -118,7 +118,6 @@ void dispatchShortB(State gameState) {
       break;
     case running:
       enterMenu(gamemenu);
-
       break;
     case help:
       exitHelp();
@@ -137,6 +136,9 @@ void dispatchLeft(State gameState) {
     case startupmenu:
       menuLeft();
       break;
+    case help:
+      previousHelp();
+      break;
   }
 }
 
@@ -148,6 +150,9 @@ void dispatchRight(State gameState) {
     case gamemenu:
     case startupmenu:
       menuRight();
+      break;
+    case help:
+      nextHelp();
       break;
   }
 }
