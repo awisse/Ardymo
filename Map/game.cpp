@@ -83,7 +83,7 @@ void showRunning() {
     // Receive vehicle position from Ardymo if available
     receive_bytes((uint8_t*)&vehicle, sizeof(vehicle_t));
     setVehicleRect(&vehicle.rect);
-    setLevel(vehicle.level);
+    setObstLevel(vehicle.level);
     level = vehicle.level;
     redraw = true;
   } else {

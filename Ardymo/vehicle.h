@@ -30,7 +30,7 @@ void accelerateForward(void);
 void accelerateBackward(void);
 void moveVehicle(void);
 
-void setLevel(uint8_t level);
+void setObstLevel(uint8_t level);
 void checkSensors(SensorValues* sensors, check_t which);
 
 class Vehicle {

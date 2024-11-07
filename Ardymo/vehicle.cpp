@@ -72,7 +72,7 @@ void moveVehicle(void) {
   vehicle.move();
 }
 
-void setLevel(uint8_t l) {
+void setObstLevel(uint8_t l) {
   level = l;
 }
 

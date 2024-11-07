@@ -142,6 +142,7 @@ uint8_t getLevel(void) {
 
 void setLevel(uint8_t newLevel) {
   level = newLevel;
+  setObstLevel(level);
 }
 
 bool getI2C() {

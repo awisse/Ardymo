@@ -23,6 +23,9 @@ ardymo : $(ardymoobjects)
 map : $(mapobjects)
 	$(CXX) -o $@ $(^F) $(LDLIBS)
 
+ardusdl:
+	@echo "Target \"ardusdl\" doesn\"t exist. Use \"ardymo\" or \"map\"".
+
 .PHONY: clean
 clean:
 	$(RM) map ardymo

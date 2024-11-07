@@ -17,7 +17,7 @@ constexpr rectangle_t kVehicle = {
 // (https://www.h-schmidt.net/FloatConverter/IEEE754.html)
 
 // Training: One obstacle, only borders and target. Learn to navigate
-// and read sensors.
+// around an obstacle and read sensors.
 const obstacle_t PROGMEM _level0[] = {
   // Target: Must be element zero of the obstacles array
   {CIRCLE, 202.5, 202.5, 5.0},
@@ -38,7 +38,14 @@ const obstacle_t PROGMEM _level1[] = {
   {BORDER, 0.0, 0.0, kBoardHeight, 0, 0x01},  // West
   {BORDER, 0.0, kBoardHeight, kBoardWidth, -90, 0x01},  // South
   {BORDER, kBoardWidth, 0.0, kBoardHeight, 0, 0x01},  // East
-  {CIRCLE, 1000.0, 500.0, 400.0},
+  {CIRCLE, 256.0, 512.0, 128.0},
+  {CIRCLE, 256.0, 512.0 + 256.0, 64.0},
+  {CIRCLE, 764.0, 384.0, 128.0},
+  {CIRCLE, 764.0, 764.0, 128.0},
+  {CIRCLE, 764.0 + 512.0, 512.0, 128.0},
+  {CIRCLE, 764.0 + 512.0, 512, 128.0},
+  {CIRCLE, 764.0 + 512.0, 2 * 256.0, 128.0},
+  {CIRCLE, 3 * 512.0, 3 * 256.0, 128.0},
 };
 
 // Medium: More complex ways
@@ -52,18 +59,16 @@ const obstacle_t PROGMEM _level2[] = {
   {BORDER, kBoardWidth, 0.0, kBoardHeight, 0, 0x01},  // East
   // Obstacles
   {CIRCLE, 410.0, 220.0, 150.0}, // 1
-  {RECTANGLE, 594.0, 586.0, 300.0, 30, 0x43160000}, // 2 (w=150.0)
-  {LINE, 860, 75, 400, 50, 0x01},  // 3
-  {LINE, 590, 350, 300, -30, 0x01},  // 4
-  {LINE, 865, 550, 300, 30, 0x01},  // 5
-  {LINE, 890, 730, 300, -30, 0x01},  // 6
-  {LINE, 890, 730, 300, -30, 0x01},  // 6
-  {LINE, 965, 504, 300, 0, 0x01},  // 7
-  {LINE, 965, 504, 720, 225, 0x01},  // 8
-  {LINE, 997, 557, 140, -4, 0x01},  // 9
-  {LINE, 997, 557, 140, 245, 0x01},  // 10
-  {RECTANGLE, 1040.0, 830.0, 100.0, -60, 0x42960000}, // 11 (w=75.0)
-  {CIRCLE, 1120.0, 630.0, 100.0}, // 12
+  {CIRCLE, 750.0, 220.0, 150.0}, // 2
+  {CIRCLE, 1110.0, 220.0, 150.0}, // 3
+  {CIRCLE, 580.0, 500.0, 150.0}, // 4
+  {CIRCLE, 930.0, 500.0, 150.0}, // 5
+  {CIRCLE, 350.0, 790.0, 150.0}, // 6
+  {CIRCLE, 750.0, 790.0, 150.0}, // 7
+  {RECTANGLE, 350.0, 400.0, 150.0, 0, 0x43af0000}, // 8 (w=350.0)
+  {RECTANGLE, 820.0, 5.0, 150.0, 225, 0x43160000}, // 9 (w=150.0)
+  {RECTANGLE, 1100.0, 1014.0, 150.0, 135, 0x447a0000}, // 10 (w=1000.0)
+  {CIRCLE, 920.0, 970.0, 50.0}, // 11
 };
 
 // Hard: Dead ends included

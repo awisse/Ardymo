@@ -33,11 +33,6 @@ void setup() {
   Wire.onReceive(I2C_SlaveReceive);
   Wire.onRequest(I2C_MasterRequest);
 
-  // Wait for button to be pressed before beginning
-  while (!arduboy.pressed(A_BUTTON)) {
-    arduboy.idle();
-  }
-
   arduboy.setFrameDuration(kFrameDuration);
   initGame();
 }
