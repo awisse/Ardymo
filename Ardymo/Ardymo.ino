@@ -68,9 +68,9 @@ uint8_t Platform::master_request(uint8_t address, uint8_t n) {
   return received;
 }
 
-uint8_t Platform::master_send(uint8_t* bytes, uint8_t n, uint8_t address) {
+I2CErrors Platform::master_send(uint8_t* bytes, uint8_t n, uint8_t address) {
   // Send n bytes to slave at address
-  uint8_t error;
+  I2CErrors error;
   Wire.beginTransmission(address);
   Wire.write(bytes, n);
   error = Wire.endTransmission();

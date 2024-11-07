@@ -17,7 +17,7 @@ public:
   static void slave_send(uint8_t* bytes, uint8_t n);
   static uint8_t master_request(uint8_t address, uint8_t n);
   static uint8_t master_receive(uint8_t* bytes, uint8_t n);
-  static uint8_t master_send(uint8_t* bytes, uint8_t n, uint8_t address);
+  static I2CErrors master_send(uint8_t* bytes, uint8_t n, uint8_t address);
 
   // Buttons
   static uint8_t buttonsState();

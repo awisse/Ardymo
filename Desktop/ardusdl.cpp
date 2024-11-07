@@ -70,8 +70,8 @@ uint8_t Platform::master_request(uint8_t address, uint8_t bytes) {
   uint8_t n {};
   return n;
 }
-uint8_t Platform::master_send(uint8_t* bytes, uint8_t n, uint8_t address) {
-  return 0;
+I2CErrors Platform::master_send(uint8_t* bytes, uint8_t n, uint8_t address) {
+  return I2C_TIMEOUT;
 }
 
 // Buttons

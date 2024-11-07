@@ -62,6 +62,8 @@ const int16_t kBoardWidth = 16 * kScreenWidth;
 const int16_t kBoardHeight = 16 * kScreenHeight;
 #endif // DRAWTEST
 
+// Time
+constexpr uint32_t kCollisionPause {5000}; // Milliseconds pause after crash
 
 // Status value rectangle top left, coordinates bottom left
 const int16_t kStatusY {18};
@@ -84,6 +86,14 @@ constexpr float SpeedStep {MaxSpeed / 18.0}; // Acceleration per key press
 constexpr int16_t AngleStep {2}; // Number of degrees for one key press
 // Player succeds if the vehicle is less than `kTargetReached` from target
 constexpr float kTargetReached {5.0};
+
+enum I2CErrors : uint8_t {
+  I2C_NONE = 0,
+  I2C_TOO_LONG = 1,
+  I2C_NACK_ADDR = 2,
+  I2C_NACK_DATA = 3,
+  I2C_TIMEOUT = 5,
+};
 
 #define DEC 10
 #define HEX 16

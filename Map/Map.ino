@@ -84,9 +84,10 @@ uint8_t Platform::master_receive(uint8_t* bytes, uint8_t n) {
   return n;
 }
 
-uint8_t Platform::master_send(uint8_t* bytes, uint8_t n, uint8_t address) {
+I2CErrors Platform::master_send(uint8_t* bytes, uint8_t n, uint8_t address) {
   // Send n bytes to slave at address
-  return 0;
+  // Not used here. Map is slave.
+  return I2C_NONE;
 }
 
 /******* Buttons **********************************************/

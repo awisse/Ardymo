@@ -29,13 +29,17 @@ static uint8_t level;
 // Help Page
 static uint8_t nHelpPage;
 
+// Time
 static uint32_t gameStart; // Milliseconds at start of game
+static uint32_t collisionStart {0}; // Start of collision
+
+// Flags
 static bool bUseI2C;
 
 // State functions
 void showStartup();
 void showRunning();
-void showCrash();
+void handleCrash();
 void showSuccess();
 void showOver();
 
@@ -92,7 +96,7 @@ void stepGame() {
       break;
 
     case crash:
-      showCrash();
+      handleCrash();
       break;
 
     case over:
@@ -218,14 +222,24 @@ void showRunning() {
   sendI2CRequest();
 }
 
-void showCrash(void) {
-  Vec position = getVehiclePos();
-  drawCrash(&position);
-  popState();
-  Platform::display();
-  Platform::delay(5000);
-  // Reposition Vehicle at start.
-  backToSquare1();
+void handleCrash(void) {
+  // Start of collision
+  if (collisionStart == 0) {
+    Vec position = getVehiclePos();
+    drawCrash(&position);
+    collisionStart = Platform::millis();
+    // Reposition Vehicle at start.
+    initVehicle(level);
+    // Send new position to Map to give it time to recompute crash data
+    sendI2CVehicle();
+  } else {
+    // Timeout Ended
+    if (Platform::millis() > collisionStart + kCollisionPause) {
+      popState();
+      drawBackground();
+      collisionStart = 0;
+    }
+  }
 }
 
 void showSuccess() {
@@ -270,7 +284,7 @@ void computeGameState(SensorValues* sensors) {
 }
 
 void sendI2CVehicle() {
-  uint8_t error {}; // For I2C communication
+  I2CErrors error {I2C_NONE}; // For I2C communication
   vehicle_t vehicle;
   if (bUseI2C) {
     getVehicleRect(&vehicle.rect);
