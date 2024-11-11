@@ -6,7 +6,8 @@
  * int is int16_t on Arduboy and int32_t on a Linux computer.
  * Use the corresponding stdint values instead.
  */
-#pragma once
+#ifndef DEFINES_H
+#define DEFINES_H
 
 #define I2C_SLAVE_ADDR 0x10
 /* #define DRAWTEST */
@@ -103,3 +104,5 @@ enum I2CErrors : uint8_t {
 // Colours
 #define COLOUR_WHITE 1
 #define COLOUR_BLACK 0
+
+#endif // DEFINES_H

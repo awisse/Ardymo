@@ -34,7 +34,7 @@ testing::AssertionResult AssertCollision(
   uint8_t intersections = intersects(&sensor, &obst);
   uint8_t n;
   intersection_t ix;
-  
+
   if (intersections == 0) {
     return testing::AssertionFailure() << "No intersection between ray "
       << s_sensor << "[" << i << "] and " << s_obst;
@@ -47,8 +47,8 @@ testing::AssertionResult AssertCollision(
     }
   }
 
-  return testing::AssertionFailure() << 
-    "Intersection but no collision between ray " << s_sensor 
+  return testing::AssertionFailure() <<
+    "Intersection but no collision between ray " << s_sensor
     << "[" << i << "] and obstacle " << s_obst;
 }
 
@@ -62,7 +62,7 @@ testing::AssertionResult AssertNoCollision(
   uint8_t intersections = intersects(&sensor, &obst);
   uint8_t n;
   intersection_t ix;
-  
+
   if (intersections == 0) {
     return testing::AssertionSuccess();
   }
@@ -74,7 +74,7 @@ testing::AssertionResult AssertNoCollision(
         "Collision between ray " << s_sensor << " and " << s_obst;
     }
   }
-    
+
   return testing::AssertionSuccess();
 }
 
@@ -84,7 +84,7 @@ obstacle_t mkObst(geometry type, progmem_t data) {
   obstacle.type = type;
   memcpy(&obstacle.item, &data, sizeof(obstacle.item));
   // Fix alignment problem on x86_64 for line_t
-  memcpy(&obstacle.item.line.seg, &(data.bytes), 
+  memcpy(&obstacle.item.line.seg, &(data.bytes),
       sizeof(obstacle.item.line.seg));
 
   return obstacle;
@@ -154,8 +154,8 @@ class TestIntersections : public testing::Test {
     void SetUp(void) override {
       Vec temp; // Auxiliary variable
                 //
-      segment = LineVector(Vec(1.8, 0.0), 2.0, -30, 1); 
-      sensor = segment; 
+      segment = LineVector(Vec(1.8, 0.0), 2.0, -30, 1);
+      sensor = segment;
       sensor.seg = 0;   // Unbound line
       seg0 = mkObst(LINE, {6.0, 5.0, 2 * M_SQRT2, 225, 0x01});
       seg1 = mkObst(LINE, {5.0, 6.0, 2 * M_SQRT2, 225, 0x01});
@@ -279,19 +279,19 @@ class TestCollisions : public testing::Test {
     void SetUp(void) {
       vehicle = Vehicle({3.0, 6.0, 4.0, 240, 2.0});
       // Define the 8 vehicle sensor rays
-      rays[FORWARD_LEFT] = LineVector(vehicle.p() + vehicle.v(), 
+      rays[FORWARD_LEFT] = LineVector(vehicle.p() + vehicle.v(),
           vehicle.v(), 0);
-      rays[FORWARD_RIGHT] = LineVector(vehicle.p() + vehicle.v() 
+      rays[FORWARD_RIGHT] = LineVector(vehicle.p() + vehicle.v()
           + vehicle.front(), vehicle.v(), 0);
-      rays[RIGHT_FRONT] = LineVector(vehicle.p() + vehicle.v() 
+      rays[RIGHT_FRONT] = LineVector(vehicle.p() + vehicle.v()
           + vehicle.front(), vehicle.front(), 0);
-      rays[RIGHT_REAR] = LineVector(vehicle.p() + vehicle.front(), 
+      rays[RIGHT_REAR] = LineVector(vehicle.p() + vehicle.front(),
           vehicle.front(), 0);
-      rays[REARWARD_RIGHT] = LineVector(vehicle.p() + vehicle.front(), 
+      rays[REARWARD_RIGHT] = LineVector(vehicle.p() + vehicle.front(),
           -vehicle.v(), 0);
       rays[REARWARD_LEFT] = LineVector(vehicle.p(), -vehicle.v(), 0);
       rays[LEFT_REAR] = LineVector(vehicle.p(), -vehicle.front(), 0);
-      rays[LEFT_FRONT] = LineVector(vehicle.p() + vehicle.v(), 
+      rays[LEFT_FRONT] = LineVector(vehicle.p() + vehicle.v(),
           -vehicle.front(), 0);
       // Segments
       segment[NONE] = mkObst(LINE, {8.8, 3.45, 2.0, 60, 1});
@@ -316,7 +316,7 @@ class TestCollisions : public testing::Test {
     Vehicle vehicle;
     // 8 sensor rays
     LineVector rays[8];
-               
+
     obstacle_t segment[NUM];
     obstacle_t circle[NUM];
     obstacle_t rectangle[NUM];
@@ -511,13 +511,20 @@ TEST_F (TestCollisions, RectangleREAR) { uint8_t i;
 }
 
 // Tests of distance to intersection point
+// Add tests for computation of distance with the same sign
 TEST_F (TestIntersections, Distance) {
 
   uint8_t n;
 
   n = intersects(&sensor, &circ);
-  EXPECT_FLOAT_EQ(distance(Vec(sensor.p), n), 2.3099859);
+  EXPECT_FLOAT_EQ(distance(Vec(sensor.p), 0), 5.81821733);
+  EXPECT_FLOAT_EQ(distance(Vec(sensor.p), 1), 2.3099859);
   n = intersects(&sensor, &rect2);
-  EXPECT_FLOAT_EQ(distance(Vec(sensor.p), n), 6.79615243);
+  EXPECT_FLOAT_EQ(distance(Vec(sensor.p), 0), 8.79615243);
+  EXPECT_FLOAT_EQ(distance(Vec(sensor.p), 1), 6.79615243);
+  // Only two intersection points exist: 0 and 1. NaN is returned as
+  // a distance to an intersection point that doesn't exist.
+  EXPECT_TRUE(isnan(distance(Vec(sensor.p), 2)));
+  EXPECT_TRUE(isnan(distance(Vec(sensor.p), 20)));
 }
 

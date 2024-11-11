@@ -68,8 +68,7 @@ void initGame() {
   stkPtr = 0;
   stateStack[0] = running;
   pushState(startup);
-  bUseI2C = true;
-  backToSquare1();
+  bUseI2C = false; // Normally, there is only one Ardyboy mini
 }
 
 void stepGame() {
@@ -136,6 +135,7 @@ void exitMenu(State state) {
   popState();
   drawBackground();
   if (state == startupmenu) {
+    backToSquare1();
     popState();
   }
 }

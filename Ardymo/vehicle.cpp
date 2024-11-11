@@ -27,17 +27,17 @@ enum direction_t : int16_t {
 
 // Information about closest obstacle - or collision.
 struct closest_t {
-  uint8_t index_positive; // Index of closest obstacle, positive v-direction
-  uint8_t index_negative; // Index of closest obstacle, negative v-direction
+  uint8_t obst_positive; // Index of closest obstacle, positive v-direction
+  uint8_t obst_negative; // Index of closest obstacle, negative v-direction
   distance_t type; // FREE (No obstacle in sight), INTERSECTION, COLLISION.
 };
 
 // Helper functions
-closest_t GetDistances(const LineVector* sensor, float* distances);
+closest_t getDistances(const LineVector* sensor, float* distances);
 
 void initVehicle(uint8_t l) {
-  vehicle = Vehicle(kVehicle);
-  target = InitTarget(l);
+  vehicle = Vehicle(vehicleLocation[vehicleChoice[l]]);
+  target = initTarget(l);
 }
 
 void getVehicleRect(rectangle_t* rect) {
@@ -114,11 +114,11 @@ void checkSensors(SensorValues* sensors, check_t which) {
     // ======================== Front left-right ============================
     sensor = LineVector(vehicle.p() + vehicle.v(), -vehicle.front(),
         vehicle.width(), 0);
-    closest = GetDistances(&sensor, distances);
+    closest = getDistances(&sensor, distances);
     // Collision - Front
     if (closest.type == COLLISION) {
         sensors->collision = FRONT;
-        if (closest.index_positive == 0) {
+        if (closest.obst_positive == 0) {
           sensors->on_target = true;
         }
         return;
@@ -131,11 +131,11 @@ void checkSensors(SensorValues* sensors, check_t which) {
     // ======================== Rear left-right =============================
     sensor = LineVector(vehicle.p(), -vehicle.front(),
         vehicle.width(), 0);
-    closest = GetDistances(&sensor, distances);
+    closest = getDistances(&sensor, distances);
     // Collision - Rear
     if (closest.type == COLLISION) {
       sensors->collision = REAR;
-      if (closest.index_positive == 0) {
+      if (closest.obst_positive == 0) {
         sensors->on_target = true;
       }
       return;
@@ -154,11 +154,11 @@ void checkSensors(SensorValues* sensors, check_t which) {
     // ======================== Left forward-rearward =======================
     sensor = LineVector(vehicle.p() + vehicle.v(), vehicle.v(),
         vehicle.length(), 0);
-    closest = GetDistances(&sensor, distances);
+    closest = getDistances(&sensor, distances);
     // Collision - Left
     if (closest.type == COLLISION) {
         sensors->collision = LEFT;
-        if (closest.index_positive == 0) {
+        if (closest.obst_positive == 0) {
           sensors->on_target = true;
         }
         return;
@@ -171,11 +171,11 @@ void checkSensors(SensorValues* sensors, check_t which) {
     // ======================== Right forward-rearward ======================
     sensor = LineVector(vehicle.p() + vehicle.front(), -vehicle.v(),
         vehicle.length(), 0);
-    closest =  GetDistances(&sensor, distances);
+    closest =  getDistances(&sensor, distances);
     // Collision - Right
     if (closest.type == COLLISION) {
       sensors->collision = RIGHT;
-      if (closest.index_positive == 0) {
+      if (closest.obst_positive == 0) {
         sensors->on_target = true;
       }
       return;
@@ -231,7 +231,7 @@ void Vehicle::set_rectangle(const rectangle_t* r) {
   rect = RectVector(*r);
 }
 
-closest_t GetDistances(const LineVector* sensor, float* distances) {
+closest_t getDistances(const LineVector* sensor, float* distances) {
   // Compute distance to all obstacles.
   // Return the index of the closest
   obstacle_t obst;
@@ -244,7 +244,7 @@ closest_t GetDistances(const LineVector* sensor, float* distances) {
 
   // Set Distances to infinity
   distances[POSITIVE] = distances[NEGATIVE] = INFINITY;
-  for (i=0; i<obstacle_count; i++) {
+  for (i=o_ix; i<obstacle_count; i++) {
     // Get the next obstacle from shapes.h
     get_obstacle(&obst, level, i);
     // Find intersections of the sensor ray with the obstacle
@@ -256,15 +256,15 @@ closest_t GetDistances(const LineVector* sensor, float* distances) {
       if ((ix.nu >= 0) && (d < distances[POSITIVE])) {
         distances[POSITIVE] = d;
         // obstacle i is now the closest
-        closest.index_positive = i;
+        closest.obst_positive = i;
       } else if ((ix.nu > -1.0) && (ix.nu < 0)) {
         // Collision with obstacle i
         closest.type = COLLISION;
-        closest.index_positive = i;
+        closest.obst_positive = i;
         return closest;
       } else if ((ix.nu <= -1.0) && (d < distances[NEGATIVE])) {
         distances[NEGATIVE] = d;
-        closest.index_negative = i;
+        closest.obst_negative = i;
       }
     }
   }

@@ -29,15 +29,16 @@ uint8_t intersects(const LineVector* sensor, const obstacle_t* obst) {
 
   switch (obst->type) {
 
-    case BORDER:
     case LINE:
       return intersects_line(sensor, &(obst->item).line);
       break;
 
+    case TARGET:
     case CIRCLE:
       return intersects_circle(sensor, &(obst->item).circle);
       break;
 
+    case BORDER:
     case RECTANGLE:
       return intersects_rectangle(sensor, &(obst->item).rectangle);
       break;
@@ -48,14 +49,11 @@ uint8_t intersects(const LineVector* sensor, const obstacle_t* obst) {
 }
 
 float distance(Vec origin, uint8_t n) {
+  // Distance of `origin` to intersection point `n`.
 
-  float d1 = origin.distance(X[0].p), d2;
-
-  if (n == 0) {
-    return  d1;
-  }
-  d2 = origin.distance(X[1].p);
-  return d1 < d2 ? d1 : d2;
+  if (n > 1) return NAN; // At least avoid access outside bounds
+  float d = origin.distance(X[n].p);
+  return d;
 }
 
 inline bool cmp01(float x) {

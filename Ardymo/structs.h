@@ -2,7 +2,8 @@
  *
  * Structs and classes used for the intersection algorithm
  */
-#pragma once
+#ifndef STRUCTS_H
+#define STRUCTS_H
 #include <stdint.h>
 #include "objects.h"
 
@@ -20,8 +21,11 @@ enum State : uint8_t {
 };
 
 // Obstacle types
-enum geometry : uint16_t {
+enum geometry : uint16_t { // uint8_t is enough. uint16_t aligns better.
+  ANY,
   BORDER,
+  TARGET,
+  VEHICLE,
   LINE,
   CIRCLE,
   RECTANGLE,
@@ -153,4 +157,5 @@ struct SharedData { // Data computed by Map and shared to Ardymo
   bool on_target; // Vehicle crashed into target
 };
 
+#endif // STRUCTS_H
 // vim:ft=cpp

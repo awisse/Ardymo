@@ -2,7 +2,8 @@
  *
  * Struct and classes used in program
  */
-#pragma once
+#ifndef OBJECTS_H
+#define OBJECTS_H
 #include <stdint.h>
 
 // We need the `point` type because the Arduino compiler doesn't accept the
@@ -49,3 +50,4 @@ class Vec {
     point as_point(void) const; // Transform into a struct `point`
 };
 
+#endif // OBJECTS_H
