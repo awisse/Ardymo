@@ -28,8 +28,8 @@ uint32_t start; // Milliseconds at start of game
 static ShowCoords show_viewport_coordinates;
 static bool redraw;
 static bool bFollowVehicle;
-static uint8_t level {4};
-static uint8_t previous_level {4};
+static uint8_t level {0};
+static uint8_t previous_level {0};
 static uint8_t helpPage {0};
 
 // Functions
