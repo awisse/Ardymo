@@ -36,6 +36,12 @@ constexpr vehicle_name vehicleChoice[kLevels] = {
 
 // 1. The first (0th) element of the array must be the target.
 // 2. The second element must be the rectangle of the four borders
+//    Rectangles origins are the **Top Right Corner**.
+//    The extent by default is in the **negative x-direction**.
+//    For example: The corners of the rectangle {4, 10, 5, 0, 3}
+//    are: TR: (4, 10), BR: (4, 15), TL: (1, 10), BL: (1, 15)
+//    A rotated rectangle: The corners of the rectangle {4, 10, 5, -90, 3}
+//    are: TR: (9, 10), BR: (9, 13), TL: (4, 10), BL: (4, 13)
 
 // Training: One obstacle, only borders and target. Learn to navigate
 // around an obstacle and read sensors.
@@ -43,7 +49,7 @@ const obstacle_t PROGMEM _level0[] = {
   // Target: Must be element  zero of the obstacles array
   {TARGET, 202.5, 202.5, 5.0},
   // Borders of board
-  {BORDER, 0.0, 0.0, 1024.0, -90, 0x44800000},  // kBoardWidth x 1024
+  {BORDER, 1024.0, 0.0, 1024.0, 0, 0x44800000},  // 1024 x 1024
   // Sole obstacle for Training
   {CIRCLE, 500.0, 500.0, 400.0},
 };
@@ -53,7 +59,7 @@ const obstacle_t PROGMEM _level1[] = {
   // Target: Must be element  zero of the obstacles array
   {TARGET, 202.5, 202.5, 5.0},
   // Borders of board
-  {BORDER, 0.0, 0.0, kBoardWidth, -90, 0x44800000},  // kBoardWidth x 1024
+  {BORDER, 2048.0, 0.0, 1024.0, 0, 0x45000000}, // 2048 x 1024
   {CIRCLE, 256.0, 512.0, 128.0},
   {CIRCLE, 256.0, 512.0 + 256.0, 64.0},
   {CIRCLE, 764.0, 384.0, 128.0},
@@ -69,7 +75,7 @@ const obstacle_t PROGMEM _level2[] = {
   // Target: Must be element  zero of the obstacles array
   {TARGET, 202.5, 202.5, 5.0},
   // Borders of board
-  {BORDER, 0.0, 0.0, kBoardWidth, -90, 0x44800000},  // kBoardWidth x 1024
+  {BORDER, 2048.0, 0.0, 1024.0, 0, 0x45000000}, // 2048 x 1024
   // Obstacles
   {CIRCLE, 410.0, 220.0, 150.0}, // 1
   {CIRCLE, 750.0, 220.0, 150.0}, // 2
@@ -89,7 +95,7 @@ const obstacle_t PROGMEM _level3[] = {
   // Target: Must be element  zero of the obstacles array
   {TARGET, 202.5, 202.5, 5.0},
   // Borders of board
-  {BORDER, 0.0, 0.0, kBoardWidth, -90, 0x44800000},  // kBoardWidth x 1024
+  {BORDER, 2048.0, 0.0, 1024.0, 0, 0x45000000}, // 2048 x 1024
   // Obstacles
   {CIRCLE, 410.0, 220.0, 150.0}, // 1
   {RECTANGLE, 594.0, 586.0, 300.0, 30, 0x43160000}, // 2 (w=150.0)
@@ -128,7 +134,7 @@ const obstacle_t PROGMEM _level4[] = {
   /* *** Don't forget to put the target first manually *** */
   // Target: Must be element zero of the obstacles array
   {TARGET, 512.0, 512.0, 5.0},
-  {BORDER, 0.0, 0.0, 1024.0, -90, 0x44800000},  // 1024 x 1024
+  {BORDER, 1024.0, 0.0, 1024.0, 0, 0x44800000},  // 1024 x 1024
   // Obstacles
   {RECTANGLE, 570.0, 28.0, 250.0, 0, 0x43200000}, // 250 x 160
   {LINE, 570.0, 28.0, 457.69, -83, 0x01},
@@ -156,7 +162,7 @@ const obstacle_t PROGMEM _level4[] = {
   {LINE, 685.0, 400.0, 393.22, 78, 0x01},
   {LINE, 300.0, 480.0, 470.74, 168, 0x01},
   {LINE, 200.0, 20.0, 190.07, -92, 0x01},
-  {LINE, 390.0, 15.0, 300.00, 180, 0x01},
+  {LINE, 390.0, 15.0, 300.00, 0, 0x01}, // Had angle 180. Check svg_parser.py
   {LINE, 390.0, 315.0, 305.37, -93, 0x01},
   {LINE, 20.0, 20.0, 180.00, -90, 0x01},
   {LINE, 200.0, 20.0, 805.23, 14, 0x01},

@@ -8,6 +8,7 @@ Helper functions to unclutter main .ino file
 #include "src/comm.h"
 #include "src/debug.h"
 #include "src/platform.h"
+#include "src/utils.h"
 #include "viewport.h"
 #include "game.h"
 #include "draw.h"
@@ -28,17 +29,19 @@ static ShowCoords show_viewport_coordinates;
 static bool redraw;
 static bool bFollowVehicle;
 static uint8_t level {4};
+static uint8_t previous_level {4};
 static uint8_t helpPage {0};
 
 // Functions
 void ReCenter();
 void ShareSensors(SensorValues* sensors);
+void setViewport(uint8_t level);
 
 void initGame() {
 
   state = startup;
   Platform::clear();
-  initViewport();
+  setViewport(level);
   initVehicle(level);
   ReCenter();
   state = running;
@@ -85,6 +88,11 @@ void showRunning() {
     setVehicleRect(&vehicle.rect);
     setObstLevel(vehicle.level);
     level = vehicle.level;
+    if (level != previous_level) {
+      // Level changed. We start from scratch
+      previous_level = level;
+      setViewport(level);
+    }
     redraw = true;
   } else {
     getVehicleRect(&vehicle.rect);
@@ -171,5 +179,11 @@ void ShareSensors(SensorValues* sensors) {
   shared.collision = sensors->collision;
   shared.on_target = sensors->on_target;
   send_bytes((uint8_t*)&shared, sizeof(shared));
+}
+
+void setViewport(uint8_t level) {
+  rectangle_t rect;
+  get_border(&rect, level);
+  initViewport(&rect);
 }
 // vim:fdm=syntax:tabstop=2:softtabstop=2:shiftwidth=2:expandtab

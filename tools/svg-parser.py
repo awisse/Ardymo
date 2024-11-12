@@ -115,7 +115,7 @@ def line(x0: float, y0: float, x1: float, y1: float):
     dx = x1 - x0
     dy = y1 - y0
     if abs(dx) < EPSILON:
-        if dy < 0:
+        if dy >= 0:
             angle = 0
         else:
             angle = 180

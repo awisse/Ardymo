@@ -2,9 +2,12 @@
 #include "viewport.h"
 
 ViewPort viewport;
+float minZoom {0.125};
 
-void initViewport(void) {
-    viewport = ViewPort(default_map, default_view);
+void initViewport(rectangle_t* map) {
+  viewport = ViewPort(*map, default_view);
+  // Max zoom in: full width of screen
+  minZoom = kScreenWidth / map->w;
 }
 
 void panRight(void) {
@@ -54,7 +57,6 @@ void getViewportPosition(point* pos) {
 void getViewport(ViewPort* v) {
   *v = viewport;
 }
-
 
 float bound(float x, float a, float b) {
   // Return x if a <= x <= b.
@@ -109,7 +111,7 @@ void ViewPort::zoom_in(void) {
 void ViewPort::zoom_out(void) {
   point c = get_center();
 
-  if (scale > MinZoom) {
+  if (scale > minZoom) {
     scale /= 2.0;
     view.l *= 2.0;
     if (view.l > kBoardWidth) {
@@ -170,7 +172,7 @@ point ViewPort::get_center(void) const {
 }
 
 void ViewPort::set_scale(float s) {
-  scale = bound(s, MinZoom, 1.0);
+  scale = bound(s, minZoom, 1.0);
 }
 
 inline void ViewPort::not_moved(void) {

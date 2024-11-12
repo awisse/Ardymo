@@ -6,9 +6,6 @@
 
 constexpr rectangle_t default_view = {{0.0, 0.0}, kScreenWidth, -90,
   kScreenHeight};
-constexpr rectangle_t default_map = {{0.0, 0.0}, kBoardWidth, -90,
-  kBoardHeight};
-constexpr float MinZoom = (float)kScreenWidth / (float)kBoardWidth;
 
 // Point to be drawn on the screen
 constexpr int16_t int16(float x) {
@@ -41,7 +38,7 @@ struct ScreenCircle {
   ScreenCircle(circle_t c) : ScreenCircle(c.p, c.r) {}
 };
 
-void initViewport();
+void initViewport(rectangle_t* map);
 void panRight(void);
 void panLeft(void);
 void panDown(void);

@@ -35,6 +35,7 @@ void draw(vehicle_t* vehicle) {
       case LINE:
         drawLine(&obst.item.line);
         break;
+      case TARGET:
       case CIRCLE:
         drawCircle(&obst.item.circle);
         break;

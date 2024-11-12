@@ -10,5 +10,18 @@ void get_obstacle(obstacle_t* obst, uint8_t level, uint8_t i) {
   memcpy((uint8_t*)&(obst->item) + 0xE, (uint8_t*)&(obst->item) + 0x10, 2);
 #endif
 }
+
+// Get BORDER associated with level from shapes.h
+void get_border(rectangle_t* rect, uint8_t level) {
+  uint8_t i; // Run through obstacles to find BORDER rectangle
+  obstacle_t obst;
+  for (i=1; i<obst_count[level]; i++) {
+    get_obstacle(&obst, level, i);
+    if (obst.type == BORDER) {
+      *rect = obst.item.rectangle;
+      return;
+    }
+  }
+}
 // vim: ft=cpp
 
