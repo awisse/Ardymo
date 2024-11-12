@@ -8,6 +8,8 @@
 void draw(vehicle_t* vehicle);
 // Draw position in bottom left corner.
 void drawPosition(point* vehicle_position);
+// Draw startup screen
+void drawStartup();
 // Draw the menu
 void drawMenu(uint8_t selected, uint8_t numItems, const char* items[]);
 // Draw Help

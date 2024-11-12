@@ -11,13 +11,13 @@ enum : uint8_t {
 };
 
 enum : uint8_t {
-  LEVEL_POS,
-  I2C_POS,
-  STARTUP_HELP_POS = 2,
-  STARTUP_PLAY_POS = 3,
-  RUNNING_HELP_POS = 2,
-  RUNNING_RESTART_POS = 4,
-  RUNNING_CONTINUE_POS = 3
+  I2C_POS = 1,
+  STARTUP_LEVEL_POS = 0,
+  STARTUP_PLAY_POS = 2,
+  STARTUP_HELP_POS = 3,
+  RUNNING_HELP_POS = 0,
+  RUNNING_CONTINUE_POS = 2,
+  RUNNING_RESTART_POS = 3,
 };
 
 static uint8_t onItem {0};
@@ -28,8 +28,10 @@ static State menuShown; // Menu currenty displayed
 const char* displayedItems[5];
 
 void refreshMenu() {
-  displayedItems[0] = pgm_read_ptr(&aLevelItems[level]);
-  displayedItems[1] = pgm_read_ptr(&aUseI2CItems[bUseI2C]);
+  displayedItems[I2C_POS] = pgm_read_ptr(&aUseI2CItems[bUseI2C]);
+  if (menuShown = startupmenu) {
+    displayedItems[STARTUP_LEVEL_POS] = pgm_read_ptr(&aLevelItems[level]);
+  }
   drawMenu(onItem, nMenuItems, displayedItems);
 }
 
@@ -41,15 +43,15 @@ void showMenu(State state) {
 
   switch (state) {
     case gamemenu:
-      nMenuItems = 5;
-      displayedItems[RUNNING_CONTINUE_POS] = aMenuItems[CONTINUE_M];
+      nMenuItems = 4;
       displayedItems[RUNNING_HELP_POS] = aMenuItems[HELP_M];
+      displayedItems[RUNNING_CONTINUE_POS] = aMenuItems[CONTINUE_M];
       displayedItems[RUNNING_RESTART_POS] = aMenuItems[RESTART_M];
       break;
     case startupmenu:
       nMenuItems = 4;
-      displayedItems[STARTUP_HELP_POS] = aMenuItems[HELP_M];
       displayedItems[STARTUP_PLAY_POS] = aMenuItems[PLAY_M];
+      displayedItems[STARTUP_HELP_POS] = aMenuItems[HELP_M];
   }
   refreshMenu();
 }
@@ -86,25 +88,23 @@ void menuSelect(State state) {
 }
 
 void menuRight() {
-  switch (onItem) {
-    case LEVEL_POS:
+  if ((menuShown == startupmenu) && (onItem == STARTUP_LEVEL_POS)) {
       level = (level + 1) % kLevels;
-      break;
-    case I2C_POS:
+  } else 
+  if (onItem == I2C_POS) {
       bUseI2C = !bUseI2C;
   }
 }
 
 void menuLeft() {
-  switch (onItem) {
-    case LEVEL_POS:
-      if (level == 0) {
-        level = kLevels - 1;
-      } else {
-        level--;
-      }
-      break;
-    case I2C_POS:
+  if ((menuShown == startupmenu) && (onItem == STARTUP_LEVEL_POS)) {
+    if (level == 0) {
+      level = kLevels - 1;
+    } else {
+      level--;
+    }
+  } else 
+  if (onItem == I2C_POS) {
       bUseI2C = !bUseI2C;
   }
 }

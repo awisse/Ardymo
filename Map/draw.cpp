@@ -8,6 +8,7 @@
 #include "src/utils.h"
 #include "draw.h"
 #include "help.h"
+#include "startup.h"
 
 // Center of screen
 static Vec centre = {(float)((kScreenWidth>>1)-1),
@@ -57,6 +58,16 @@ void drawPosition(point* vehicle_position) {
   Platform::print((int16_t)vehicle_position->y);
 }
 
+void drawStartup(void) {
+  Platform::clear();
+  Platform::setCursor(startupXPos, startupYPos);
+  Platform::print_P(sLine1);
+  Platform::setCursor(startupXPos, startupYPos + 12);
+  Platform::print_P(sLine2);
+  Platform::drawCircle(startupXPos + 2, startupYPos + 3, 5);
+  Platform::drawCircle(startupXPos + 2, startupYPos + 15, 5);
+}
+
 // Helper functions
 void drawLine(const line_t* line) {
   LinePoints lpts;
@@ -92,13 +103,12 @@ void drawMenu(uint8_t selected, uint8_t numItems, const char* item[]) {
   // For now, there is just one more item
   uint8_t i;
 
-  /* Platform::eraseRectRow(kMenuLeft, kMenuTop, kMenuWidth, numItems * 10); */
   Platform::clear();
 
   // Font height is 8. Rectangles must be 10.
   for (i=0; i<numItems; i++) {
     Platform::setCursor(kMenuLeft + 2, kMenuTop + 2 + i * 10);
-    Platform::print(item[i]);
+    Platform::print_P(item[i]);
   }
   // Rectangle around selected item
   Platform::drawRect(kMenuLeft, kMenuTop + 10 * selected,

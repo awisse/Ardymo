@@ -9,6 +9,8 @@ enum ShowCoords : uint8_t {
 
 void initGame();
 void stepGame(); // Return true if screen must be updated
+void showStartup();
+void exitStartup();
 void enterMenu();
 void exitMenu();
 void showHelp();

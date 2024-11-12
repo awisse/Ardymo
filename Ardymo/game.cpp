@@ -121,8 +121,7 @@ void stepGame() {
 }
 
 void restartGame(void) {
-  popState();
-  backToSquare1();
+  initGame();
 }
 
 void enterMenu(State menu) {

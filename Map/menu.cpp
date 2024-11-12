@@ -4,10 +4,10 @@
 #include "draw.h"
 
 enum : uint8_t {
-  SHOW_COORDS_POS,
-  FOLLOW_POS,
-  APPLY_POS,
-  HELP_POS
+  SHOW_COORDS_POS = 0,
+  FOLLOW_POS = 1,
+  APPLY_POS = 2,
+  HELP_POS = 3
 };
 
 static uint8_t onItem {0};
@@ -16,17 +16,13 @@ static bool bFollow;
 
 constexpr uint8_t nMenuItems {4};
 const char* displayedItems[nMenuItems];
-static const char* aMenuItems[2] = {"Apply", "Help"};
-static const char* aShowCoordsItems[3] = {"\x11Hide XY \x10",
-  "\x11Veh. XY \x10", "\x11View XY \x10"};
-static const char* aFollowItems[2] = {"\x11Unfollow\x10",
-  "\x11" "Follow  \x10"};
 
 void refreshMenu() {
-  displayedItems[SHOW_COORDS_POS] = aShowCoordsItems[vShowCoords];
-  displayedItems[FOLLOW_POS] = aFollowItems[bFollow];
-  displayedItems[APPLY_POS] = aMenuItems[0];
-  displayedItems[HELP_POS] = aMenuItems[1];
+  displayedItems[SHOW_COORDS_POS]
+    = pgm_read_ptr(&aShowCoordsItems[vShowCoords]);
+  displayedItems[FOLLOW_POS] = pgm_read_ptr(&aFollowItems[bFollow]);
+  displayedItems[APPLY_POS] = mApply;
+  displayedItems[HELP_POS] = mHelp;
   drawMenu(onItem, nMenuItems, displayedItems);
 }
 

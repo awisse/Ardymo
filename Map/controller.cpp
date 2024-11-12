@@ -112,6 +112,9 @@ uint8_t DebouncedButtons() {
 
 void dispatchShortA(State gameState) {
   switch (gameState) {
+    case startup:
+      exitStartup();
+      break;
     case gamemenu:
       menuSelect();
       break;
@@ -125,6 +128,7 @@ void dispatchShortB(State gameState) {
     case gamemenu:
       exitMenu();
       break;
+    case startup:
     case running:
       enterMenu();
       break;

@@ -44,8 +44,6 @@ void initGame() {
   setViewport(level);
   initVehicle(level);
   ReCenter();
-  state = running;
-  redraw = false;
   show_viewport_coordinates = NO_COORDS;
   bFollowVehicle = true;
 }
@@ -58,6 +56,9 @@ void stepGame() {
   handleInput(state); // User input: Button presses
 
   switch (state) {
+    case startup:
+      showStartup();
+      break;
     case running:
       showRunning();
       break;
@@ -74,6 +75,16 @@ void stepGame() {
   // How much time for one frame?
   Platform::DebugPrintln(Platform::millis() - start);
 #endif
+}
+
+void showStartup() {
+  // Show startup screen
+  drawStartup();
+}
+
+void exitStartup() {
+  state = running;
+  redraw = true;
 }
 
 void showRunning() {
