@@ -1,13 +1,13 @@
 # Description
 
-A game for the Arduboy Mini with the ATmega32U4. For the jam due October 
-31st, 2024.
+A game for the Arduboy Mini with the ATmega32U4. For the [Mini
+Jam](https://community.arduboy.com/t/arduboy-mini-jam-win-an-ipad-mini/12295/61) due October 31st, 2024.
 
 ## Remarks
 
-At this stage, this is a proof of concept rather than a fully featured game. 
-Bells and whistles like a menu, preferences, levels, high scores etc. are 
-notably absent. However, it is a fully playable game which demonstrates the 
+The game in the
+[Ardymo](https://github.com/awisse/Ardymo/tree/7c01b704e8a9441d824b4c3ba460043306ef6824/Ardymo) 
+directory is a fully featured game which demonstrates the 
 use of the I2C capabilities of the 
 [Arduboy mini](https://www.arduboy.com/shop/p/arduboy-mini).
 
@@ -38,11 +38,10 @@ and Map applications, one cycle takes about 67ms on Ardymo and 47ms on Map for
 the display applications. When sharing the computations, the time needed rises
 to 77ms on Map and decreases to 47ms on Ardymo. 
 
-Surely this can be optimized for speed. 
-
 
 ### Space
 
-Also, the code is not optimized for space but for readability. Both the Map and
-Ardymo sketches takeup about 90% of the program memory. There is space left for
-about 50 more obstacles on the map. With some work, this can surely be improved upon.
+The code is not optimized for space but for readability. Both the Map and
+Ardymo sketches take up more than 94% of the program memory. There is space 
+left for about 10 more obstacles on the map. With some work, this can surely 
+be improved upon.

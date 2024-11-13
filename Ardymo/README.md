@@ -1,10 +1,13 @@
 # Description
 
-This is the main game. It compiles by default with I2C communication enabled.
+This is the main game. It compiles by default with I2C communication disabled.
 
-If the *Map* I2C client is not available, the display will show *NACK 
-(Address)* for five seconds and after that the game can be played without the 
-*Map* application. No more attempts are made to establish I2C communication.
+If the *Map* I2C client is not available, the display will show *I2C Timeout*
+for five seconds. If the client is switched on but the Map application is not
+running, the display will show *NACK (Address)* for five seconds and after 
+that the game can be played without the *Map* application. No more attempts 
+are made to establish I2C communication unless the user chooses *I2C on* in the
+menu.
 
 ## Compiling
 
@@ -26,7 +29,7 @@ In order to use the *Map* application via I2C with this game. You must
 
 ### Objective
 
-The player is an AI driving a vehicle and has to rely exclusively on the sensor
+The player drives the vehicle and has to rely exclusively on the sensor
 values to reach the target. The objective is to reach the target without
 crashing into obstacles or into the target. The run is successful if the
 vehicle gets within 5m of the target at zero speed.
@@ -52,12 +55,11 @@ The sensor values available are:
    circle in the center of the screen.
 
 4. The north with respect to the vehicle axis: the line inside the circle.
-   hea
 
 5. The heading of the vehicle with respect to the north: the number in degrees
    inside the circle.
 
-6. The coordinates of the vehicle in the lower left corner.
+6. The coordinates of the vehicle position in the lower left corner.
 
 ### Movement
 
