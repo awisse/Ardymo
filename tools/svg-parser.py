@@ -4,22 +4,22 @@ Parse an svg file.
 Convert geometric objects "ellipse", "rect", line and "polyline" to Ardymo
 obstacle_t objects. Send the resulting array to stdout.
 """
+import argparse
 import binascii
 import math
 import re
 import struct
-import sys
 import xml.etree.ElementTree as elTree
 
 SVG_NS = {'svg' : 'http://www.w3.org/2000/svg'}
-SHAPES = ['polyline', 'ellipse', 'rect', 'line']
+SHAPES = ['circle', 'polyline', 'ellipse', 'rect', 'line']
 EPSILON = 1E-6
 
 xmlns = re.compile(r'\{.*\}')
 
-BORDER_FMT = '{{BORDER, {}, {}, {}, {}, 0x01}},'
+BORDER_FMT = '{{BORDER, {:.1f}, {:.1f}, {:.1f}, {:.0f}, 0x{:s}}},'
 CIRCLE_FMT = '{{CIRCLE, {}, {}, {}}},'
-LINE_FMT = '{{LINE, {:.1f}, {:.1f}, {:.2f}, {:.0f}, 0x01}},'
+LINE_FMT = '{{LINE, {:.1f}, {:.1f}, {:.1f}, {:.0f}, 0x01}},'
 RECTANGLE_FMT = '{{RECTANGLE, {:.1f}, {:.1f}, {:.1f}, {:.0f}, 0x{:s}}},'
 
 # Auxiliary functions
@@ -84,28 +84,25 @@ def to_ieee754(x: float):
     bytes_str = binascii.hexlify(b).decode()
     return bytes_str
 
-def circle(cx: float, cy: float, rx: float, ry: float):
+def circle(cx: float, cy: float, r: float):
     """
-    The circle_t obstacle from svg ellipsis parameters
+    The circle_t obstacle from svg ellipsis or circle parameters
     """
-    return CIRCLE_FMT.format(cx, cy, rx)
+    return CIRCLE_FMT.format(cx, cy, r)
 
 def border(viewBox: str):
     """
-    Prepare "BORDER_FMT" obstacles, which are `line_t`
+    Prepare the "BORDER_FMT" obstacle, which is a `rectangle_t`,
     from viewBox coordinates.
+    viewBox = "x y width height"
     """
-    coords = viewBox.split()
-    border_lines = []
-    border_lines.append(BORDER_FMT.format(coords[0], coords[1],
-                                          coords[2], -90))
-    border_lines.append(BORDER_FMT.format(coords[0], coords[1],
-                                          coords[3], 0))
-    border_lines.append(BORDER_FMT.format(coords[0], coords[3],
-                                          coords[2], -90))
-    border_lines.append(BORDER_FMT.format(coords[2], coords[1],
-                                          coords[3], 0))
-    return border_lines
+    coords = [float(x) for x in viewBox.split()]
+
+    border_rect = BORDER_FMT.format(coords[0] + coords[2],
+                                    coords[1],
+                                    coords[3], 0,
+                                    to_ieee754(coords[2]))
+    return [border_rect]
 
 def line(x0: float, y0: float, x1: float, y1: float):
     """
@@ -160,16 +157,26 @@ def rect(x: float, y: float, width: float, height: float,
 
     return RECTANGLE_FMT.format(x, y, height, 0, hex_width)
 
+def prepare_options():
+    """Prepare the option parser"""
+
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument('filename',
+                        help="SVG file to be processes")
+
+    return parser
+
 def main():
     """
     Get the filename and parse the .svg file.
     Print the obstacles line by line
     """
-    if len(sys.argv) != 2:
-        print("Usage: svg-parser.py <filename>")
-        sys.exit(0)
+    parser = prepare_options()
+    args = parser.parse_args()
 
-    path = sys.argv[1]
+    path = args.filename
+
     tree = elTree.parse(path)
     root = tree.getroot()
     viewBox = root.get('viewBox')
@@ -183,11 +190,15 @@ def main():
             continue
         styles = get_style_dict(element.get('style'))
 
+        if tag == 'circle':
+            obstacles.append(circle(element.get('cx'),
+                                    element.get('cy'),
+                                    element.get('r')))
+
         if tag == 'ellipse':
             obstacles.append(circle(element.get('cx'),
                                     element.get('cy'),
-                                    element.get('rx'),
-                                    element.get('ry')))
+                                    element.get('rx')))
 
         elif tag == 'line':
             obstacles.append(line(float(element.get('x1')),
@@ -205,8 +216,8 @@ def main():
         elif tag == 'rect':
             transform = element.get('transform', '')
             tr_origin = styles.get('transform-origin', '')
-            obstacles.append(rect(float(element.get('x')),
-                                  float(element.get('y')),
+            obstacles.append(rect(float(element.get('x', 0)),
+                                  float(element.get('y', 0)),
                                   float(element.get('width')),
                                   float(element.get('height')),
                                   tr_origin, transform))

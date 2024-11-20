@@ -6,7 +6,9 @@ directly inserted into *shapes.h*.
 
 * The only handled elements are
 
-    * `circle` (always an `ellipsis` Boxy SVG),
+    * `ellipse` (Only if both radiuses are equal: a circle)
+
+    * `circle`
 
     * `polyline` (split into `line_t` segments),
 

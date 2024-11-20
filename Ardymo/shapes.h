@@ -9,7 +9,8 @@
 enum vehicle_name : uint8_t {
   VEHICLE_BR2048 = 0, // Bottom right
   VEHICLE_BR1024 = 1, // Bottom right
-  VEHICLE_TL = 2  // Top Left
+  VEHICLE_TR1024 = 2, // Bottom right
+  VEHICLE_TL = 3  // Top Left
 };
 
 constexpr uint8_t t_ix {0}; // Index of target in obstacle Array
@@ -19,11 +20,12 @@ constexpr uint8_t o_ix {0}; // Index of first obstacle in obstacle Array
 constexpr rectangle_t vehicleLocation[] = {
   {{2038.0, 1014.0}, 10.0, 90, 5.0},
   {{1014.0, 1014.0}, 10.0, 90, 5.0},
+  {{1014.0, 10.0}, 10.0, 0, 5.0},
   {{10.0, 10.0}, 10.0, -90, 5.0}
 };
 
 constexpr vehicle_name vehicleChoice[kLevels] = {
-  VEHICLE_BR1024, VEHICLE_BR2048, VEHICLE_BR2048, VEHICLE_BR2048, VEHICLE_TL
+  VEHICLE_BR1024, VEHICLE_BR1024, VEHICLE_BR2048, VEHICLE_BR2048, VEHICLE_TL
 };
 
 
@@ -57,74 +59,60 @@ const obstacle_t PROGMEM _level0[] = {
 // Easy: Easy to navigate around obstacles
 const obstacle_t PROGMEM _level1[] = {
   // Target: Must be element  zero of the obstacles array
-  {TARGET, 202.5, 202.5, 5.0},
-  // Borders of board
-  {BORDER, 2048.0, 0.0, 1024.0, 0, 0x45000000}, // 2048 x 1024
-  {CIRCLE, 256.0, 512.0, 128.0},
-  {CIRCLE, 256.0, 512.0 + 256.0, 64.0},
-  {CIRCLE, 764.0, 384.0, 128.0},
-  {CIRCLE, 764.0, 764.0, 128.0},
-  {CIRCLE, 764.0 + 512.0, 512.0, 128.0},
-  {CIRCLE, 764.0 + 512.0, 512, 128.0},
-  {CIRCLE, 764.0 + 512.0, 2 * 256.0, 128.0},
-  {CIRCLE, 3 * 512.0, 3 * 256.0, 128.0},
+  {TARGET, 912.5, 102.5, 5.0},
+  // 9 obstacles from "../doc/odg/map-easy.svg"
+  // Representing 162 bytes
+  /* *** Don't forget to put the target first manually *** */
+  {BORDER, 1024.0, 0.0, 1024.0, 0, 0x44800000},
+  {CIRCLE, 128, 350, 128},
+  {CIRCLE, 764, 900, 100},
+  {LINE, 1020.0, 512.0, 920.00, 90, 0x01},
+  {LINE, 512.0, 536.0, 488.00, 0, 0x01},
+  {LINE, 1024.0, 768.0, 494.00, 90, 0x01},
+  {LINE, 1020.0, 192.0, 920.00, 90, 0x01},
+  {CIRCLE, 700, 128, 64}
 };
 
 // Medium: More complex ways
 const obstacle_t PROGMEM _level2[] = {
   // Target: Must be element  zero of the obstacles array
   {TARGET, 202.5, 202.5, 5.0},
-  // Borders of board
-  {BORDER, 2048.0, 0.0, 1024.0, 0, 0x45000000}, // 2048 x 1024
   // Obstacles
-  {CIRCLE, 410.0, 220.0, 150.0}, // 1
-  {CIRCLE, 750.0, 220.0, 150.0}, // 2
-  {CIRCLE, 1110.0, 220.0, 150.0}, // 3
-  {CIRCLE, 580.0, 500.0, 150.0}, // 4
-  {CIRCLE, 930.0, 500.0, 150.0}, // 5
-  {CIRCLE, 350.0, 790.0, 150.0}, // 6
-  {CIRCLE, 750.0, 790.0, 150.0}, // 7
-  {RECTANGLE, 350.0, 400.0, 150.0, 0, 0x43af0000}, // 8 (w=350.0)
-  {RECTANGLE, 820.0, 5.0, 150.0, 225, 0x43160000}, // 9 (w=150.0)
-  {RECTANGLE, 1100.0, 1014.0, 150.0, 135, 0x447a0000}, // 10 (w=1000.0)
-  {CIRCLE, 920.0, 970.0, 50.0}, // 11
+  // 12 obstacles from "../doc/odg/map-medium.svg"
+  // Representing 216 bytes
+  /* *** Don't forget to put the target first manually *** */
+  {BORDER, 2048.0, 0.0, 1024.0, 0, 0x45000000},
+  {CIRCLE, 750, 220, 150},
+  {CIRCLE, 1110, 220, 150},
+  {CIRCLE, 580, 500, 150},
+  {CIRCLE, 930, 500, 150},
+  {CIRCLE, 200, 790, 150},
+  {RECTANGLE, 370.0, 400.0, 150.0, 0, 0x43af0000},
+  {RECTANGLE, 930.0, 140.0, 150.0, 135, 0x43160000},
+  {LINE, 930.0, 650.0, 374.00, 0, 0x01},
+  {LINE, 197.5, 0.0, 435.61, -23, 0x01},
+  {LINE, 1000.0, 1000.0, 1391.59, -135, 0x01},
 };
 
 // Hard: Dead ends included
 const obstacle_t PROGMEM _level3[] = {
   // Target: Must be element  zero of the obstacles array
-  {TARGET, 202.5, 202.5, 5.0},
-  // Borders of board
-  {BORDER, 2048.0, 0.0, 1024.0, 0, 0x45000000}, // 2048 x 1024
-  // Obstacles
-  {CIRCLE, 410.0, 220.0, 150.0}, // 1
-  {RECTANGLE, 594.0, 586.0, 300.0, 30, 0x43160000}, // 2 (w=150.0)
-  {LINE, 860, 75, 400, 50, 0x01},  // 3
-  {LINE, 590, 350, 300, -30, 0x01},  // 4
-  {LINE, 865, 550, 300, 30, 0x01},  // 5
-  {LINE, 890, 730, 300, -30, 0x01},  // 6
-  {LINE, 890, 730, 300, -30, 0x01},  // 6
-  {LINE, 965, 504, 300, 0, 0x01},  // 7
-  {LINE, 965, 504, 720, 225, 0x01},  // 8
-  {LINE, 997, 557, 140, -4, 0x01},  // 9
-  {LINE, 997, 557, 140, 245, 0x01},  // 10
-  {RECTANGLE, 1040.0, 830.0, 100.0, -60, 0x42960000}, // 11 (w=75.0)
-  {CIRCLE, 1120.0, 630.0, 100.0}, // 12
-  {LINE, 1075, 1024, 140, 210, 0x01},  // 13
-  {CIRCLE, 1118.0, 792.0, 50.0}, // 14
-  {LINE, 1150, 894, 300, 200, 0x01},  // 15
-  {LINE, 1155, 508, 120, -50, 0x01},  // 16
-  {LINE, 1247, 585, 300, 240, 0x01},  // 17
-  {LINE, 1252.6, 612.1, 300, 240, 0x01},  // 18
-  {LINE, 1530, 1000, 337, 162, 0x01},  // 19
-  {LINE, 1506.8, 435, 347.5, -45, 0x01},  // 20
-  {LINE, 1512.4, 462.4, 308, -45, 0x01},  // 21
-  {RECTANGLE, 1830.0, 700.0, 300.0, 0, 0x43960000}, // 22 (w=300.0)
-  {LINE, 1425.8, 680, 304, -90, 0x01},  // 23
-  {LINE, 1752.5, 680, 295.5, -90, 0x01},  // 24
-  {LINE, 1850, 700, 300, 0, 0x01},  // 25
-  {LINE, 1850, 700, 198, -90, 0x01},  // 26
-  {LINE, 1850, 1000, 198, -90, 0x01},  // 27
+  {TARGET, 64, 512, 5},
+  // 13 obstacles from "../doc/odg/map-hard.svg"
+  // Representing 234 bytes
+  /* *** Don't forget to put the target first manually *** */
+  {BORDER, 1024.0, 0.0, 1024.0, 0, 0x44800000},
+  {RECTANGLE, 400.0, 16.0, 480.0, 0, 0x43c00000},
+  {LINE, 0.0, 600.0, 141.4, -135, 0x01},
+  {RECTANGLE, 71.6, 696.1, 550.0, 50, 0x42f00000},
+  {LINE, 500.0, 0.0, 1029.6, -11, 0x01},
+  {RECTANGLE, 1024.0, 100.0, 300.0, 0, 0x43d40000},
+  {CIRCLE, 800, 600, 180},
+  {LINE, 615.6, 579.3, 519.3, 97, 0x01},
+  {LINE, 100.0, 517.0, 431.9, 11, 0x01},
+  {LINE, 700.0, 780.0, 262.3, -22, 0x01},
+  {CIRCLE, 471.706, 401.078, 39.323},
+  {LINE, 415.0, 3.0, 352.0, 0, 0x01},
 };
 
 // Ultra: Doable. Needs lots of patience

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <circle style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" cx="64" cy="512" r="5"/>
+  <rect x="16" y="16" width="384" height="480" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); transform-origin: 0px 256px;"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" x1="0" y1="600" x2="100" y2="500"/>
+  <rect x="270.029" y="536.742" width="120" height="550" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); transform-box: fill-box; transform-origin: 50% 50%;" transform="matrix(0.642788, 0.766044, -0.766044, 0.642788, 0.000507, 0.000156)"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" x1="500" y1="0" x2="700" y2="1010"/>
+  <rect x="600" y="100" width="424" height="300" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);"/>
+  <circle style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" cx="800" cy="600" r="180"/>
+  <polyline style="stroke: rgb(0, 0, 0); fill: none;" points="615.572 579.341 100 517 16 940.643"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" x1="700" y1="780" x2="800" y2="1022.481"/>
+  <circle style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" cx="471.706" cy="401.078" r="39.323" transform="matrix(2.03443, 0, 0, 1.939125, -476.652191, -347.740509)"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" x1="415" y1="3" x2="415" y2="355"/>
+</svg>

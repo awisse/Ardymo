@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <circle style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" cx="912.5" cy="102.5" r="5"/>
+  <circle style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" cx="128" cy="350" r="128"/>
+  <circle style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" cx="764" cy="900" r="100"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" x1="1020" y1="512" x2="100" y2="512"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" x1="512" y1="536" x2="512" y2="1024"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" x1="1024" y1="768" x2="530" y2="768"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" x1="1020" y1="192" x2="100" y2="192"/>
+  <circle style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" cx="700" cy="128" r="64"/>
+</svg>

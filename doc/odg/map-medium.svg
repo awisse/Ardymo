@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 1024">
+  <ellipse style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" cx="202.5" cy="202.5" rx="5" ry="5"/>
+  <circle style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" cx="750" cy="220" r="150"/>
+  <circle style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" cx="1110" cy="220" r="150"/>
+  <circle style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" cx="580" cy="500" r="150"/>
+  <circle style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" cx="930" cy="500" r="150"/>
+  <circle style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" cx="200" cy="790" r="150"/>
+  <rect y="400" width="350" height="150" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" x="20"/>
+  <rect x="780" y="140" width="150" height="150" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); transform-origin: 930px 140px;" transform="matrix(-0.707107, 0.707107, -0.707107, -0.707107, 0.000232, 0.000109)"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" x1="930" y1="650" x2="930" y2="1024"/>
+  <polyline style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" points="197.5 0 370 400"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" x1="1000" y1="1000" x2="1984" y2="16"/>
+</svg>
