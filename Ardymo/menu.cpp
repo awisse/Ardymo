@@ -29,7 +29,7 @@ const char* displayedItems[5];
 
 void refreshMenu() {
   displayedItems[I2C_POS] = pgm_read_ptr(&aUseI2CItems[bUseI2C]);
-  if (menuShown = startupmenu) {
+  if (menuShown == startupmenu) {
     displayedItems[STARTUP_LEVEL_POS] = pgm_read_ptr(&aLevelItems[level]);
   }
   drawMenu(onItem, nMenuItems, displayedItems);
