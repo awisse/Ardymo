@@ -5,12 +5,32 @@
 #include "../viewport.h"
 #include "../src/intersection.h"
 
+rectangle_t default_map = {kBoardWidth, 0, kBoardHeight, 0, kBoardWidth};
+
+void constrain(rectangle_t* rect, rectangle_t reference) {
+  /* Make sure the rectangle `rect` is contained entirely within
+   * `reference`. Translate `rect` inside `reference` if necessary. */
+  if (rect->p.x - rect->w < reference.p.x - reference.w) {
+    rect->p.x = reference.p.x - reference.w + rect->w;
+  }
+  if (rect->p.x > reference.p.x) {
+    rect->p.x = reference.p.x;
+  }
+  if (rect->p.y < reference.p.y) {
+    rect->p.y = reference.p.y;
+  }
+  if (rect->p.y + rect->l > reference.p.y + reference.l) {
+    rect->p.y = reference.p.y + reference.l - rect->l;
+  }
+}
+
 bool eqv(Vec v, Vec w) {
   return (abs(v.x - w.x) < epsilon) && (abs(v.y - w.y) < epsilon);
 }
 
 // Equality of two rectangle_t
 bool eqr(rectangle_t r0, rectangle_t r) {
+  // Check if equal if rotated to the same angle
   return (r0.p.x == r.p.x) && (r0.p.y == r.p.y) && (r0.l == r.l)
     && (r0.rho == r.rho) && (r0.w == r.w);
 }
@@ -53,7 +73,7 @@ obstacle_t mkObst(geometry type, progmem_t data) {
 ScreenPt to_screen(const point p, const ViewPort* v) {
   ScreenPt sp;
   const rectangle_t r = v->get_rectangle();
-  sp = ScreenPt((p.x - r.p.x) * v->get_scale(),
+  sp = ScreenPt((p.x - r.p.x + r.w) * v->get_scale(),
      (p.y - r.p.y) * v->get_scale());
 
   return sp;
@@ -64,18 +84,19 @@ class ViewportTest : public testing::Test {
   protected:
     void SetUp() override {
 
+      /* *** All these rectangles must be with an angle of zero (rho=0) ***
+       * *** because they are used as `view` parameters in `ViewPort`.  *** */
       // Middle
-      rect_middle = {kBoardWidth / 2.0, kBoardHeight / 2.0,
-        kScreenWidth, -90, kScreenHeight};
+      rect_middle = {kBoardWidth / 2.0 + kScreenWidth, kBoardHeight / 2.0,
+        kScreenHeight, 0, kScreenWidth};
       // Bottom-Left
-      rect_bl = {0.0, kBoardHeight - kScreenHeight,
-        kScreenWidth, -90, kScreenHeight};
+      rect_bl = {kScreenWidth, kBoardHeight - kScreenHeight,
+        kScreenHeight, 0, kScreenWidth};
       // Top-Right
-      rect_tr = {kBoardWidth - kScreenWidth, 0.0,
-        kScreenWidth, -90, kScreenHeight};
+      rect_tr = {kBoardWidth, 0.0, kScreenHeight, 0, kScreenWidth};
       // Bottom-Right
-      rect_br = {kBoardWidth - kScreenWidth, kBoardHeight - kScreenHeight,
-        kScreenWidth, -90, kScreenHeight};
+      rect_br = {kBoardWidth, kBoardHeight - kScreenHeight,
+        kScreenHeight, 0, kScreenWidth};
       // Top-Left is given by default_view;
     }
 
@@ -144,8 +165,8 @@ TEST_F (ViewportTest, Centering) {
 
   v = ViewPort(default_map, r_middle);
   v.center_on({kBoardWidth / 2, kBoardHeight / 2});
-  r_middle.p.x = (kBoardWidth - r_middle.l) / 2;
-  r_middle.p.y = (kBoardHeight - r_middle.w) / 2;
+  r_middle.p.x = (kBoardWidth + r_middle.w) / 2;
+  r_middle.p.y = (kBoardHeight - r_middle.l) / 2;
   EXPECT_PRED2(eqr, v.get_rectangle(), r_middle);
 }
 
@@ -158,31 +179,31 @@ TEST_F (ViewportTest, Scaling) {
   v.zoom_out();
   r.l *= 2;
   r.w *= 2;
+  constrain(&r, default_map);
   EXPECT_PRED2(eqr, v.get_rectangle(), r);
 
   r = rect_br;
   v = ViewPort(default_map, r);
   v.zoom_out();
-  r.p.x = r.p.x - r.l;
-  r.p.y = r.p.y - r.w;
   r.l *= 2;
   r.w *= 2;
+  constrain(&r, default_map);
   EXPECT_PRED2(eqr, v.get_rectangle(), r);
 
   r = rect_tr;
   v = ViewPort(default_map, r);
   v.zoom_out();
-  r.p.x = r.p.x - r.l;
   r.l *= 2;
   r.w *= 2;
+  constrain(&r, default_map);
   EXPECT_PRED2(eqr, v.get_rectangle(), r);
 
   r = rect_bl;
   v = ViewPort(default_map, r);
   v.zoom_out();
-  r.p.y = r.p.y - r.w;
   r.l *= 2;
   r.w *= 2;
+  constrain(&r, default_map);
   EXPECT_PRED2(eqr, v.get_rectangle(), r);
   EXPECT_EQ(0.5, v.get_scale());
 
@@ -196,12 +217,15 @@ TEST_F (ViewportTest, Scaling) {
   v = ViewPort(default_map, r);
   v.zoom_out();
   EXPECT_EQ(0.5, v.get_scale());
+  v.zoom_in(); // Do we return to the previous view?
+  EXPECT_PRED2(eqr, v.get_rectangle(), r);
+  v.zoom_out();
   v.zoom_out();
   EXPECT_EQ(0.25, v.get_scale());
   v.zoom_out();
   EXPECT_EQ(0.125, v.get_scale());
   v.zoom_out();
-  EXPECT_EQ(1.0 / 16.0, v.get_scale());
+  EXPECT_EQ(0.0625, v.get_scale());
   EXPECT_PRED2(eqr, v.get_rectangle(), default_map);
 }
 
@@ -212,56 +236,55 @@ TEST_F (ViewportTest, map2Screen) {
 
   // Test whether map points are correctly translated into
   // Screen Points (can be outside of screen)
-  // 1. Reduce rect_middle by a factor of four.
   v = ViewPort(default_map, rect_middle);
 
   // Define four points in the center, four quadrants and corners of
   // rect_middle for a total of 9 points.
   // Corners
-  // Top Left
+  // Top Right
   p = rect_middle.p;
   sp = v.map2Screen(p);
+  EXPECT_EQ(sp.x, kScreenWidth);
+  EXPECT_EQ(sp.y, 0);
+  // Top Left
+  p.x -= rect_middle.w;
+  sp = v.map2Screen(p);
   EXPECT_EQ(sp.x, 0);
   EXPECT_EQ(sp.y, 0);
-  // Top Right
-  p.x += rect_middle.l;
-  sp = v.map2Screen(p);
-  EXPECT_EQ(sp.x, kScreenWidth);
-  EXPECT_EQ(sp.y, 0);
-  // Bottom Right
-  p.y += rect_middle.w;
-  sp = v.map2Screen(p);
-  EXPECT_EQ(sp.x, kScreenWidth);
-  EXPECT_EQ(sp.y, kScreenHeight);
   // Bottom Left
+  p.y += rect_middle.l;
+  sp = v.map2Screen(p);
+  EXPECT_EQ(sp.x, 0);
+  EXPECT_EQ(sp.y, kScreenHeight);
+  // Bottom Right
   p.x = rect_middle.p.x;
   sp = v.map2Screen(p);
-  EXPECT_EQ(sp.x, 0);
+  EXPECT_EQ(sp.x, kScreenWidth);
   EXPECT_EQ(sp.y, kScreenHeight);
   // Center
-  p.x += rect_middle.l / 2.0;
-  p.y = rect_middle.p.y + rect_middle.w / 2.0;
+  p.x -= rect_middle.w / 2.0;
+  p.y = rect_middle.p.y + rect_middle.l / 2.0;
   sp = v.map2Screen(p);
   EXPECT_EQ(sp.x, kScreenWidth / 2);
   EXPECT_EQ(sp.y, kScreenHeight / 2);
   // Upper left
-  p.x -= rect_middle.l / 4.0;
-  p.y -= rect_middle.w / 4.0;
+  p.x -= rect_middle.w / 4.0;
+  p.y -= rect_middle.l / 4.0;
   sp = v.map2Screen(p);
   EXPECT_EQ(sp.x, kScreenWidth / 4);
   EXPECT_EQ(sp.y, kScreenHeight / 4);
   // Upper right
-  p.x += rect_middle.l / 2.0;
+  p.x += rect_middle.w / 2.0;
   sp = v.map2Screen(p);
   EXPECT_EQ(sp.x, 3 * kScreenWidth / 4);
   EXPECT_EQ(sp.y, kScreenHeight / 4);
   // Lower right
-  p.y += rect_middle.w / 2.0;
+  p.y += rect_middle.l / 2.0;
   sp = v.map2Screen(p);
   EXPECT_EQ(sp.x, 3 * kScreenWidth / 4);
   EXPECT_EQ(sp.y, 3 * kScreenHeight / 4);
   // Lower left
-  p.x = rect_middle.p.x + rect_middle.l / 4.0;
+  p.x -= rect_middle.w / 2.0;
   sp = v.map2Screen(p);
   EXPECT_EQ(sp.x, kScreenWidth / 4);
   EXPECT_EQ(sp.y, 3 * kScreenHeight / 4);
@@ -295,9 +318,9 @@ class GetFigure : public testing::Test {
   protected:
     void SetUp() override {
 
-      p0 = {kBoardWidth / 2, kBoardHeight / 2};
+      p0 = {kBoardWidth / 2 + kScreenWidth, kBoardHeight / 2};
 
-      initViewport();
+      initViewport(&default_map);
       moveTo(p0);
       getViewport(&viewport);
     }

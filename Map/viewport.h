@@ -4,14 +4,17 @@
 #include "src/objects.h"
 #include "src/structs.h"
 
-constexpr rectangle_t default_view = {{0.0, 0.0}, kScreenWidth, -90,
-  kScreenHeight};
+/* The default view is the screen size. It **must** be a `rectangle_t` with
+ * `rho = 0`. */
+constexpr rectangle_t default_view = {kScreenWidth, 0.0, kScreenHeight, 0,
+  kScreenWidth};
 
 // Point to be drawn on the screen
 constexpr int16_t int16(float x) {
   return (int16_t)lrintf(x);
 }
 
+// All sorts of constructors to get a point on the screen.
 struct ScreenPt {
   int16_t x, y;
   constexpr ScreenPt(int16_t x, int16_t y) : x(x), y(y) {}
@@ -54,11 +57,13 @@ void getViewportPosition(point*);
 class ViewPort;
 void getViewport(ViewPort*);
 
-// Transform a line from shapes. Return false if not in viewport.
+// Get the endpoints of the line in the ViewPort for display
+// on the screen.
 uint8_t getLine(const line_t* line, LinePoints* s_line);
-// Transform a circle from shapes. Return false if not in viewport.
+// Get the screen parameters of the circle in the viewport from the shape.
 uint8_t getCircle(const circle_t* circle, ScreenCircle* s_circle);
-// Transform a rectangle from shapes. Return false if not in viewport.
+// Get the four line segments in the viewport from the rectangle shape. 
+// Return zero if not in viewport.
 // Returns the number of line segments in the viewport.
 // The array lines contains the endpoints of the lines to draw.
 uint8_t getRectangle(const rectangle_t* rect, LinePoints* lines);
@@ -68,9 +73,7 @@ class ViewPort {
   public:
     // Constructors
     ViewPort() = default;
-    ViewPort(rectangle_t map, rectangle_t view) :
-      map(map), view(view), scale(1.0),
-      h_step(view.l/2.0), v_step(view.w/2.0), moved(false) {}
+    ViewPort(rectangle_t map, rectangle_t view);
 
     // Methods
     void pan_left(void);
@@ -104,6 +107,7 @@ class ViewPort {
   private:
     rectangle_t map; // The rectangle defining the map.
     rectangle_t view; // The rectangle defining the viewport.
+    float min_zoom; // Min zoom = max zoom out
     float scale; // Precompute scale at each zoom.
     float h_step, v_step;
     bool moved; // True if the viewport has moved or is rescaled

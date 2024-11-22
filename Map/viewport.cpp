@@ -1,13 +1,15 @@
 #include "src/intersection.h"
 #include "viewport.h"
 
+#ifndef max
+#define max(x, y) (x) > (y) ? (x) : (y)
+#endif // max
+
 ViewPort viewport;
-float minZoom {0.125};
 
 void initViewport(rectangle_t* map) {
   viewport = ViewPort(*map, default_view);
   // Max zoom in: full width of screen
-  minZoom = kScreenWidth / map->w;
 }
 
 void panRight(void) {
@@ -70,11 +72,24 @@ float bound(float x, float a, float b) {
   return x;
 }
 
+ViewPort::ViewPort(rectangle_t map, rectangle_t view) {
+  /* Both `map` and `view` must be rectangles with `rho=0` */
+
+  this->map = map;
+  this->view = view;
+  this->scale = 1.0;
+  this->h_step = view.l/2.0;
+  this->v_step = view.w/2.0;
+  this->moved = false;
+  this->min_zoom = max(view.l / map.l, view.w / map.w);
+}
+
 void ViewPort::move_to(const point v) {
   float to_x = v.x;
   float to_y = v.y;
-  view.p.x = bound(to_x, 0.0, map.p.x + map.l - view.l);
-  view.p.y = bound(to_y, 0.0, map.p.y + map.w - view.w);
+  // The right edge of a rectangle is its x coordinate
+  view.p.x = bound(to_x, view.w, map.p.x);
+  view.p.y = bound(to_y, 0.0, map.p.y + map.l - view.l);
   moved = true;
 }
 
@@ -111,18 +126,18 @@ void ViewPort::zoom_in(void) {
 void ViewPort::zoom_out(void) {
   point c = get_center();
 
-  if (scale > minZoom) {
+  if (scale > min_zoom) {
     scale /= 2.0;
     view.l *= 2.0;
-    if (view.l > kBoardWidth) {
-      view.l = kBoardWidth;
+    if (view.w > kBoardWidth) {
+      view.w = kBoardWidth;
     }
     view.w *= 2.0;
-    if (view.w > kBoardHeight) {
-      view.w = kBoardHeight;
+    if (view.l > kBoardHeight) {
+      view.l = kBoardHeight;
     }
-    h_step = view.l / 2.0;
-    v_step = view.w / 2.0;
+    h_step = view.w / 2.0;
+    v_step = view.l / 2.0;
     moved = true;
   }
   center_on(c);
@@ -131,14 +146,14 @@ void ViewPort::zoom_out(void) {
 void ViewPort::center_on(const point p) {
   // Center the viewport on the point p.
   point to_p;
-  to_p.x = p.x - view.l / 2.0;
-  to_p.y = p.y - view.w / 2.0;
+  to_p.x = p.x + view.w / 2.0; // Origin is top right corner
+  to_p.y = p.y - view.l / 2.0;
   move_to(to_p);
 }
 
 bool ViewPort::inside(const point p) {
-  return (p.x >= view.p.x) && (p.y >= view.p.y)
-    && (p.x <= view.p.x + view.l) && (p.y <= view.p.y + view.w);
+  return (p.x + view.w >= view.p.x) && (p.y >= view.p.y)
+    && (p.x <= view.p.x) && (p.y <= view.p.y + view.l);
 }
 
 bool ViewPort::inside(const Vec& p) {
@@ -159,20 +174,20 @@ ScreenPt ViewPort::map2Screen(const Vec v) const {
 }
 
 ScreenPt ViewPort::map2Screen(const point p) const {
-  ScreenPt s_p = ScreenPt(scale * (p.x - view.p.x),
+  ScreenPt s_p = ScreenPt(scale * (p.x - view.p.x + view.w),
       scale * (p.y - view.p.y));
   return s_p;
 }
 
 point ViewPort::get_center(void) const {
   point p;
-  p.x = view.p.x + view.l / 2;
-  p.y = view.p.y + view.w / 2;
+  p.x = view.p.x - view.w / 2; // Origin is top right corner
+  p.y = view.p.y + view.l / 2;
   return p;
 }
 
 void ViewPort::set_scale(float s) {
-  scale = bound(s, minZoom, 1.0);
+  scale = bound(s, min_zoom, 1.0);
 }
 
 inline void ViewPort::not_moved(void) {
@@ -216,7 +231,7 @@ uint8_t getLine(const line_t* line, LinePoints* s_line) {
     s_line->l1 = viewport.map2Screen(l1);
   }
 
-  return true;
+  return 1;
 }
 
 bool is_in_circle(const Vec& p, const circle_t* circle) {
@@ -230,9 +245,9 @@ uint8_t getCircle(const circle_t* circle, ScreenCircle* s_circle) {
   rectangle_t vrect = viewport.get_rectangle();
   // Completely outside the viewport?
   if (is_in_circle(Vec(vrect.p), circle) &&
-      is_in_circle(Vec(vrect.p.x + vrect.l, vrect.p.y), circle) &&
-      is_in_circle(Vec(vrect.p.x, vrect.p.y + vrect.w), circle) &&
-      is_in_circle(Vec(vrect.p.x + vrect.l, vrect.p.y + vrect.w), circle)) {
+      is_in_circle(Vec(vrect.p.x - vrect.w, vrect.p.y), circle) &&
+      is_in_circle(Vec(vrect.p.x, vrect.p.y + vrect.l), circle) &&
+      is_in_circle(Vec(vrect.p.x - vrect.w, vrect.p.y + vrect.l), circle)) {
     return 0;
   }
 

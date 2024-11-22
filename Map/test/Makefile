@@ -7,11 +7,10 @@ CXXFLAGS = -g $(INCLUDE)
 ARDYMOSRC := objects.cpp intersection.cpp rotate.cpp viewport.cpp
 SOURCES := $(wildcard *.cpp) $(ARDYMOSRC)
 OBJECTS := $(notdir $(SOURCES:%.cpp=%.o))
-INCLUDES := $(wildcard *.h)
 
 all: $(TARGET)
 
-%.o : %.cpp $(SOURCES) $(INCLUDES)
+%.o : %.cpp $(SOURCES) %.h
 	$(CXX) $(CXXFLAGS) -c -o $(@F) $<
 
 $(TARGET) : $(OBJECTS)
